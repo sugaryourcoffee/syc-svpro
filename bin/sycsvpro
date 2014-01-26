@@ -11,35 +11,30 @@ end
 
 include GLI::App
 
-program_desc 'Describe your application here'
+program_desc 'Processing CSV files'
 
 version Sycsvpro::VERSION
 
-desc 'Describe some switch here'
-switch [:s,:switch]
+=begin
+desc 'CSV file to operate on'
+switch [:f,:file]
+=end
 
-desc 'Describe some flag here'
-default_value 'the default'
-arg_name 'The name of the argument'
-flag [:f,:flagname]
+desc 'CSV file to operate on'
+arg_name 'FILE'
+flag [:f,:file]
 
-desc 'Describe analyze here'
-arg_name 'Describe arguments to analyze here'
+desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
-  c.desc 'Describe a switch to analyze'
-  c.switch :s
 
-  c.desc 'Describe a flag to analyze'
-  c.default_value 'default'
-  c.flag :f
   c.action do |global_options,options,args|
-
-    # Your command logic here
-     
-    # If you have any errors, just raise them
-    # raise "that command made no sense"
-
-    puts "analyze command ran"
+    analyzer = Sycsvpro::Analyzer.new(global_options[:f])
+    result = analyzer.result
+    puts "Analysis of #{global_options[:f]}"
+    puts "#{result.col_count} columns: #{result.cols}"
+    puts "#{result.row_count} rows"
+    puts "Row sample data:"
+    puts "#{result.sample_row}"
   end
 end
 
