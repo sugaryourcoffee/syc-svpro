@@ -24,6 +24,10 @@ desc 'CSV file to operate on'
 arg_name 'FILE'
 flag [:f,:file]
 
+desc 'CSV file to write the result to'
+arg_name 'OUT_FILE'
+flag [:o, :out]
+
 desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
 
@@ -38,11 +42,24 @@ command :analyze do |c|
   end
 end
 
-desc 'Describe extract here'
-arg_name 'Describe arguments to extract here'
+desc 'Extract specified rows and columns from the file'
+arg_name 'ROWS|COLOMNS|CONDITION'
 command :extract do |c|
+
+  c.desc 'Rows to extract'
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30,>ROW50,<ROW99|REGEXP'
+  c.flag [:r, :row]
+
+  c.desc 'Columns to extract'
+  c.arg_name 'COL1,COL2,COL10-COL30,>COL50,<COL99|REGEXP'
+  c.flag [:c, :col]
+
   c.action do |global_options,options,args|
-    puts "extract command ran"
+    puts "Extracting ..."
+    extracter = Sycsvpro::Extractor.new(global_options[:f], global_options[:o],
+                                        options[:r], options[:c])
+    extracter.extract
+        
   end
 end
 
