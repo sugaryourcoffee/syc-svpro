@@ -12,7 +12,7 @@ module Sycsvpro
       @rows     = rows
       @cols     = cols
       @row_filter = Filter.new(rows)
-      @col_filger = Filter.new(cols)
+      @col_filter = Filter.new(cols)
     end
 
     def extract
