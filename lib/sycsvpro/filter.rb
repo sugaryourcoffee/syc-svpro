@@ -18,20 +18,16 @@ module Sycsvpro
     end
 
     def process(object, options={})
-      filtered = object.split(';').values_at(*filter.flatten.uniq)
-      filtered.compact.join(';')
+      raise 'Needs to be overridden by sub class'
     end
 
     private
 
       def create_filter(values)
         values.split(',').each { |f| send(f) }
-        puts filter.inspect
-        puts pattern.inspect
       end
 
       def equal(value, args, block)
-        puts "equal #{value}"
         filter << value.to_i unless filter.index(value.to_i) 
       end
 
@@ -40,7 +36,6 @@ module Sycsvpro
       end
 
       def regex(value, args, block)
-        puts "regex #{value}"
         pattern << value unless pattern.index(value)
       end
 
