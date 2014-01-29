@@ -56,10 +56,20 @@ command :extract do |c|
 
   c.action do |global_options,options,args|
     puts "Extracting ..."
-    extracter = Sycsvpro::Extractor.new(global_options[:f], global_options[:o],
+    extractor = Sycsvpro::Extractor.new(global_options[:f], global_options[:o],
                                         options[:r], options[:c])
-    extracter.extract
+    extractor.extract
         
+  end
+end
+
+desc 'Profile executes the code profided in a file'
+arg_name 'PRO_FILE'
+command :profile do |c|
+  c.action do |global_options,options,args|
+    puts args.inspect
+    profile = Sycsvpro::Profile.new(args[0])
+    profile.execute
   end
 end
 
