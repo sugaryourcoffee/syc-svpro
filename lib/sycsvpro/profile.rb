@@ -1,16 +1,22 @@
+require_relative 'dsl'
+
 module Sycsvpro
 
   class Profile
 
+    include Dsl
+
     attr_reader :pro_file
 
     def initialize(pro_file)
-      @pro_file = pro_file
+      require pro_file
     end
 
     def execute
-      load pro_file
+      puts self
+      calc
     end
+
 
   end
 
