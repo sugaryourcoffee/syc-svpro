@@ -12,9 +12,9 @@ module Sycsvpro
       require pro_file
     end
 
-    def execute
+    def execute(method)
       puts self
-      calc
+      send(method)
     end
 
 

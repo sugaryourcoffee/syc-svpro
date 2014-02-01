@@ -63,26 +63,42 @@ command :extract do |c|
   end
 end
 
-desc 'Profile executes the code profided in a file'
-arg_name 'PRO_FILE'
-command :profile do |c|
+desc 'Executes the code provided in a file'
+arg_name 'PRO_FILE, METHOD'
+command :execute do |c|
   c.action do |global_options,options,args|
     puts args.inspect
     profile = Sycsvpro::Profile.new(args[0])
-    profile.execute
+    profile.execute(args[1])
   end
 end
 
-desc 'Describe count here'
+desc 'Counts the occurences of column values. Uses column values as headings with count as values'
 arg_name 'Describe arguments to count here'
 command :count do |c|
+
+  c.desc 'Key column that is assigned the count of column values to'
+  c.arg_name 'KEY_COLUMN'
+  c.flag [:k, :key]
+
+  c.desc 'Rows to consider'
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30,>ROW50,<ROW99|REGEXP'
+  c.flag [:r, :row]
+
+  c.desc 'Columns to count'
+  c.arg_name 'COL1,COL2,COL10-COL30,>COL50,<COL99|REGEXP'
+  c.flag [:c, :col]
+
   c.action do |global_options,options,args|
+    counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
+                                    key: options[:k], rows: options[:r], cols: options[:c])
+    counter.execute
     puts "count command ran"
   end
 end
 
-desc 'Describe map here'
-arg_name 'Describe arguments to map here'
+desc 'Map values in columns to new values'
+arg_name 'MAPPINGS-FILE'
 command :map do |c|
   c.action do |global_options,options,args|
     puts "map command ran"

@@ -1,27 +1,34 @@
+require_relative 'row_filter'
+
 module Dsl
 
-  def infile(file)
-    @in_file = File.expand_path(file)
-    puts file
-  end
-
-  def outfile(file)
-    @out_file = File.expand_path(file)
-    puts file
-  end
-
   def rows(options={})
-    puts @out_file
-    puts @in_file
-    key = Hash.new(0)
-    File.foreach(@in_file) do |line|
-      next if line.chomp.empty?
-      values = line.split(';') 
-      key_column = options[:key_column]
-      data_columns = options[:data_columns]
-       
-      yield values[key_column], values.values_at(*data_columns)
+    infile     = File.expand_path(options[:infile])
+    row_filter = Sycsvpro::RowFilter.new(options[:row_filter]) if options[:row_filter]
+
+    puts "row filter = #{row_filter}"
+    File.new(infile).each_with_index do |line, index|
+      next if line.chomp.empty? 
+      next if !row_filter.nil? and row_filter.process(line.chomp, row: index).nil?
+
+      values = line.chomp.split(';') 
+      params = []
+      options.each { |k,v| params << extract_values(values, k, v) if k =~ /column$|columns$/ }
+
+      yield *params
     end
   end
 
+  def write_to(file)
+    File.open(file, 'w') do |out|
+      yield out
+    end
+  end
+
+  private
+
+    def extract_values(values, key, position)
+      return values[position]            if key =~ /column$/
+      return values.values_at(*position) if key =~ /columns$/
+    end
 end

@@ -24,7 +24,7 @@ module Sycsvpro
     private
 
       def create_filter(values)
-        values.split(',').each { |f| send(f) }
+        values.split(',').each { |f| send(f) } unless values.nil?
       end
 
       def equal(value, args, block)
