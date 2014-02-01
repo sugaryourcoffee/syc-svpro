@@ -15,11 +15,6 @@ program_desc 'Processing CSV files'
 
 version Sycsvpro::VERSION
 
-=begin
-desc 'CSV file to operate on'
-switch [:f,:file]
-=end
-
 desc 'CSV file to operate on'
 arg_name 'FILE'
 flag [:f,:file]
@@ -43,15 +38,14 @@ command :analyze do |c|
 end
 
 desc 'Extract specified rows and columns from the file'
-arg_name 'ROWS|COLOMNS|CONDITION'
 command :extract do |c|
 
   c.desc 'Rows to extract'
-  c.arg_name 'ROW1,ROW2,ROW10-ROW30,>ROW50,<ROW99|REGEXP'
+  c.arg_name '1,2,10-30|REGEXP'
   c.flag [:r, :row]
 
   c.desc 'Columns to extract'
-  c.arg_name 'COL1,COL2,COL10-COL30,>COL50,<COL99|REGEXP'
+  c.arg_name '1,2,10-30'
   c.flag [:c, :col]
 
   c.action do |global_options,options,args|
@@ -59,7 +53,7 @@ command :extract do |c|
     extractor = Sycsvpro::Extractor.new(global_options[:f], global_options[:o],
                                         options[:r], options[:c])
     extractor.extract
-        
+    puts "extract done"    
   end
 end
 
@@ -70,11 +64,11 @@ command :execute do |c|
     puts args.inspect
     profile = Sycsvpro::Profile.new(args[0])
     profile.execute(args[1])
+    puts "execute done"
   end
 end
 
 desc 'Counts the occurences of column values. Uses column values as headings with count as values'
-arg_name 'Describe arguments to count here'
 command :count do |c|
 
   c.desc 'Key column that is assigned the count of column values to'
@@ -82,18 +76,18 @@ command :count do |c|
   c.flag [:k, :key]
 
   c.desc 'Rows to consider'
-  c.arg_name 'ROW1,ROW2,ROW10-ROW30,>ROW50,<ROW99|REGEXP'
+  c.arg_name '1,2,10-30|REGEXP'
   c.flag [:r, :row]
 
   c.desc 'Columns to count'
-  c.arg_name 'COL1,COL2,COL10-COL30,>COL50,<COL99|REGEXP'
+  c.arg_name '1,2,10-30'
   c.flag [:c, :col]
 
   c.action do |global_options,options,args|
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c])
     counter.execute
-    puts "count command ran"
+    puts "count done"
   end
 end
 
