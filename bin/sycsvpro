@@ -57,6 +57,26 @@ command :extract do |c|
   end
 end
 
+desc 'Collect values of specified rows and columns from the file'
+command :collect do |c|
+
+  c.desc 'Rows to consider for collection'
+  c.arg_name '1,2,10-30|REGEXP'
+  c.flag [:r, :row]
+
+  c.desc 'Columns to collect values from'
+  c.arg_name '1,2,10-30'
+  c.flag [:c, :col]
+
+  c.action do |global_options,options,args|
+    puts "Collecting ..."
+    collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
+                                        rows: options[:r], cols: options[:c])
+    collector.execute
+    puts "collect done"    
+  end
+end
+
 desc 'Executes the code provided in a file'
 arg_name 'PRO_FILE, METHOD'
 command :execute do |c|
