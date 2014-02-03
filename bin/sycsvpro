@@ -57,15 +57,15 @@ command :extract do |c|
   end
 end
 
-desc 'Collect values of specified rows and columns from the file'
+desc 'Collect values of specified rows and columns from the file and group them in categories'
 command :collect do |c|
 
   c.desc 'Rows to consider for collection'
-  c.arg_name '1,2,10-30|REGEXP'
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30|REGEXP'
   c.flag [:r, :row]
 
   c.desc 'Columns to collect values from'
-  c.arg_name '1,2,10-30'
+  c.arg_name 'CATEGORY1:ROW1,ROW2,ROW10-ROW30+CATEGORY2:ROW3-ROW9'
   c.flag [:c, :col]
 
   c.action do |global_options,options,args|
@@ -119,11 +119,10 @@ command :map do |c|
   end
 end
 
-desc 'Describe calc here'
-arg_name 'Describe arguments to calc here'
+desc 'Process math operations on columns'
 command :calc do |c|
   c.action do |global_options,options,args|
-    puts "calc command ran"
+    puts "calc not implemented yet"
   end
 end
 
