@@ -12,7 +12,7 @@ module Sycsvpro
       @outfile    = options[:outfile]
       @key_column = options[:key].to_i
       @row_filter = RowFilter.new(options[:rows])
-      @col_filter = ColumnFilter.new(options[:cols])
+      @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
       @customers  = {}
       @heading    = []
     end

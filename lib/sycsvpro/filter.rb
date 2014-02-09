@@ -1,27 +1,38 @@
+require 'date'
+
 module Sycsvpro
 
   class Filter
 
-    attr_reader :filter, :pattern
+    attr_reader :date_format, :filter, :pattern, :pivot
 
-    def initialize(values)
+    def initialize(values, options={})
+      @date_format = options[:df] || "%Y-%m-%d"
       @filter  = []
       @pattern = []
+      @pivot   = {}
       create_filter(values)
     end
 
     def method_missing(id, *args, &block)
-      return equal($1, args, block)    if id =~ /^(\d+)$/
-      return range($1, $2, args, block) if id =~ /^(\d+)-(\d+)$/
-      return regex($1, args, block)   if id =~ /^\/(.*)\/$/
-      return col_regex($1, $2, args, block)  if id =~ /^(\d+):\/(.*)\/$/
-      return date($1, $2, $3, args, block)      if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
+      return equal($1, args, block)              if id =~ /^(\d+)$/
+      return range($1, $2, args, block)          if id =~ /^(\d+)-(\d+)$/
+      return regex($1, args, block)              if id =~ /^\/(.*)\/$/
+      return col_regex($1, $2, args, block)      if id =~ /^(\d+):\/(.*)\/$/
+      return date($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
       return date_range($1, $2, $3, args, block) if id =~ /^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/
       super
     end
 
     def process(object, options={})
       raise 'Needs to be overridden by sub class'
+    end
+
+    def pivot_each_column(values=[])
+      pivot.each do |column, parameters|
+        puts "column #{column} - parameters #{parameters}"
+        yield column, eval(parameters[:operation].gsub('[value]', values[parameters[:col].to_i]))
+      end
     end
 
     private
@@ -42,13 +53,27 @@ module Sycsvpro
         pattern << value unless pattern.index(value)
       end
 
-      def col_regex(col, regex, args, block)
+      def col_regex(col, r, args, block)
+        operation = "[value] =~ Regexp.new(\"#{r}\")"
+        pivot[r] = { col: col, operation: operation } 
+        puts pivot.inspect
       end
 
       def date(col, comparator, date, args, block)
+        puts date.inspect
+        operation = "Date.strptime(\"[value]\", \"#{date_format}\") #{comparator} " +
+                    "Date.strptime(\"#{date}\", \"#{date_format}\")"
+        pivot[date] = { col: col, operation: operation }
+        puts pivot.inspect
       end
 
       def date_range(col, start_date, end_date, args, block)
+        operation = "   Date.strptime(\"#{start_date}\",  \"#{date_format}\") "    +
+                    "<= Date.strptime(\"[value]\",        \"#{date_format}\") && " +
+                    "   Date.strptime(\"[value]\",        \"#{date_format}\") "    +
+                    "<= Date.strptime(\"#{end_date}\",    \"#{date_format}\")"
+        pivot["#{start_date}-#{end_date}"] = { col: col, operation: operation }
+        puts pivot.inspect
       end
 
   end

@@ -103,9 +103,14 @@ command :count do |c|
   c.arg_name '1,2,10-30'
   c.flag [:c, :col]
 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
   c.action do |global_options,options,args|
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
-                                    key: options[:k], rows: options[:r], cols: options[:c])
+                                    key: options[:k], rows: options[:r], cols: options[:c],
+                                    df: options[:df])
     counter.execute
     puts "count done"
   end

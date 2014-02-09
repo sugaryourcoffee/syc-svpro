@@ -6,8 +6,11 @@ module Sycsvpro
     
     def process(object, options={})
       return nil if object.nil?
-      return object if filter.empty?
+      return object if filter.empty? and pivot.empty?
       filtered = object.split(';').values_at(*filter.flatten.uniq)
+      pivot_each_column(object.split(';')) do |column, match|
+        filtered << column if match
+      end
       filtered.compact.join(';')
     end
     
