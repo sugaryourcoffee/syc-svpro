@@ -137,8 +137,19 @@ end
 
 desc 'Process math operations on columns'
 command :calc do |c|
+    c.desc 'Columns to consider for calculations'
+    c.arg_name 'ROW1,ROW2-ROW10|REGEXP'
+    c.flag [:r, :row]
+
+    c.desc 'Column to do calculations on'
+    c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5)'
+    c.flag [:c, :col]
+
   c.action do |global_options,options,args|
-    puts "calc not implemented yet"
+    calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
+                                          rows: options[:r], cols: options[:c])
+    calculator.execute 
+    puts "calc done"
   end
 end
 

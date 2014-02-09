@@ -30,7 +30,6 @@ module Sycsvpro
 
     def pivot_each_column(values=[])
       pivot.each do |column, parameters|
-        puts "column #{column} - parameters #{parameters}"
         yield column, eval(parameters[:operation].gsub('[value]', values[parameters[:col].to_i]))
       end
     end
@@ -54,17 +53,14 @@ module Sycsvpro
       end
 
       def col_regex(col, r, args, block)
-        operation = "[value] =~ Regexp.new(\"#{r}\")"
+        operation = "'[value]' =~ Regexp.new('#{r}')"
         pivot[r] = { col: col, operation: operation } 
-        puts pivot.inspect
       end
 
       def date(col, comparator, date, args, block)
-        puts date.inspect
         operation = "Date.strptime(\"[value]\", \"#{date_format}\") #{comparator} " +
                     "Date.strptime(\"#{date}\", \"#{date_format}\")"
-        pivot[date] = { col: col, operation: operation }
-        puts pivot.inspect
+        pivot["#{comparator}#{date}"] = { col: col, operation: operation }
       end
 
       def date_range(col, start_date, end_date, args, block)
@@ -73,7 +69,6 @@ module Sycsvpro
                     "   Date.strptime(\"[value]\",        \"#{date_format}\") "    +
                     "<= Date.strptime(\"#{end_date}\",    \"#{date_format}\")"
         pivot["#{start_date}-#{end_date}"] = { col: col, operation: operation }
-        puts pivot.inspect
       end
 
   end
