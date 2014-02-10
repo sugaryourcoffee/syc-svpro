@@ -142,7 +142,7 @@ command :calc do |c|
     c.flag [:r, :row]
 
     c.desc 'Column to do calculations on'
-    c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5)'
+    c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
     c.flag [:c, :col]
 
   c.action do |global_options,options,args|
