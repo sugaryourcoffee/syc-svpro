@@ -18,14 +18,14 @@ module Sycsvpro
         row_number = 0
         row_number += 1 while rows[row_number].chomp.empty?
 
-        result.cols       = rows[row_number].split(';')
+        result.cols       = rows[row_number].chomp.split(';')
         result.col_count  = result.cols.size
 
         row_number += 1
         row_number += 1 while rows[row_number].chomp.empty?
 
         result.row_count  = rows.size - 1
-        result.sample_row = rows[row_number]
+        result.sample_row = rows[row_number].chomp
       end
 
       result
