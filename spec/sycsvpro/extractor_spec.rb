@@ -12,7 +12,7 @@ module Sycsvpro
     it "should extract rows and columns" do
       extractor = Extractor.new(infile: @in_file, outfile: @out_file, rows: "2-4", cols: "1,3")
 
-      extractor.extract
+      extractor.execute
 
       result = ["3322;h1", "4323;g1", "3342;f2"]
 
