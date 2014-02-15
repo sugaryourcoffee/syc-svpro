@@ -2,7 +2,7 @@ require_relative 'dsl'
 
 module Sycsvpro
 
-  class Profile
+  class Profiler
 
     include Dsl
 
@@ -13,7 +13,6 @@ module Sycsvpro
     end
 
     def execute(method)
-      puts self
       send(method)
     end
 

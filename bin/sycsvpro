@@ -81,12 +81,11 @@ command :collect do |c|
 end
 
 desc 'Executes the code provided in a file'
-arg_name 'PRO_FILE, METHOD'
+arg_name 'PRO_FILE METHOD'
 command :execute do |c|
   c.action do |global_options,options,args|
-    puts args.inspect
-    profile = Sycsvpro::Profile.new(args[0])
-    profile.execute(args[1])
+    profiler = Sycsvpro::Profiler.new(args[0])
+    profiler.execute(args[1])
     puts "execute done"
   end
 end

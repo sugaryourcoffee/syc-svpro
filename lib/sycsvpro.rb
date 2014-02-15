@@ -1,7 +1,7 @@
 require 'sycsvpro/version.rb'
 require 'sycsvpro/analyzer.rb'
 require 'sycsvpro/extractor.rb'
-require 'sycsvpro/profile.rb'
+require 'sycsvpro/profiler.rb'
 require 'sycsvpro/counter.rb'
 require 'sycsvpro/collector.rb'
 require 'sycsvpro/mapper.rb'
