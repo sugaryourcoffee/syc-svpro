@@ -38,7 +38,6 @@ module Sycsvpro
     private
 
       def init_collection(column_filter)
-        puts column_filter
         column_filter.split('+').each do |f|
           category, filter = f.split(':')
           collection[category] = { entries: [], filter: ColumnFilter.new(filter) }
