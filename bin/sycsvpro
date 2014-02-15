@@ -53,9 +53,9 @@ command :extract do |c|
 
   c.action do |global_options,options,args|
     puts "Extracting ..."
-    extractor = Sycsvpro::Extractor.new(global_options[:f], global_options[:o],
-                                        options[:r], options[:c])
-    extractor.extract
+    extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
+                                        rows: options[:r], cols: options[:c])
+    extractor.execute
     puts "extract done"    
   end
 end
