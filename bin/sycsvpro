@@ -90,7 +90,10 @@ command :execute do |c|
   end
 end
 
-desc 'Counts the occurences of column values. Uses column values as headings with count as values'
+desc 'Counts the occurences of column values. Uses column values as headings with count as ' +
+     'values. Columns with a condition will be added as new columns and the condition will ' +
+     'be set as column name'
+
 command :count do |c|
 
   c.desc 'Key column that is assigned the count of column values to'
@@ -101,8 +104,8 @@ command :count do |c|
   c.arg_name '1,2,10-30|REGEXP'
   c.flag [:r, :row]
 
-  c.desc 'Columns to count'
-  c.arg_name '1,2,10-30'
+  c.desc 'Columns to count where column 2 is counted conditionally'
+  c.arg_name '1,2:<14.2.2014,10-30'
   c.flag [:c, :col]
 
   c.desc 'Format of date values'
