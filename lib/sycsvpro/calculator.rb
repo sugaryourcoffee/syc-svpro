@@ -1,12 +1,30 @@
 require_relative 'row_filter'
 require_relative 'header'
 
+# Operating csv files
 module Sycsvpro
 
+  # Processes arithmetic operations on columns of a csv file. A column value has to be a number.
+  # Possible operations are +, -, * and /. It is also possible to use values of columns as an
+  # operator like c1*2 will multiply the value of column 1 with 2.
   class Calculator
 
-    attr_reader :infile, :outfile, :row_filter, :formulae, :header, :columns
+    # infile contains the data that is operated on
+    attr_reader :infile
+    # outfile is the file where the result is written to
+    attr_reader :outfile
+    # filter that is used for rows
+    attr_reader :row_filter
+    # the operations on columns
+    attr_reader :formulae
+    # header of the outfile
+    attr_reader :header
+    # filter that is used for columns
+    attr_reader :columns
 
+    # Creates a new Calculator. Options expects :infile, :outfile, :rows and :columns. Optionally
+    # a header can be provided. The header can be supplemented with additional column names that
+    # are generated due to a arithmetic operation that creates new columns
     def initialize(options={})
       @infile     = options[:infile]
       @outfile    = options[:outfile]
@@ -16,10 +34,12 @@ module Sycsvpro
       create_calculator(options[:cols])
     end
 
+    # Retrieves the values from a row as the result of a arithmetic operation
     def method_missing(id, *args, &block)
       to_number(columns[$1.to_i]) if id =~ /c(\d+)/
     end
 
+    # Executes the calculator
     def execute
       processed_header = false
 
@@ -63,6 +83,7 @@ module Sycsvpro
         end
       end
 
+      # Casts a string to an integer or float depending whether the value has a decimal point
       def to_number(value)
         return value.to_i unless value =~ /\./
         return value.to_f if     value =~ /\./ 

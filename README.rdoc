@@ -1,6 +1,44 @@
 = sycsvpro
 
-Describe your project here
+Author:: Pierre Sugar (mailto:pierre@sugaryourcoffee.de)
+Copyright:: Copyright (c) 2014 by Pierre Sugar
+License:: Distributed uder the MIT license, see LICENSE in the source distro
+
+The application provides an interface for analyzing, cleaning and operating on csv files
+
+
+== Install
+
+Install:
+
+    gem install sycsvpro
+
+== Use
+
+    sycsvpro --help
+
+== Developing for `sycsvpro`
+
+First install bundler
+
+    gem install bundler
+
+Get the development dependencies
+
+    bundle install
+
+The code is in
+
+    lib/sycsvpro
+    bin
+
+Tests are in
+
+    spec/sycsvpro
+
+Test files are in
+
+    spec/sycsvpro/files
 
 :include:sycsvpro.rdoc
 

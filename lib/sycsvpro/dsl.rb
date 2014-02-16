@@ -1,7 +1,9 @@
 require_relative 'row_filter'
 
+# Methods to be used in customer specific script files
 module Dsl
 
+  # Retrieves rows and columns from the file and returns them to the block provided by the caller
   def rows(options={})
     infile     = File.expand_path(options[:infile])
     row_filter = Sycsvpro::RowFilter.new(options[:row_filter]) if options[:row_filter]
@@ -18,6 +20,7 @@ module Dsl
     end
   end
 
+  # writes values provided by a block to the given file
   def write_to(file)
     File.open(file, 'w') do |out|
       yield out
@@ -26,6 +29,7 @@ module Dsl
 
   private
 
+    # Assigns values to keys that are used in rows and yielded to the block
     def extract_values(values, key, position)
       return values[position]            if key =~ /column$/
       return values.values_at(*position) if key =~ /columns$/

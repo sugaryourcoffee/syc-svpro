@@ -1,9 +1,21 @@
+# Operating csv files
 module Sycsvpro
 
+  # Map values to new values described in a mapping file
   class Mapper
 
-    attr_reader :infile, :outfile, :mapper, :row_filter, :col_filter
+    # infile contains the data that is operated on
+    attr_reader :infile
+    # outfile is the file where the result is written to
+    attr_reader :outfile
+    # file that contains the mappings from existing column values to new values
+    attr_reader :mapper
+    # filter that is used for rows
+    attr_reader :row_filter
+    # filter that is used for columns
+    attr_reader :col_filter
 
+    # Creates new mapper
     def initialize(options={})
       @infile = options[:infile]
       @outfile = options[:outfile]
@@ -13,6 +25,7 @@ module Sycsvpro
       init_mapper(options[:mapping])
     end
 
+    # Executes the mapper
     def execute
       File.open(outfile, 'w') do |out|
         File.new(infile, 'r').each_with_index do |line, index|
@@ -28,6 +41,7 @@ module Sycsvpro
 
     private
 
+      # Initializes the mappings
       def init_mapper(file)
         File.new(file, 'r').each_line do |line|
           from, to = line.chomp.split(':')

@@ -1,9 +1,12 @@
 require_relative 'filter'
 
+# Operating csv files
 module Sycsvpro
 
+  # Creates a new column filter
   class ColumnFilter < Filter
     
+    # Processes the filter and returns the values that respect the filter
     def process(object, options={})
       return nil if object.nil? or object.empty?
       object = object.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')

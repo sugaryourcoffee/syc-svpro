@@ -1,5 +1,29 @@
 = sycsvpro
 
-Generate this with
-    sycsvpro rdoc
-After you have described your command line interface
+NAME
+    sycsvpro - Processing CSV files
+
+SYNOPSIS
+    sycsvpro [global options] command [command options] [arguments...]
+
+VERSION
+    0.0.1
+
+GLOBAL OPTIONS
+    -f, --file=FILE    - CSV file to operate on (default: none)
+    --help             - Show this message
+    -o, --out=OUT_FILE - CSV file to write the result to (default: none)
+    --version          - Display the program version
+
+COMMANDS
+    analyze - Analyze the CSV file regarding columns, rows and content
+    calc    - Process math operations on columns
+    collect - Collect values of specified rows and columns from the file and group them in
+              categories
+    count   - Counts the occurences of column values. Uses column values as headings with count as
+              values. Columns with a condition will be added as new columns and the condition will
+              be set as column name
+    execute - Executes the code provided in a file
+    extract - Extract specified rows and columns from the file
+    help    - Shows a list of commands or help for one command
+    map     - Map values in columns to new values

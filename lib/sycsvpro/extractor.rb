@@ -1,12 +1,22 @@
 require_relative 'row_filter'
 require_relative 'column_filter'
 
+# Operating csv files
 module Sycsvpro
 
+  # Extracts rows and columns from a csv file
   class Extractor
 
-    attr_reader :in_file, :out_file, :row_filter, :col_filter
+    # infile contains the data that is operated on
+    attr_reader :in_file
+    # outfile is the file where the result is written to
+    attr_reader :out_file
+    # filter that is used for rows
+    attr_reader :row_filter
+    # filter that is used for columns
+    attr_reader :col_filter
 
+    # Creates a new extractor
     def initialize(options={})
       @in_file  = options[:infile]
       @out_file = options[:outfile]
@@ -14,6 +24,7 @@ module Sycsvpro
       @col_filter = ColumnFilter.new(options[:cols])
     end
 
+    # Executes the extractor
     def execute
       File.open(out_file, 'w') do |o|
         File.new(in_file, 'r').each_with_index do |line, index|
