@@ -11,6 +11,10 @@ Processing of csv files. *sycsvpro* offers following functions
 * arithmetic operations on values of columns
 * execute a ruby script file that operates a csv file
 
+To get help type
+
+    $ sycsvpro -h
+    
 In the following examples we assume the following file
 
 ```
@@ -76,18 +80,18 @@ Map the product names to new names
 
 The mapping file (mapping) uses the result from the collect command above
 
-con123:control123
-con331:control331
-con333:control333
-con456:control456
-dri100:drive100
-dri110:drive110
-dri120:drive120
-dri130:drive130
-mot090:motor090
-mot100:motor100
-mot110:motor110
-mot130:motor130
+    con123:control123
+    con331:control331
+    con333:control333
+    con456:control456
+    dri100:drive100
+    dri110:drive110
+    dri120:drive120
+    dri130:drive130
+    mot090:motor090
+    mot100:motor100
+    mot110:motor110
+    mot130:motor130
 
     $ sycsvpro -f in.csv -o out.csv map mapping -c 2-4
 
@@ -172,3 +176,13 @@ Working with sycsvpro
 =====================
 
 sycsvpro emerged from my daily work when cleaning and anaylzing data. If you want to dig deeper I would recommend [R](http://www.r-project.org/).
+
+A work flow could be as follows
+
+* Analyze the file `analyze`
+* Clean the data `map`
+* Extract rows and columns of interest `extract`
+* Count values `count`
+* Do arithmetic operations on the values `calc`
+
+When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to create nice graphs. To create more sophisiticated analysis *R* is the right tool to use.
