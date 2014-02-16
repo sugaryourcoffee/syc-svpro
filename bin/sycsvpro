@@ -65,11 +65,11 @@ command :collect do |c|
 
   c.desc 'Rows to consider for collection'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30|REGEXP'
-  c.flag [:r, :row]
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
 
   c.desc 'Columns to collect values from'
   c.arg_name 'CATEGORY1:ROW1,ROW2,ROW10-ROW30+CATEGORY2:ROW3-ROW9'
-  c.flag [:c, :col]
+  c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
   c.action do |global_options,options,args|
     puts "Collecting ..."
