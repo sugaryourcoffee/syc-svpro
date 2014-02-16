@@ -5,7 +5,7 @@ module Sycsvpro
   class ColumnFilter < Filter
     
     def process(object, options={})
-      return nil if object.nil?
+      return nil if object.nil? or object.empty?
       object = object.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
       return object if filter.empty? and pivot.empty?
       filtered = object.split(';').values_at(*filter.flatten.uniq)

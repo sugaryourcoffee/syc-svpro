@@ -27,6 +27,7 @@ desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
 
   c.action do |global_options,options,args|
+    help_now! 'You need to provide a file to analyze' if global_options[:f].nil?
     analyzer = Sycsvpro::Analyzer.new(global_options[:f])
     result = analyzer.result
     puts "Analysis of #{global_options[:f]}"
@@ -42,7 +43,6 @@ end
 
 desc 'Extract specified rows and columns from the file'
 command :extract do |c|
-
   c.desc 'Rows to extract'
   c.arg_name '1,2,10-30|REGEXP'
   c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
@@ -52,6 +52,9 @@ command :extract do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
+    help_now! 'You need to provide a file where to extract data from' if global_options[:f].nil?
+    help_now! 'You need to provide a result file' if global_options[:o].nil?
+
     puts "Extracting ..."
     extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
@@ -72,6 +75,9 @@ command :collect do |c|
   c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
   c.action do |global_options,options,args|
+    help_now! 'You need to provide a file where to collect data from' if global_options[:f].nil?
+    help_now! 'You need to provide a result file' if global_options[:o].nil?
+
     puts "Collecting ..."
     collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
@@ -98,21 +104,24 @@ command :count do |c|
 
   c.desc 'Key column that is assigned the count of column values to'
   c.arg_name 'KEY_COLUMN'
-  c.flag [:k, :key]
+  c.flag [:k, :key], :must_match => /^\d+/
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30|REGEXP'
-  c.flag [:r, :row]
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
 
   c.desc 'Columns to count where column 2 is counted conditionally'
   c.arg_name '1,2:<14.2.2014,10-30'
-  c.flag [:c, :col]
+  c.flag [:c, :col], :must_match => /^\d+(?:,\d+|(?::[<=>]\d+.\d+.\d+|:\d+.\d+.\d+-\d+.\d+.\d+|:\/.*?\/|-\d+)*)*/
 
   c.desc 'Format of date values'
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
 
   c.action do |global_options,options,args|
+    help_now! 'You need to provide a file where to count data from' if global_options[:f].nil?
+    help_now! 'You need to provide a result file' if global_options[:o].nil?
+
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
                                     df: options[:df])

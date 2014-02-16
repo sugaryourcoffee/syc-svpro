@@ -58,6 +58,7 @@ module Sycsvpro
       end
 
       def date(col, comparator, date, args, block)
+        comparator = '==' if comparator == '='
         operation = "Date.strptime(\"[value]\", \"#{date_format}\") #{comparator} " +
                     "Date.strptime(\"#{date}\", \"#{date_format}\")"
         pivot["#{comparator}#{date}"] = { col: col, operation: operation }
