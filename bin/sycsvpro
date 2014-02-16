@@ -27,7 +27,7 @@ desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
 
   c.action do |global_options,options,args|
-    help_now! 'You need to provide a file to analyze' if global_options[:f].nil?
+    help_now! "You need to provide a file to analyze '-f FILE'" if global_options[:f].nil?
     analyzer = Sycsvpro::Analyzer.new(global_options[:f])
     result = analyzer.result
     puts "Analysis of #{global_options[:f]}"
@@ -52,8 +52,8 @@ command :extract do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
-    help_now! 'You need to provide a file where to extract data from' if global_options[:f].nil?
-    help_now! 'You need to provide a result file' if global_options[:o].nil?
+    help_now! "You need to provide a file to extract data from '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
     puts "Extracting ..."
     extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
@@ -75,8 +75,8 @@ command :collect do |c|
   c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
   c.action do |global_options,options,args|
-    help_now! 'You need to provide a file where to collect data from' if global_options[:f].nil?
-    help_now! 'You need to provide a result file' if global_options[:o].nil?
+    help_now! "You need to provide a file to collect data from '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
     puts "Collecting ..."
     collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
@@ -90,6 +90,7 @@ desc 'Executes the code provided in a file'
 arg_name 'PRO_FILE METHOD'
 command :execute do |c|
   c.action do |global_options,options,args|
+    help_now! "You need to provide a script FILE and a METHOD to call" if args.size < 2
     profiler = Sycsvpro::Profiler.new(args[0])
     profiler.execute(args[1])
     puts "execute done"
@@ -119,8 +120,8 @@ command :count do |c|
   c.flag [:df]
 
   c.action do |global_options,options,args|
-    help_now! 'You need to provide a file where to count data from' if global_options[:f].nil?
-    help_now! 'You need to provide a result file' if global_options[:o].nil?
+    help_now! "You need to provide a file to count data from '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
@@ -142,6 +143,9 @@ command :map do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
+    help_now! "You need to provide a file to map data from '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
+
     mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
                                   mapping: args[0], rows: options[:r], cols: options[:c])
     mapper.execute
@@ -156,17 +160,22 @@ command :calc do |c|
            'If additional columns are created then *,COL1,COL2 will create the additional header '+
            'columns COL1 and COL2'
     c.arg_name '*,COL2,COL2'
-    c.flag [:h, :header]
+    default_value '*'
+    c.flag [:h, :header], :must_match => /\*(?:,\w+)*/
 
     c.desc 'Columns to consider for calculations'
     c.arg_name 'ROW1,ROW2-ROW10|REGEXP'
-    c.flag [:r, :row]
+    c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
 
     c.desc 'Column to do calculations on'
     c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
-    c.flag [:c, :col]
+    c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
 
   c.action do |global_options,options,args|
+    help_now! "You need to provide a file to calculate data at '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
+    help_now! "You need to provide the column flag" if options[:c].nil?
+
     calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
                                           header: options[:h], rows: options[:r], cols: options[:c])
     calculator.execute 
