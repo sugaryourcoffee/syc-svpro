@@ -135,11 +135,11 @@ arg_name 'MAPPINGS-FILE'
 command :map do |c|
   c.desc 'Rows to consider'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30|REGEXP'
-  c.flag [:r, :row]
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
 
   c.desc 'Columns to consider for mapping'
   c.arg_name 'COL1,COL2,COL10-COL30'
-  c.flag [:c, :col]
+  c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
     mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
