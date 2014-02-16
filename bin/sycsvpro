@@ -145,6 +145,7 @@ command :map do |c|
   c.action do |global_options,options,args|
     help_now! "You need to provide a file to map data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
+    help_now! "You need to provide a mapping file" if args.size == 0
 
     mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
                                   mapping: args[0], rows: options[:r], cols: options[:c])
