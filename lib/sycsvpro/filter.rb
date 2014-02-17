@@ -48,6 +48,10 @@ module Sycsvpro
       end
     end
 
+    def has_filter?
+      return !(filter.empty? and pattern.empty?)
+    end
+
     private
 
       # Creates a filter based on the provided rows and columns

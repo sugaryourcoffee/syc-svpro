@@ -8,7 +8,8 @@ module Sycsvpro
     
     # Processes the filter on the given row
     def process(object, options={})
-      filtered = (!filter.flatten.uniq.index(options[:row]).nil? or filter.empty?)
+      return object unless has_filter?
+      filtered = !filter.flatten.uniq.index(options[:row]).nil?
       pattern.each do |p|
         filtered = (filtered or !(object =~ Regexp.new(p)).nil?)
       end
