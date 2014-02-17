@@ -53,6 +53,7 @@ module Sycsvpro
       end
     end
 
+    # Checks whether a filter has been set. Returns true if filter has been set otherwise false
     def has_filter?
       return !(filter.empty? and pattern.empty?)
     end

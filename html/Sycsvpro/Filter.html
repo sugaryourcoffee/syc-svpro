@@ -75,6 +75,8 @@
     
     <li ><a href="#method-c-new">::new</a>
     
+    <li ><a href="#method-i-has_filter-3F">#has_filter?</a>
+    
     <li class="calls-super" ><a href="#method-i-method_missing">#method_missing</a>
     
     <li ><a href="#method-i-pivot_each_column">#pivot_each_column</a>
@@ -223,6 +225,39 @@ to override the process method</p>
        </header>
 
     
+      <div id="method-i-has_filter-3F" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">has_filter?</span><span
+            class="method-args">()</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="has_filter-3F-source">
+            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 56</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">has_filter?</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">filter</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">empty?</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
       <div id="method-i-method_missing" class="method-detail ">
         
         <div class="method-heading">
@@ -271,7 +306,7 @@ to override the process method</p>
         
         <div class="method-heading">
           <span class="method-name">pivot_each_column</span><span
-            class="method-args">(values=[]) { |column, eval(gsub('[value]', values[parameters))| ... }</span>
+            class="method-args">(values=[]) { |column, match| ... }</span>
           
           <span class="method-click-advice">click to toggle source</span>
           
@@ -289,7 +324,12 @@ to override the process method</p>
             <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 45</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">pivot_each_column</span>(<span class="ruby-identifier">values</span>=[])
   <span class="ruby-identifier">pivot</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span>, <span class="ruby-identifier">parameters</span><span class="ruby-operator">|</span>
-    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">column</span>, <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:operation</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;[value]&#39;</span>, <span class="ruby-identifier">values</span>[<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:col</span>].<span class="ruby-identifier">to_i</span>]))
+    <span class="ruby-identifier">match</span> = <span class="ruby-keyword">false</span>
+    <span class="ruby-keyword">begin</span>
+      <span class="ruby-identifier">match</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:operation</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;[value]&#39;</span>, <span class="ruby-identifier">values</span>[<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:col</span>].<span class="ruby-identifier">to_i</span>]))
+    <span class="ruby-keyword">rescue</span>
+    <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">yield</span> <span class="ruby-identifier">column</span>, <span class="ruby-identifier">match</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
