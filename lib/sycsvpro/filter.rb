@@ -44,9 +44,11 @@ module Sycsvpro
     # Yields the column value and whether the filter matches the column
     def pivot_each_column(values=[])
       pivot.each do |column, parameters|
+        value = values[parameters[:col].to_i]
+        value = value.strip.gsub(/^"|"$/, "") unless value.nil?
         match = false
         begin
-          match = eval(parameters[:operation].gsub('[value]', values[parameters[:col].to_i]))
+          match = eval(parameters[:operation].gsub('[value]', value))
         rescue
         end
         yield column, match

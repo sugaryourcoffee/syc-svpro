@@ -15,7 +15,7 @@ module Sycsvpro
 
       counter.execute
 
-      result = [ "customer;con123;con332;con333;dri111;dri222;dri321",
+      result = [ "key;con123;con332;con333;dri111;dri222;dri321",
                  "Fink;1;0;1;0;1;1",
                  "Haas;0;1;0;1;0;0",
                  "Gent;1;0;0;1;0;0",
@@ -35,7 +35,7 @@ module Sycsvpro
 
       counter.execute
 
-      result = [ "customer;1.1.2013-31.12.2014;<1.1.2013;>31.12.2014",
+      result = [ "key;1.1.2013-31.12.2014;<1.1.2013;>31.12.2014",
                  "Fink;0;0;2",
                  "Haas;0;1;0",
                  "Gent;1;0;0",

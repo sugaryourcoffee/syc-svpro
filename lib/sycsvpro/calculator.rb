@@ -1,5 +1,6 @@
 require_relative 'row_filter'
 require_relative 'header'
+require_relative 'dsl'
 
 # Operating csv files
 module Sycsvpro
@@ -8,6 +9,8 @@ module Sycsvpro
   # Possible operations are +, -, * and /. It is also possible to use values of columns as an
   # operator like c1*2 will multiply the value of column 1 with 2.
   class Calculator
+
+    include Dsl
 
     # infile contains the data that is operated on
     attr_reader :infile
@@ -56,7 +59,7 @@ module Sycsvpro
 
           next if row_filter.process(line, row: index).nil?
 
-          @columns = line.chomp.split(';')
+          @columns = unstring(line).chomp.split(';')
           formulae.each do |col, formula|
             @columns[col.to_i] = eval(formula)
           end

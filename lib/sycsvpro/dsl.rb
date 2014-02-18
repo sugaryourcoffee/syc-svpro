@@ -27,6 +27,12 @@ module Dsl
     end
   end
 
+  # Remove leading and trailing " and spaces as well as reducing more than 2 spaces between words
+  # from csv values like "a";ba   g;c;"d";e to a;b ag;c;d;e
+  def unstring(line)
+    line.gsub(/(?<=^|;)\s*"?\s*|\s*"?\s*(?=;|$)/, "").gsub(/\s{2,}/, " ") unless line.nil?
+  end
+
   private
 
     # Assigns values to keys that are used in rows and yielded to the block

@@ -1,5 +1,6 @@
 require_relative 'row_filter'
 require_relative 'column_filter'
+require_relative 'dsl'
 
 # Operating csv files
 module Sycsvpro
@@ -7,6 +8,8 @@ module Sycsvpro
   # Creates a new counter that counts values and uses the values as column names and uses the count
   # as the column value
   class Counter
+
+    include Dsl
 
     # infile contains the data that is operated on
     attr_reader :infile
@@ -19,7 +22,7 @@ module Sycsvpro
     # filter that is used for columns
     attr_reader :col_filter
     # values that are assigned to the key column 
-    attr_reader :customers
+    attr_reader :key_values
     # header of the out file
     attr_reader :heading
     
@@ -30,7 +33,7 @@ module Sycsvpro
       @key_column = options[:key].to_i
       @row_filter = RowFilter.new(options[:rows])
       @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
-      @customers  = {}
+      @key_values       = {}
       @heading    = []
     end
 
@@ -45,11 +48,11 @@ module Sycsvpro
       File.new(infile).each_with_index do |line, index|
         result = col_filter.process(row_filter.process(line.chomp, row: index))
         unless result.nil? or result.empty?
-          key = line.split(';')[key_column]
-          customer = customers[key] || customers[key] = { name: key, products: Hash.new(0) }
+          key = unstring(line).split(';')[key_column]
+          key_value = key_values[key] || key_values[key] = { name: key, elements: Hash.new(0) }
           result.chomp.split(';').each do |column|
             heading << column if heading.index(column).nil?
-            customer[:products][column] += 1
+            key_value[:elements][column] += 1
           end
         end
       end
@@ -58,11 +61,11 @@ module Sycsvpro
     # Writes the results
     def write_result
       File.open(outfile, 'w') do |out|
-        out.puts (["customer"] + heading.sort).join(';')
-        customers.each do |k,v|
+        out.puts (["key"] + heading.sort).join(';')
+        key_values.each do |k,v|
           line = [k]
           heading.sort.each do |h|
-            line << v[:products][h]
+            line << v[:elements][h]
           end
           out.puts line.join(';')
         end
