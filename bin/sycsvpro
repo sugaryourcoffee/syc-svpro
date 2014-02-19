@@ -86,11 +86,38 @@ command :collect do |c|
   end
 end
 
+desc 'Allocate specified columns from the file to a key value'
+command :allocate do |c|
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30|REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+
+  c.desc 'Key to allocate columns to'
+  c.arg_name '0'
+  c.flag [:k, :key], :must_match => /\d+/
+
+  c.desc 'Columns to allocate'
+  c.arg_name '1,2,10-30'
+  c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
+
+  c.action do |global_options,options,args|
+    help_now! "You need to provide a file to read data from '-f FILE'" if global_options[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
+
+    puts "Allocating ..."
+    allocator = Sycsvpro::Allocator.new(infile: global_options[:f], outfile: global_options[:o],
+                                        key: options[:k], rows: options[:r], cols: options[:c])
+    allocator.execute
+    puts "allocation done"    
+  end
+end
+
 desc 'Executes the code provided in a file'
 arg_name 'PRO_FILE METHOD'
 command :execute do |c|
   c.action do |global_options,options,args|
     help_now! "You need to provide a script FILE and a METHOD to call" if args.size < 2
+    puts "Executing..."
     profiler = Sycsvpro::Profiler.new(args[0])
     profiler.execute(args[1])
     puts "execute done"
@@ -123,6 +150,7 @@ command :count do |c|
     help_now! "You need to provide a file to count data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
+    puts "Counting..."
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
                                     df: options[:df])
@@ -147,6 +175,7 @@ command :map do |c|
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide a mapping file" if args.size == 0
 
+    puts "Mapping..."
     mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
                                   mapping: args[0], rows: options[:r], cols: options[:c])
     mapper.execute
@@ -177,6 +206,7 @@ command :calc do |c|
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide the column flag" if options[:c].nil?
 
+    puts "Calculating..."
     calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
                                           header: options[:h], rows: options[:r], cols: options[:c])
     calculator.execute 

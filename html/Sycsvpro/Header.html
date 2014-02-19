@@ -65,7 +65,18 @@
   
 </div>
 
-    
+    <div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="../Dsl.html">Dsl</a>
+  
+  
+  </ul>
+</div>
+
     
     <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
@@ -153,7 +164,7 @@
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/header.rb, line 13</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/header.rb, line 16</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">header</span>)
   <span class="ruby-keyword">unless</span> <span class="ruby-identifier">header</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword">or</span> <span class="ruby-identifier">header</span>.<span class="ruby-identifier">empty?</span>
     <span class="ruby-ivar">@header_cols</span> = <span class="ruby-identifier">header</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;,&#39;</span>)
@@ -198,10 +209,10 @@
 
           
           <div class="method-source-code" id="process-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/header.rb, line 22</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/header.rb, line 25</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">process</span>(<span class="ruby-identifier">line</span>)
   <span class="ruby-keyword">return</span> <span class="ruby-string">&quot;&quot;</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@header_cols</span>.<span class="ruby-identifier">empty?</span>
-  <span class="ruby-ivar">@header_cols</span>[<span class="ruby-value">0</span>] = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)
+  <span class="ruby-ivar">@header_cols</span>[<span class="ruby-value">0</span>] = <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>).<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)
   <span class="ruby-ivar">@header_cols</span>.<span class="ruby-identifier">flatten</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
 <span class="ruby-keyword">end</span></pre>
           </div>

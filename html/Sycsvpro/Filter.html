@@ -245,7 +245,7 @@ otherwise false</p>
 
           
           <div class="method-source-code" id="has_filter-3F-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 57</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 59</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">has_filter?</span>
   <span class="ruby-keyword">return</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">filter</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">empty?</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -325,9 +325,11 @@ otherwise false</p>
             <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 45</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">pivot_each_column</span>(<span class="ruby-identifier">values</span>=[])
   <span class="ruby-identifier">pivot</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span>, <span class="ruby-identifier">parameters</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">value</span> = <span class="ruby-identifier">values</span>[<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:col</span>].<span class="ruby-identifier">to_i</span>]
+    <span class="ruby-identifier">value</span> = <span class="ruby-identifier">value</span>.<span class="ruby-identifier">strip</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/^&quot;|&quot;$/</span>, <span class="ruby-string">&quot;&quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">value</span>.<span class="ruby-identifier">nil?</span>
     <span class="ruby-identifier">match</span> = <span class="ruby-keyword">false</span>
     <span class="ruby-keyword">begin</span>
-      <span class="ruby-identifier">match</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:operation</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;[value]&#39;</span>, <span class="ruby-identifier">values</span>[<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:col</span>].<span class="ruby-identifier">to_i</span>]))
+      <span class="ruby-identifier">match</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:operation</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;[value]&#39;</span>, <span class="ruby-identifier">value</span>))
     <span class="ruby-keyword">rescue</span>
     <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">column</span>, <span class="ruby-identifier">match</span>

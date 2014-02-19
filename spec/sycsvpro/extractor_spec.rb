@@ -14,7 +14,7 @@ module Sycsvpro
 
       extractor.execute
 
-      result = ["3322;h1", "4323;g1", "3342;f2"]
+      result = ["3322;h1", "4323;g1", "1234;f2"]
 
       File.open(@out_file).each_with_index do |line, index|
         line.chomp.should eq result[index]
@@ -27,8 +27,9 @@ module Sycsvpro
 
       extractor.execute
 
-      result = [ "Fink;3342;30.12.2016;f2;con333;dri321",
-                 "Rank;3232;1.5.2013;r1;con332;dri321" ]
+      result = [ "Fink;1234;30.12.2016;f2;con333;dri321",
+                 "Rank;3232;1.5.2013;r1;con332;dri321",
+                 "fink;1234;;f3;con332;dri321" ]
 
       File.open(@out_file).each_with_index do |line, index|
         line.chomp.should eq result[index]

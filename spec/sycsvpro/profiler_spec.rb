@@ -20,7 +20,8 @@ module Sycsvpro
                  "Haas;0;1;0;1;0;0",
                  "Gent;1;0;0;1;0;0",
                  "Rank;0;1;0;0;0;1",
-                 "Klig;0;1;0;0;1;0" ]
+                 "Klig;0;1;0;0;1;0",
+                 "fink;0;1;0;0;0;1" ]
 
       File.open(@out_file).each_with_index do |line, index|
         line.chomp.should eq result[index]

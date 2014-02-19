@@ -65,7 +65,18 @@
   
 </div>
 
-    
+    <div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="../Dsl.html">Dsl</a>
+  
+  
+  </ul>
+</div>
+
     
     <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
@@ -226,7 +237,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 28</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 31</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@infile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
   <span class="ruby-ivar">@outfile</span>    = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
@@ -272,7 +283,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 43</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 46</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
   <span class="ruby-identifier">processed_header</span> = <span class="ruby-keyword">false</span>
 
@@ -289,7 +300,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
       <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">row_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">line</span>, <span class="ruby-identifier">row</span><span class="ruby-operator">:</span> <span class="ruby-identifier">index</span>).<span class="ruby-identifier">nil?</span>
 
-      <span class="ruby-ivar">@columns</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)
+      <span class="ruby-ivar">@columns</span> = <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>).<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)
       <span class="ruby-identifier">formulae</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">col</span>, <span class="ruby-identifier">formula</span><span class="ruby-operator">|</span>
         <span class="ruby-ivar">@columns</span>[<span class="ruby-identifier">col</span>.<span class="ruby-identifier">to_i</span>] = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">formula</span>)
       <span class="ruby-keyword">end</span>
@@ -326,7 +337,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="method_missing-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 38</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 41</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">id</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">to_number</span>(<span class="ruby-identifier">columns</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/c(\d+)/</span>
 <span class="ruby-keyword">end</span></pre>

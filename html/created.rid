@@ -1,17 +1,18 @@
-Mon, 17 Feb 2014 21:03:10 +0100
+Wed, 19 Feb 2014 21:12:37 +0100
 README.rdoc	Sun, 16 Feb 2014 22:01:46 +0100
-lib/sycsvpro.rb	Sun, 16 Feb 2014 21:33:36 +0100
-lib/sycsvpro/analyzer.rb	Sun, 16 Feb 2014 21:08:55 +0100
-lib/sycsvpro/calculator.rb	Sun, 16 Feb 2014 20:55:48 +0100
+lib/sycsvpro.rb	Wed, 19 Feb 2014 18:42:14 +0100
+lib/sycsvpro/allocator.rb	Wed, 19 Feb 2014 20:34:28 +0100
+lib/sycsvpro/analyzer.rb	Tue, 18 Feb 2014 19:57:28 +0100
+lib/sycsvpro/calculator.rb	Tue, 18 Feb 2014 19:53:34 +0100
 lib/sycsvpro/collector.rb	Sun, 16 Feb 2014 20:59:27 +0100
 lib/sycsvpro/column_filter.rb	Sun, 16 Feb 2014 21:10:11 +0100
-lib/sycsvpro/counter.rb	Sun, 16 Feb 2014 21:38:32 +0100
-lib/sycsvpro/dsl.rb	Sun, 16 Feb 2014 21:20:01 +0100
-lib/sycsvpro/extractor.rb	Sun, 16 Feb 2014 21:06:42 +0100
-lib/sycsvpro/filter.rb	Mon, 17 Feb 2014 21:02:21 +0100
-lib/sycsvpro/header.rb	Sun, 16 Feb 2014 21:30:06 +0100
-lib/sycsvpro/mapper.rb	Sun, 16 Feb 2014 21:04:46 +0100
+lib/sycsvpro/counter.rb	Tue, 18 Feb 2014 21:22:37 +0100
+lib/sycsvpro/dsl.rb	Tue, 18 Feb 2014 21:34:51 +0100
+lib/sycsvpro/extractor.rb	Tue, 18 Feb 2014 19:42:16 +0100
+lib/sycsvpro/filter.rb	Tue, 18 Feb 2014 20:23:57 +0100
+lib/sycsvpro/header.rb	Tue, 18 Feb 2014 19:50:26 +0100
+lib/sycsvpro/mapper.rb	Tue, 18 Feb 2014 19:45:47 +0100
 lib/sycsvpro/profiler.rb	Sun, 16 Feb 2014 21:31:39 +0100
-lib/sycsvpro/row_filter.rb	Mon, 17 Feb 2014 19:48:06 +0100
-lib/sycsvpro/version.rb	Mon, 17 Feb 2014 20:31:15 +0100
-bin/sycsvpro	Sun, 16 Feb 2014 18:17:16 +0100
+lib/sycsvpro/row_filter.rb	Tue, 18 Feb 2014 19:45:25 +0100
+lib/sycsvpro/version.rb	Tue, 18 Feb 2014 20:01:04 +0100
+bin/sycsvpro	Wed, 19 Feb 2014 20:59:05 +0100

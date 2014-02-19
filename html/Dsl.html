@@ -68,6 +68,8 @@
     
     <li ><a href="#method-i-rows">#rows</a>
     
+    <li ><a href="#method-i-unstring">#unstring</a>
+    
     <li ><a href="#method-i-write_to">#write_to</a>
     
   </ul>
@@ -141,6 +143,41 @@ provided by the caller</p>
 
     <span class="ruby-keyword">yield</span> <span class="ruby-operator">*</span><span class="ruby-identifier">params</span>
   <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+      <div id="method-i-unstring" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">unstring</span><span
+            class="method-args">(line)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Remove leading and trailing “ and spaces as well as reducing more than 2
+spaces between words from csv values like ”a“;ba   g;c;”d“;e to a;b
+ag;c;d;e</p>
+          
+          
+
+          
+          <div class="method-source-code" id="unstring-source">
+            <pre><span class="ruby-comment"># File lib/sycsvpro/dsl.rb, line 32</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>)
+  <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/(?&lt;=^|;)\s*&quot;?\s*|\s*&quot;?\s*(?=;|$)/</span>, <span class="ruby-string">&quot;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/\s{2,}/</span>, <span class="ruby-string">&quot; &quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">nil?</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           

@@ -14,7 +14,7 @@ module Sycsvpro
       result.cols.should =~ ['customer', 'contract-number', 'expires-on', 'machine', 
                              'product1', 'product2']
       result.col_count.should eq 6
-      result.row_count.should eq 6
+      result.row_count.should eq 7
       result.sample_row.should eq "Fink;1234;20.12.2015;f1;con123;dri222"
     end
 

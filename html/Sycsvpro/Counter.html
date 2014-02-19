@@ -65,7 +65,18 @@
   
 </div>
 
-    
+    <div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="../Dsl.html">Dsl</a>
+  
+  
+  </ul>
+</div>
+
     
     <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
@@ -129,19 +140,6 @@ names and uses the count as the column value</p>
         </div>
       </div>
       
-      <div id="attribute-i-customers" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">customers</span><span
-            class="attribute-access-type">[R]</span>
-        </div>
-
-        <div class="method-description">
-        
-        <p>values that are assigned to the key column</p>
-        
-        </div>
-      </div>
-      
       <div id="attribute-i-heading" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">heading</span><span
@@ -177,6 +175,19 @@ names and uses the count as the column value</p>
         <div class="method-description">
         
         <p>values are assigned to the key column</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-key_values" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">key_values</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>values that are assigned to the key column</p>
         
         </div>
       </div>
@@ -236,14 +247,14 @@ names and uses the count as the column value</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 27</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 30</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@infile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
   <span class="ruby-ivar">@outfile</span>    = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
   <span class="ruby-ivar">@key_column</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:key</span>].<span class="ruby-identifier">to_i</span>
   <span class="ruby-ivar">@row_filter</span> = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
   <span class="ruby-ivar">@col_filter</span> = <span class="ruby-constant">ColumnFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:cols</span>], <span class="ruby-identifier">df</span><span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:df</span>])
-  <span class="ruby-ivar">@customers</span>  = {}
+  <span class="ruby-ivar">@key_values</span>       = {}
   <span class="ruby-ivar">@heading</span>    = []
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -283,7 +294,7 @@ names and uses the count as the column value</p>
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 38</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 41</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
   <span class="ruby-identifier">process_file</span>
   <span class="ruby-identifier">write_result</span>
@@ -317,16 +328,16 @@ names and uses the count as the column value</p>
 
           
           <div class="method-source-code" id="process_file-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 44</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 47</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">process_file</span>
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">infile</span>).<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">result</span> = <span class="ruby-identifier">col_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">row_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">row</span><span class="ruby-operator">:</span> <span class="ruby-identifier">index</span>))
     <span class="ruby-keyword">unless</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword">or</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">empty?</span>
-      <span class="ruby-identifier">key</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)[<span class="ruby-identifier">key_column</span>]
-      <span class="ruby-identifier">customer</span> = <span class="ruby-identifier">customers</span>[<span class="ruby-identifier">key</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">customers</span>[<span class="ruby-identifier">key</span>] = { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-identifier">key</span>, <span class="ruby-identifier">products</span><span class="ruby-operator">:</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>) }
+      <span class="ruby-identifier">key</span> = <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>).<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)[<span class="ruby-identifier">key_column</span>]
+      <span class="ruby-identifier">key_value</span> = <span class="ruby-identifier">key_values</span>[<span class="ruby-identifier">key</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">key_values</span>[<span class="ruby-identifier">key</span>] = { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-identifier">key</span>, <span class="ruby-identifier">elements</span><span class="ruby-operator">:</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>) }
       <span class="ruby-identifier">result</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span><span class="ruby-operator">|</span>
         <span class="ruby-identifier">heading</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">column</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">column</span>).<span class="ruby-identifier">nil?</span>
-        <span class="ruby-identifier">customer</span>[<span class="ruby-value">:products</span>][<span class="ruby-identifier">column</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+        <span class="ruby-identifier">key_value</span>[<span class="ruby-value">:elements</span>][<span class="ruby-identifier">column</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
       <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
@@ -360,14 +371,14 @@ names and uses the count as the column value</p>
 
           
           <div class="method-source-code" id="write_result-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 59</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 62</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">write_result</span>
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">outfile</span>, <span class="ruby-string">&#39;w&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> ([<span class="ruby-string">&quot;customer&quot;</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
-    <span class="ruby-identifier">customers</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> ([<span class="ruby-string">&quot;key&quot;</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
+    <span class="ruby-identifier">key_values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
       <span class="ruby-identifier">line</span> = [<span class="ruby-identifier">k</span>]
       <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">h</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">v</span>[<span class="ruby-value">:products</span>][<span class="ruby-identifier">h</span>]
+        <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">v</span>[<span class="ruby-value">:elements</span>][<span class="ruby-identifier">h</span>]
       <span class="ruby-keyword">end</span>
       <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
     <span class="ruby-keyword">end</span>
