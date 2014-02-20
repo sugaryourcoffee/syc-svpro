@@ -48,6 +48,26 @@ module Sycsvpro
 
     end
 
+    it "should add a sum row" do
+      counter = Counter.new(infile: @in_file, outfile: @out_file, rows: "1-10",
+                          cols: "2:<1.1.2013,2:1.1.2013-31.12.2014,2:>31.12.2014", key: "0",
+                          df: "%d.%m.%Y", sum: "Total:1")
+
+      counter.execute
+
+      result = [ "key;1.1.2013-31.12.2014;<1.1.2013;>31.12.2014",
+                 "Total;2;1;2",
+                 "Fink;0;0;2",
+                 "Haas;0;1;0",
+                 "Gent;1;0;0",
+                 "Rank;1;0;0" ]
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end
+
+    end
+
   end
 
 end
