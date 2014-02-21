@@ -32,7 +32,8 @@ module Sycsvpro
     # sums of the column values
     attr_reader :sums
     
-    # Creates a new counter
+    # Creates a new counter. Takes as attributes infile, outfile, key, rows, cols, date-format and
+    # indicator whether to add a sum row
     def initialize(options={})
       @infile     = options[:infile]
       @outfile    = options[:outfile]
@@ -76,12 +77,10 @@ module Sycsvpro
       end
       row = 0;
       File.open(outfile, 'w') do |out|
-        out.puts sum_line.join(';') if row == sum_row
-        row += 1
+        out.puts sum_line.join(';') if row == sum_row ; row += 1
         out.puts (["key"] + heading.sort).join(';')
         key_values.each do |k,v|
-          out.puts sum_line.join(';') if row == sum_row
-          row += 1
+          out.puts sum_line.join(';') if row == sum_row ; row += 1
           line = [k]
           heading.sort.each do |h|
             line << v[:elements][h]

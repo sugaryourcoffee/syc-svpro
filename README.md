@@ -7,6 +7,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * extract rows and columns from a file
 * collect values of rows and assign them to categories
 * map column values to new values
+* allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
 * execute a ruby script file that operates a csv file
@@ -95,17 +96,28 @@ The mapping file (mapping) uses the result from the collect command above
 
     $ sycsvpro -f in.csv -o out.csv map mapping -c 2-4
 
+Allocate
+--------
+Allocate all the machine types to the customer
+
+    $ sycsvpro -f in.csv -o out.csv assign -k 0 -r 1-20 -c 1
+
+    hello;h1;h2
+    indix;i1
+    chiro;c1;c2
+
 Count
 -----
 
-Count all customers (key column) in rows 2 to 20 that have machines that start with *h* and have contract valid beginning after 1.1.2000
+Count all customers (key column) in rows 2 to 20 that have machines that start with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with title Total at column 1
 
-    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0 -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y"
+    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0 -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
 
 The result in file out.csv is
 
     $ cat out.csv
     customer;>1.1.2000;^h
+    Total;5;2
     hello;2;2
     indix;1;0
     chiro;2;0

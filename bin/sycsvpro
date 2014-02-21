@@ -126,7 +126,7 @@ end
 
 desc 'Counts the occurences of column values. Uses column values as headings with count as ' +
      'values. Columns with a condition will be added as new columns and the condition will ' +
-     'be set as column name'
+     'be set as column name. Optionally adds a sum row'
 
 command :count do |c|
 
@@ -142,6 +142,10 @@ command :count do |c|
   c.arg_name '1,2:<14.2.2014,10-30'
   c.flag [:c, :col], :must_match => /^\d+(?:,\d+|(?::[<=>]\d+.\d+.\d+|:\d+.\d+.\d+-\d+.\d+.\d+|:\/.*?\/|-\d+)*)*/
 
+  c.desc 'Adds a sum row with TITLE for the counted columns at the specified row position'
+  c.arg_name 'TITLE:ROW'
+  c.flag [:s, :sum], :must_match => /^\w+:\d+/
+
   c.desc 'Format of date values'
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
@@ -153,7 +157,7 @@ command :count do |c|
     puts "Counting..."
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
-                                    df: options[:df])
+                                    df: options[:df], sum: options[:s])
     counter.execute
     puts "count done"
   end

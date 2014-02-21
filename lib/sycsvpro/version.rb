@@ -1,5 +1,5 @@
 # Operating csv files
 module Sycsvpro
   # Version number of sycsvpro
-  VERSION = '0.0.4'
+  VERSION = '0.0.5'
 end
