@@ -14,7 +14,7 @@ include GLI::App
 # Directory holding configuration files
 sycsvpro_directory = File.expand_path("~/.syc/sycsvpro")
 # Script directory
-script_directory   = File.join(sycsvpro_director, "scripts")
+script_directory   = File.join(sycsvpro_directory, "scripts")
 
 unless File.exists? sycsvpro_directory
   Dir.mkdir sycsvpro_directory
