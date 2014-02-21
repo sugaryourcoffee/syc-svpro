@@ -10,7 +10,8 @@ Processing of csv files. *sycsvpro* offers following functions
 * allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
-* execute a ruby script file that operates a csv file
+* create or edit a Ruby script
+* execute a Ruby script file that operates a csv file
 
 To get help type
 
@@ -136,6 +137,12 @@ Process arithmetic operations on the contract count and create a target column
     indix;i1;con456;dri130;mot090;1.12.3013;2;20
     chiro;c1;con333;dri110;mot100;1.12.3013;2;20
     chiro;c2;con331;dri100;mot130;1.12.3013;2;20
+
+Edit
+----
+Creates or if it exists opens a file for editing. The file is created in the directory ~/.syc/sycsvpro/scripts. Following command creates a Ruby script with the name script.rb and a method call_me
+
+    $ sycsvpro edit -s script.rb -m call_me
 
 Execute
 -------

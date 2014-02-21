@@ -11,6 +11,15 @@ end
 
 include GLI::App
 
+# Directory holding configuration files
+sycsvpro_directory = File.expand_path("~/.syc/sycsvpro")
+# Script directory
+script_directory   = File.join(sycsvpro_director, "scripts")
+
+unless File.exists? sycsvpro_directory
+  Dir.mkdir sycsvpro_directory
+end
+
 program_desc 'Processing CSV files'
 
 version Sycsvpro::VERSION
@@ -109,6 +118,24 @@ command :allocate do |c|
                                         key: options[:k], rows: options[:r], cols: options[:c])
     allocator.execute
     puts "allocation done"    
+  end
+end
+
+desc 'Creates a script file or opens a script file for editing if it exists'
+command :edit do |c|
+  c.desc 'Name of the script file'
+  c.default_value 'script.rb'
+  c.arg_name 'SCRIPT_NAME.rb'
+  c.flag [:s, :script], :must_match => /^\w+\.rb/
+
+  c.desc 'Method to create'
+  c.arg_name 'METHOD_NAME'
+  c.flag [:m, :method], :must_match => /^\w+/
+
+  c.action do |global_options,options,args|
+    script_creator = Sycsvpro::ScriptCreator.new(dir: sycsvpro_directory, 
+                                                 script: options[:s], method: options[:m])  
+    system "vi #{script_creator.script_file}"
   end
 end
 
