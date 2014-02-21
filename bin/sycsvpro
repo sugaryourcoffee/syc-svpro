@@ -13,12 +13,13 @@ include GLI::App
 
 # Directory holding configuration files
 sycsvpro_directory = File.expand_path("~/.syc/sycsvpro")
-# Script directory
-script_directory   = File.join(sycsvpro_directory, "scripts")
 
 unless File.exists? sycsvpro_directory
   Dir.mkdir sycsvpro_directory
 end
+
+# Script directory
+script_directory   = File.join(sycsvpro_directory, "scripts")
 
 program_desc 'Processing CSV files'
 
@@ -144,8 +145,13 @@ arg_name 'PRO_FILE METHOD'
 command :execute do |c|
   c.action do |global_options,options,args|
     help_now! "You need to provide a script FILE and a METHOD to call" if args.size < 2
+
+    script_file = File.expand_path(args[0])
+    script_file = File.join(script_directory, args[0]) unless File.exists? script_file
+    help_now! "Script file #{script_file} doesn't exist!" unless File.exists? script_file
+
     puts "Executing..."
-    profiler = Sycsvpro::Profiler.new(args[0])
+    profiler = Sycsvpro::Profiler.new(script_file)
     profiler.execute(args[1])
     puts "execute done"
   end
