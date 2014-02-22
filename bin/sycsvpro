@@ -38,8 +38,10 @@ command :analyze do |c|
 
   c.action do |global_options,options,args|
     help_now! "You need to provide a file to analyze '-f FILE'" if global_options[:f].nil?
+    print "Analyzing..."
     analyzer = Sycsvpro::Analyzer.new(global_options[:f])
     result = analyzer.result
+    puts "done"
     puts "Analysis of #{global_options[:f]}"
     puts "#{result.col_count} columns: #{result.cols}"
     puts "#{result.row_count} rows"
@@ -65,11 +67,11 @@ command :extract do |c|
     help_now! "You need to provide a file to extract data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
-    puts "Extracting ..."
+    print "Extracting ..."
     extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
     extractor.execute
-    puts "extract done"    
+    puts "done"    
   end
 end
 
@@ -88,11 +90,11 @@ command :collect do |c|
     help_now! "You need to provide a file to collect data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
-    puts "Collecting ..."
+    print "Collecting ..."
     collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
     collector.execute
-    puts "collect done"    
+    puts "done"    
   end
 end
 
@@ -114,11 +116,11 @@ command :allocate do |c|
     help_now! "You need to provide a file to read data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
-    puts "Allocating ..."
+    print "Allocating ..."
     allocator = Sycsvpro::Allocator.new(infile: global_options[:f], outfile: global_options[:o],
                                         key: options[:k], rows: options[:r], cols: options[:c])
     allocator.execute
-    puts "allocation done"    
+    puts "done"    
   end
 end
 
@@ -150,10 +152,10 @@ command :execute do |c|
     script_file = File.join(script_directory, args[0]) unless File.exists? script_file
     help_now! "Script file #{script_file} doesn't exist!" unless File.exists? script_file
 
-    puts "Executing..."
+    print "Executing..."
     profiler = Sycsvpro::Profiler.new(script_file)
     profiler.execute(args[1])
-    puts "execute done"
+    puts "done"
   end
 end
 
@@ -187,12 +189,12 @@ command :count do |c|
     help_now! "You need to provide a file to count data from '-f FILE'" if global_options[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
 
-    puts "Counting..."
+    print "Counting..."
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
                                     df: options[:df], sum: options[:s])
     counter.execute
-    puts "count done"
+    puts "done"
   end
 end
 
@@ -212,11 +214,11 @@ command :map do |c|
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide a mapping file" if args.size == 0
 
-    puts "Mapping..."
+    print "Mapping..."
     mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
                                   mapping: args[0], rows: options[:r], cols: options[:c])
     mapper.execute
-    puts "mapping done"
+    puts "done"
   end
 end
 
@@ -243,11 +245,11 @@ command :calc do |c|
     help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide the column flag" if options[:c].nil?
 
-    puts "Calculating..."
+    print "Calculating..."
     calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
                                           header: options[:h], rows: options[:r], cols: options[:c])
     calculator.execute 
-    puts "calc done"
+    puts "done"
   end
 end
 
@@ -257,6 +259,17 @@ pre do |global,command,options,args|
   # chosen command
   # Use skips_pre before a command to skip this block
   # on that command only
+  Stats = Struct.new(:start, :end, :count)
+
+  @stats = Stats.new(Time.now)
+
+  progress = Thread.new do
+    sleep 3
+    while true
+      print '.'
+      sleep 1
+    end
+  end
   true
 end
 
@@ -264,6 +277,9 @@ post do |global,command,options,args|
   # Post logic here
   # Use skips_post before a command to skip this
   # block on that command only
+  @stats.end = Time.now
+  puts
+  puts @stats.end - @stats.start
 end
 
 on_error do |exception|
