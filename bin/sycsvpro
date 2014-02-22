@@ -258,6 +258,7 @@ pre do |global,command,options,args|
     count = result.row_count
   end
 
+  # Creates statistics on the command operation
   Stats = Struct.new(:command, :start, :end, :count) do
     def duration
       self.end - self.start
