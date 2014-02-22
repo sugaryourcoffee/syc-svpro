@@ -37,7 +37,6 @@ desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to analyze '-f FILE'" if global_options[:f].nil?
     print "Analyzing..."
     analyzer = Sycsvpro::Analyzer.new(global_options[:f])
     result = analyzer.result
@@ -64,9 +63,6 @@ command :extract do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to extract data from '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
-
     print "Extracting ..."
     extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
@@ -87,9 +83,6 @@ command :collect do |c|
   c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to collect data from '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
-
     print "Collecting ..."
     collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
                                         rows: options[:r], cols: options[:c])
@@ -113,9 +106,6 @@ command :allocate do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to read data from '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
-
     print "Allocating ..."
     allocator = Sycsvpro::Allocator.new(infile: global_options[:f], outfile: global_options[:o],
                                         key: options[:k], rows: options[:r], cols: options[:c])
@@ -186,9 +176,6 @@ command :count do |c|
   c.flag [:df]
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to count data from '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
-
     print "Counting..."
     counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
                                     key: options[:k], rows: options[:r], cols: options[:c],
@@ -210,8 +197,6 @@ command :map do |c|
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to map data from '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide a mapping file" if args.size == 0
 
     print "Mapping..."
@@ -224,7 +209,6 @@ end
 
 desc 'Process math operations on columns'
 command :calc do |c|
-    
     c.desc 'The first non-empty column is considered the header. '+
            'If additional columns are created then *,COL1,COL2 will create the additional header '+
            'columns COL1 and COL2'
@@ -241,8 +225,6 @@ command :calc do |c|
     c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
 
   c.action do |global_options,options,args|
-    help_now! "You need to provide a file to calculate data at '-f FILE'" if global_options[:f].nil?
-    help_now! "You need to provide a result file '-o OUT_FILE'" if global_options[:o].nil?
     help_now! "You need to provide the column flag" if options[:c].nil?
 
     print "Calculating..."
@@ -259,17 +241,67 @@ pre do |global,command,options,args|
   # chosen command
   # Use skips_pre before a command to skip this block
   # on that command only
-  Stats = Struct.new(:start, :end, :count)
 
-  @stats = Stats.new(Time.now)
+  case command.name
+  when :analyze
+    help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
+  when :allocate, :calc, :collect, :count, :extract, :map
+    help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global[:o].nil?
+  end
 
-  progress = Thread.new do
-    sleep 3
-    while true
-      print '.'
-      sleep 1
+  count = 0
+
+  unless command.name == :edit or command.name == :execute
+    analyzer = Sycsvpro::Analyzer.new(global[:f])
+    result = analyzer.result
+    count = result.row_count
+  end
+
+  Stats = Struct.new(:command, :start, :end, :count) do
+    def duration
+      self.end - self.start
+    end
+
+    def average
+      if count > 0
+        (self.end - self.start) * 1000 / self.count
+      else
+        0
+      end
+    end
+
+    def to_s
+      if count > 0
+        sprintf("%s %g %s %d %s %g %s", "'#{self.command}' has run",  
+                                             duration,
+                                             "seconds to operate",
+                                             self.count,
+                                             "rows -",
+                                             average,
+                                             "ms per row")
+      else
+        sprintf("%s %g %s %d %s", "'#{self.command}' has run",
+                                  duration,
+                                  "seconds to operate",
+                                  self.count,
+                                  "rows")
+      end
     end
   end
+
+  @stats = Stats.new(command.name, Time.now, Time.now, count)
+
+  unless command.name == :edit
+    progress = Thread.new do
+      sleep 3
+      while true
+        print '.'
+        sleep 1
+      end
+    end
+  end
+
   true
 end
 
@@ -277,9 +309,15 @@ post do |global,command,options,args|
   # Post logic here
   # Use skips_post before a command to skip this
   # block on that command only
-  @stats.end = Time.now
   puts
-  puts @stats.end - @stats.start
+  print "-> "
+
+  @stats.end = Time.now
+  unless command.name == :edit or command.name == :execute
+    puts @stats
+  else
+    puts @stats if command.name == :execute
+  end
 end
 
 on_error do |exception|
