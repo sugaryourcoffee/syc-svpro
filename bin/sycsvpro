@@ -213,6 +213,30 @@ command :count do |c|
     counter.execute
     puts "done"
   end
+
+end
+
+desc 'Inserts rows from a file to a csv-file'
+arg_name 'INSERT_FILE'
+command :insert do |c|
+
+  c.desc 'Position TOP or BOTTOM where to insert the rows'
+  c.default_value 'top'
+  c.arg_name 'top|bottom'
+  c.flag [:p, :position], :must_match => /^top|^bottom/i
+
+  c.action do |global_options,options,args|
+    help_now! "You need to provide an insert file" if args.size == 0
+
+    insert_file = File.expand_path(args[0])
+    help_now! "Insert file #{insert_file} doesn't exist!" unless File.exists? insert_file
+
+    print "Inserting..."
+    inserter = Sycsvpro::Inserter.new(infile: global_options[:f], outfile: global_options[:o], 
+                                      insert: insert_file, position: options[:p])
+    inserter.execute
+    puts "done"
+  end
 end
 
 desc 'Map values in columns to new values'
@@ -290,10 +314,12 @@ pre do |global,command,options,args|
 
   # Creates statistics on the command operation
   Stats = Struct.new(:command, :start, :end, :count) do
+    # Calcualates the total duration
     def duration
       self.end - self.start
     end
 
+    # Calculates the average time per row processing
     def average
       if count > 0
         (self.end - self.start) * 1000 / self.count
@@ -302,6 +328,7 @@ pre do |global,command,options,args|
       end
     end
 
+    # Prints the statistics
     def to_s
       if count > 0
         sprintf("%s %.5f %s %d %s %.5f %s", "'#{self.command}' has run",  

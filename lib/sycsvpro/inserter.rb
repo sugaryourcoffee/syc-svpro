@@ -10,17 +10,25 @@ module Sycsvpro
     attr_reader :outfile
     # file that contains the lines to insert
     attr_reader :insert
+    # position (top or bottom) where to insert the rows
+    attr_reader :position
 
     def initialize(options={})
       @infile  = options[:infile]
       @outfile = options[:outfile]
       @insert  = options[:insert]
+      @position = options[:position] || 'top'
     end
 
     def execute
       File.open(outfile, 'w') do |out|
-        out.puts File.read(insert)
-        out.puts File.read(infile)
+        if position.downcase == 'bottom'
+          out.puts File.read(infile)
+          out.puts File.read(insert)
+        else
+          out.puts File.read(insert)
+          out.puts File.read(infile)
+        end
       end
     end
 
