@@ -132,6 +132,36 @@ command :edit do |c|
   end
 end
 
+desc 'Lists scripts in the scripts directory with optionally listing methods'
+command :list do |c|
+  c.desc 'Name of the script file'
+  c.arg_name 'SCRIPT_NAME.rb'
+  c.flag [:s, :script], :must_match => /^\w+\.rb/
+
+  c.desc 'Show methods'
+  c.switch [:m, :method]
+
+  c.action do |global_options,options,args|
+    script_list = Sycsvpro::ScriptList.new(dir: script_directory,
+                                           script: options[:s], show_methods: options[:m])
+
+    scripts = script_list.execute
+
+    if scripts.empty?
+      help_now! "No scripts available. You can create scripts with the edit command"
+    else
+      scripts.each do |script, methods|
+        puts File.basename(script)
+        methods.each do |method|
+          puts method.gsub(/^/, "  ")
+          puts
+        end unless methods.empty?
+      end
+    end
+
+  end
+end
+
 desc 'Executes the code provided in a file'
 arg_name 'PRO_FILE METHOD'
 command :execute do |c|
@@ -252,7 +282,7 @@ pre do |global,command,options,args|
 
   count = 0
 
-  unless command.name == :edit or command.name == :execute
+  unless command.name == :edit or command.name == :execute or command.name == :list
     analyzer = Sycsvpro::Analyzer.new(global[:f])
     result = analyzer.result
     count = result.row_count
@@ -274,7 +304,7 @@ pre do |global,command,options,args|
 
     def to_s
       if count > 0
-        sprintf("%s %g %s %d %s %g %s", "'#{self.command}' has run",  
+        sprintf("%s %.5f %s %d %s %.5f %s", "'#{self.command}' has run",  
                                              duration,
                                              "seconds to operate",
                                              self.count,
@@ -282,11 +312,9 @@ pre do |global,command,options,args|
                                              average,
                                              "ms per row")
       else
-        sprintf("%s %g %s %d %s", "'#{self.command}' has run",
-                                  duration,
-                                  "seconds to operate",
-                                  self.count,
-                                  "rows")
+        sprintf("%s %.5f %s", "'#{self.command}' has run",
+                            duration,
+                            "seconds")
       end
     end
   end
@@ -311,13 +339,10 @@ post do |global,command,options,args|
   # Use skips_post before a command to skip this
   # block on that command only
   puts
-  print "-> "
 
   @stats.end = Time.now
-  unless command.name == :edit or command.name == :execute
+  unless command.name == :edit
     puts @stats
-  else
-    puts @stats if command.name == :execute
   end
 end
 

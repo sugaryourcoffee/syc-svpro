@@ -1,6 +1,6 @@
-Sat, 22 Feb 2014 22:09:24 +0100
+Sun, 23 Feb 2014 13:56:52 +0100
 README.rdoc	Sun, 16 Feb 2014 22:01:46 +0100
-lib/sycsvpro.rb	Fri, 21 Feb 2014 22:22:32 +0100
+lib/sycsvpro.rb	Sun, 23 Feb 2014 12:40:24 +0100
 lib/sycsvpro/allocator.rb	Wed, 19 Feb 2014 20:34:28 +0100
 lib/sycsvpro/analyzer.rb	Tue, 18 Feb 2014 19:57:28 +0100
 lib/sycsvpro/calculator.rb	Tue, 18 Feb 2014 19:53:34 +0100
@@ -15,5 +15,6 @@ lib/sycsvpro/mapper.rb	Tue, 18 Feb 2014 19:45:47 +0100
 lib/sycsvpro/profiler.rb	Sun, 16 Feb 2014 21:31:39 +0100
 lib/sycsvpro/row_filter.rb	Tue, 18 Feb 2014 19:45:25 +0100
 lib/sycsvpro/script_creator.rb	Fri, 21 Feb 2014 22:42:17 +0100
+lib/sycsvpro/script_list.rb	Sun, 23 Feb 2014 13:56:43 +0100
 lib/sycsvpro/version.rb	Sat, 22 Feb 2014 22:06:58 +0100
-bin/sycsvpro	Sat, 22 Feb 2014 22:09:17 +0100
+bin/sycsvpro	Sun, 23 Feb 2014 13:55:33 +0100

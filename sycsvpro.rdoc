@@ -7,7 +7,7 @@ SYNOPSIS
     sycsvpro [global options] command [command options] [arguments...]
 
 VERSION
-    0.0.5
+    0.0.7
 
 GLOBAL OPTIONS
     -f, --file=FILE    - CSV file to operate on (default: none)
@@ -27,4 +27,5 @@ COMMANDS
     execute  - Executes the code provided in a file
     extract  - Extract specified rows and columns from the file
     help     - Shows a list of commands or help for one command
+    list     - List scripts in the scripts directory with optionally listing methods
     map      - Map values in columns to new values

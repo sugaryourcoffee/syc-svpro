@@ -11,6 +11,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
 * create or edit a Ruby script
+* list scripts available optionally with methods
 * execute a Ruby script file that operates a csv file
 
 To get help type
@@ -143,6 +144,14 @@ Edit
 Creates or if it exists opens a file for editing. The file is created in the directory ~/.syc/sycsvpro/scripts. Following command creates a Ruby script with the name script.rb and a method call_me
 
     $ sycsvpro edit -s script.rb -m call_me
+
+List
+----
+List the scripts available in the scripts directory
+
+    $ sycsvpro list -m
+    script.rb
+      call_me
 
 Execute
 -------
