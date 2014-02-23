@@ -221,3 +221,7 @@ A work flow could be as follows
 * Do arithmetic operations on the values `calc`
 
 When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to create nice graphs. To create more sophisiticated analysis *R* is the right tool to use.
+
+Installation
+============
+[![Gem Version](https://badge.fury.io/rb/sycsvpro.png)](http://badge.fury.io/rb/sycsvpro)

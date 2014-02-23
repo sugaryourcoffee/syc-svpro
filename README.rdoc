@@ -6,6 +6,7 @@ License:: Distributed uder the MIT license, see LICENSE in the source distro
 
 The application provides an interface for analyzing, cleaning and operating on csv files
 
+{<img src="https://badge.fury.io/rb/sycsvpro.png" alt="Gem Version" />}[http://badge.fury.io/rb/sycsvpro]
 
 == Install
 
