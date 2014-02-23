@@ -3,15 +3,16 @@ syc-svpro
 
 Processing of csv files. *sycsvpro* offers following functions
 
-* analyze csv file
+* analyze a csv file
 * extract rows and columns from a file
 * collect values of rows and assign them to categories
 * map column values to new values
 * allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
+* insert rows to a csv-file (since version 0.0.8)
 * create or edit a Ruby script
-* list scripts available optionally with methods
+* list scripts available optionally with methods (since version 0.0.7)
 * execute a Ruby script file that operates a csv file
 
 To get help type
@@ -138,6 +139,12 @@ Process arithmetic operations on the contract count and create a target column
     indix;i1;con456;dri130;mot090;1.12.3013;2;20
     chiro;c1;con333;dri110;mot100;1.12.3013;2;20
     chiro;c2;con331;dri100;mot130;1.12.3013;2;20
+
+Insert
+------
+Add rows at the bottom or on top of a file. The command below adds the content of the file file-with-rows-to-insert.text on top of the file in.csv and saves it to out.csv
+
+    $ sycsvpro -f in.csv -o out.csv insert file-with-rows-to-insert.txt -p top
 
 Edit
 ----
