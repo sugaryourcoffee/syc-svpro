@@ -12,12 +12,15 @@ module Sycsvpro
     attr_reader :method_name
     # script_file path
     attr_reader :script_file
+    # type of the script-file
+    attr_reader :script_type
 
     # Creates a new ScriptCreator
     def initialize(options={})
       @dir         = File.join(options[:dir], 'scripts')
       @script_name = options[:script]
-      @method_name = options[:method]
+      @script_type = File.extname(@script_name)
+      @method_name = options[:method] if @script_type == '.rb'
       create_script
     end
 
@@ -31,12 +34,14 @@ module Sycsvpro
         @script_file = File.join(dir, script_name)
         unless File.exists? @script_file
           File.open(@script_file, 'w') do |f|
-            f.print "def "
-            f.puts  "#{method_name}" if method_name
-            f.puts  "end"
+            if script_type == '.rb'
+              f.print "def "
+              f.puts  "#{method_name}" if method_name
+              f.puts  "end"
+            end
           end
         else
-          if method_name
+          if method_name and script_type == '.rb'
             File.open(@script_file, 'a') do |f|
               f.puts
               f.puts "def #{method_name}"

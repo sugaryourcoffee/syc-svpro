@@ -114,14 +114,13 @@ command :allocate do |c|
   end
 end
 
-desc 'Creates a script file or opens a script file for editing if it exists'
+desc 'Creates a script/insert file or opens a script/insert file for editing if it exists'
 command :edit do |c|
-  c.desc 'Name of the script file'
-  c.default_value 'script.rb'
-  c.arg_name 'SCRIPT_NAME.rb'
-  c.flag [:s, :script], :must_match => /^\w+\.rb/
+  c.desc 'Name of the script/insert file'
+  c.arg_name 'SCRIPT_NAME.rb|INSERT_NAME.ins'
+  c.flag [:s, :script], :must_match => /^\w+\.rb|^\w+\.ins/
 
-  c.desc 'Method to create'
+  c.desc 'Method to create in combination with a script file'
   c.arg_name 'METHOD_NAME'
   c.flag [:m, :method], :must_match => /^\w+/
 
@@ -132,17 +131,22 @@ command :edit do |c|
   end
 end
 
-desc 'Lists scripts in the scripts directory with optionally listing methods'
+desc 'Lists script or insert files in the scripts directory with optionally listing methods of script files'
 command :list do |c|
+  c.desc 'Type of script (Ruby or insert file)'
+  c.default_value 'script'
+  c.arg_name 'SCRIPT|INSERT'
+  c.flag [:t, :type], :must_match => /script|insert/i
+
   c.desc 'Name of the script file'
-  c.arg_name 'SCRIPT_NAME.rb'
-  c.flag [:s, :script], :must_match => /^\w+\.rb/
+  c.arg_name 'SCRIPT_NAME.rb|INSERT_NAME.ins'
+  c.flag [:s, :script], :must_match => /^\w+\.rb|^\w+\.ins/
 
   c.desc 'Show methods'
   c.switch [:m, :method]
 
   c.action do |global_options,options,args|
-    script_list = Sycsvpro::ScriptList.new(dir: script_directory,
+    script_list = Sycsvpro::ScriptList.new(dir: script_directory, type: options[:t],
                                            script: options[:s], show_methods: options[:m])
 
     scripts = script_list.execute
@@ -229,6 +233,7 @@ command :insert do |c|
     help_now! "You need to provide an insert file" if args.size == 0
 
     insert_file = File.expand_path(args[0])
+    insert_file = File.join(script_directory, args[0])    unless File.exists? insert_file
     help_now! "Insert file #{insert_file} doesn't exist!" unless File.exists? insert_file
 
     print "Inserting..."
