@@ -17,8 +17,11 @@ module Sycsvpro
     # Creates a new ScriptList. Takes params script_dir, script_file and show_methods
     def initialize(options={})
       @script_dir   = options[:dir]
-      @script_file  = options[:script] || '*.rb'
-      @show_methods = options[:show_methods]
+      @script_type  = options[:type] || 'script'
+      @script_file  = options[:script] || '*.rb'  if @script_type == 'script'
+      @script_file  = options[:script] || '*.ins' if @script_type == 'insert'
+      @show_methods = options[:show_methods] if @script_type == 'script'
+      @show_methods = false if @script_type == 'insert'
       @list         = {}
     end
 
