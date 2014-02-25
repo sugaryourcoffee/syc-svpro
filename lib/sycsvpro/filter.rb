@@ -11,6 +11,8 @@ module Sycsvpro
     attr_reader :date_format
     # Filter for rows and columns
     attr_reader :filter
+    # Type of column (n = number, s = string)
+    attr_reader :types
     # Pattern that is used as a filter
     attr_reader :pattern
     # Comparison that is used as a filter
@@ -20,6 +22,7 @@ module Sycsvpro
     def initialize(values, options={})
       @date_format = options[:df] || "%Y-%m-%d"
       @filter  = []
+      @types   = []
       @pattern = []
       @pivot   = {}
       create_filter(values)
@@ -28,7 +31,9 @@ module Sycsvpro
     # Creates the filters based on the given patterns
     def method_missing(id, *args, &block)
       return equal($1, args, block)              if id =~ /^(\d+)$/
+      return equal_type($1, $2, args, block)     if id =~ /^(s|n|d):(\d+)$/
       return range($1, $2, args, block)          if id =~ /^(\d+)-(\d+)$/
+      return range_type($1, $2, $3, args, block) if id =~ /^(s|n|d):(\d+)-(\d+)$/
       return regex($1, args, block)              if id =~ /^\/(.*)\/$/
       return col_regex($1, $2, args, block)      if id =~ /^(\d+):\/(.*)\/$/
       return date($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
@@ -72,9 +77,23 @@ module Sycsvpro
         filter << value.to_i unless filter.index(value.to_i) 
       end
 
+      # Adds a single value and an associated type to the filter
+      def equal_type(type, value, args, block)
+        filter_size_before = filter.size
+        equal(value, args, block)
+        types << type if filter_size_before < filter.size
+      end
+
       # Adds a range to the filter
       def range(start_value, end_value, args, block)
         filter << (start_value.to_i..end_value.to_i).to_a
+      end
+
+      # Adds a range and the associated types to the filter
+      def range_type(type, start_value, end_value, args, block)
+        filter_size_before = filter.size
+        range(start_value, end_value, args, block)
+        (filter.size - filter_size_before).times { types << type }
       end
 
       # Adds a regex to the pattern filter
