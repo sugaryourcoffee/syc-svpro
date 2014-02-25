@@ -2,8 +2,10 @@ require_relative 'row_filter'
 require_relative 'column_type_filter'
 require_relative 'dsl'
 
+# Operating csv files
 module Sycsvpro
 
+  # Sorts an input file based on a column sort filter
   class Sorter
 
     include Dsl
@@ -19,6 +21,8 @@ module Sycsvpro
     # sorted rows
     attr_reader :sorted_rows
 
+    # Creates a Sorter and takes as options infile, outfile, rows, cols including types and a
+    # date format for the date columns to sort (optional)
     def initialize(options={})
       @infile          = options[:infile]
       @outfile         = options[:outfile]
@@ -27,10 +31,10 @@ module Sycsvpro
       @sorted_rows     = []
     end
 
+    # Sorts the data of the infile
     def execute
       rows = File.readlines(infile)
 
-      #File.open(infile).each_with_index do |line, index|
       rows.each_with_index do |line, index|
         filtered = col_type_filter.process(row_filter.process(line, row: index))
         next if filtered.nil?

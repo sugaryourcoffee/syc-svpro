@@ -13,6 +13,8 @@ module Sycsvpro
     # position (top or bottom) where to insert the rows
     attr_reader :position
 
+    # Creates an Inserter and takes options infile, outfile, insert-file and position where to
+    # insert the insert-file content. Default position is top
     def initialize(options={})
       @infile  = options[:infile]
       @outfile = options[:outfile]
@@ -20,6 +22,7 @@ module Sycsvpro
       @position = options[:position] || 'top'
     end
 
+    # Inserts the content of the insert-file at the specified positions (top or bottom)
     def execute
       File.open(outfile, 'w') do |out|
         if position.downcase == 'bottom'

@@ -7,7 +7,7 @@ SYNOPSIS
     sycsvpro [global options] command [command options] [arguments...]
 
 VERSION
-    0.0.7
+    0.0.8
 
 GLOBAL OPTIONS
     -f, --file=FILE    - CSV file to operate on (default: none)
@@ -30,3 +30,4 @@ COMMANDS
     insert   - Inserts rows from a file to a csv-file
     list     - List scripts in the scripts directory with optionally listing methods
     map      - Map values in columns to new values
+    sort     - Sort columns based on column values

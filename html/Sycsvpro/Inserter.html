@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class Sycsvpro::ScriptList - Your application title</title>
+<title>class Sycsvpro::Inserter - Your application title</title>
 
 <link href="../fonts.css" rel="stylesheet">
 <link href="../rdoc.css" rel="stylesheet">
@@ -83,16 +83,14 @@
   </div>
 </nav>
 
-<main role="main" aria-labelledby="class-Sycsvpro::ScriptList">
-  <h1 id="class-Sycsvpro::ScriptList" class="class">
-    class Sycsvpro::ScriptList
+<main role="main" aria-labelledby="class-Sycsvpro::Inserter">
+  <h1 id="class-Sycsvpro::Inserter" class="class">
+    class Sycsvpro::Inserter
   </h1>
 
   <section class="description">
     
-<p>Lists the contents of the script directory. Optionally listing a specific
-script file and also optionally the methods and associated description of
-the methods</p>
+<p>Insert a text file into another textfile at a specified position</p>
 
   </section>
 
@@ -113,54 +111,54 @@ the methods</p>
       </header>
 
       
-      <div id="attribute-i-list" class="method-detail">
+      <div id="attribute-i-infile" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">list</span><span
+          <span class="method-name">infile</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Hash holding the list of scripts</p>
+        <p>file to insert lines to</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-script_dir" class="method-detail">
+      <div id="attribute-i-insert" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">script_dir</span><span
+          <span class="method-name">insert</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Directory that holds the scripts</p>
+        <p>file that contains the lines to insert</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-script_file" class="method-detail">
+      <div id="attribute-i-outfile" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">script_file</span><span
+          <span class="method-name">outfile</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Script file of interest</p>
+        <p>file to write result to</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-show_methods" class="method-detail">
+      <div id="attribute-i-position" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">show_methods</span><span
+          <span class="method-name">position</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Switch indicating whether to show methods</p>
+        <p>position (top or bottom) where to insert the rows</p>
         
         </div>
       </div>
@@ -188,25 +186,20 @@ the methods</p>
 
         <div class="method-description">
           
-          <p>Creates a new <a href="ScriptList.html">ScriptList</a>. Takes params <a
-href="ScriptList.html#attribute-i-script_dir">#script_dir</a>, <a
-href="ScriptList.html#attribute-i-script_file">#script_file</a> and <a
-href="ScriptList.html#attribute-i-show_methods">#show_methods</a></p>
+          <p>Creates an <a href="Inserter.html">Inserter</a> and takes options infile,
+outfile, insert-file and position where to insert the insert-file content.
+Default position is top</p>
           
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/script_list.rb, line 18</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/inserter.rb, line 18</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
-  <span class="ruby-ivar">@script_dir</span>   = <span class="ruby-identifier">options</span>[<span class="ruby-value">:dir</span>]
-  <span class="ruby-ivar">@script_type</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:type</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@script_type</span>.<span class="ruby-identifier">downcase!</span>
-  <span class="ruby-ivar">@script_file</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:script</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;*.rb&#39;</span>  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@script_file</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:script</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;*.ins&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;insert&#39;</span>
-  <span class="ruby-ivar">@show_methods</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:show_methods</span>] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@show_methods</span> = <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;insert&#39;</span>
-  <span class="ruby-ivar">@list</span>         = {}
+  <span class="ruby-ivar">@infile</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
+  <span class="ruby-ivar">@outfile</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
+  <span class="ruby-ivar">@insert</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:insert</span>]
+  <span class="ruby-ivar">@position</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:position</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;top&#39;</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -239,23 +232,24 @@ href="ScriptList.html#attribute-i-show_methods">#show_methods</a></p>
 
         <div class="method-description">
           
-          <p>Retrieves the information about scripts and methods from the script
-directory</p>
+          <p>Inserts the content of the insert-file at the specified positions (top or
+bottom)</p>
           
           
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/script_list.rb, line 30</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/inserter.rb, line 26</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
-  <span class="ruby-identifier">scripts</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@script_dir</span>, <span class="ruby-ivar">@script_file</span>))
-  <span class="ruby-identifier">scripts</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">script</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">list</span>[<span class="ruby-identifier">script</span>] = []
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">show_methods</span>
-      <span class="ruby-identifier">list</span>[<span class="ruby-identifier">script</span>] = <span class="ruby-identifier">retrieve_methods</span>(<span class="ruby-identifier">script</span>)
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">outfile</span>, <span class="ruby-string">&#39;w&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">position</span>.<span class="ruby-identifier">downcase</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;bottom&#39;</span>
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">infile</span>)
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">insert</span>)
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">insert</span>)
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-constant">File</span>.<span class="ruby-identifier">read</span>(<span class="ruby-identifier">infile</span>)
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
-  <span class="ruby-identifier">list</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           

@@ -161,6 +161,19 @@
         </div>
       </div>
       
+      <div id="attribute-i-script_type" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">script_type</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>type of the script-file</p>
+        
+        </div>
+      </div>
+      
     </section>
     
 
@@ -190,11 +203,12 @@
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/script_creator.rb, line 17</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/script_creator.rb, line 19</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@dir</span>         = <span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:dir</span>], <span class="ruby-string">&#39;scripts&#39;</span>)
   <span class="ruby-ivar">@script_name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:script</span>]
-  <span class="ruby-ivar">@method_name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:method</span>]
+  <span class="ruby-ivar">@script_type</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">extname</span>(<span class="ruby-ivar">@script_name</span>)
+  <span class="ruby-ivar">@method_name</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:method</span>] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;.rb&#39;</span>
   <span class="ruby-identifier">create_script</span>
 <span class="ruby-keyword">end</span></pre>
           </div>

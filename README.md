@@ -10,6 +10,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
+* sort rows base on columns
 * insert rows to a csv-file (since version 0.0.8)
 * create or edit a Ruby script
 * list scripts available optionally with methods (since version 0.0.7)
@@ -23,11 +24,11 @@ In the following examples we assume the following file
 
 ```
 customer;machine;control;drive;motor;date;contract
-hello;h1;con123;dri120;mot100;1.12.3013;1
-hello;h2;con123;dri130;mot110;1.12.3013;1
-indix;i1;con456;dri130;mot090;1.12.3013;1
-chiro;c1;con333;dri110;mot100;1.12.3013;1
-chiro;c2;con331;dri100;mot130;1.12.3013;1
+hello;h1;con123;dri120;mot100;1.01.3013;1
+hello;h2;con123;dri130;mot110;1.02.3012;1
+indix;i1;con456;dri130;mot090;5.11.3013;1
+chiro;c1;con333;dri110;mot100;1.10.3011;1
+chiro;c2;con331;dri100;mot130;3.05.3010;1
 ```
 
 Analyze
@@ -134,11 +135,24 @@ Process arithmetic operations on the contract count and create a target column
 
     $ cat out.csv
     customer;machine;control;drive;motor;date;contract;target
-    hello;h1;con123;dri120;mot100;1.12.3013;2;20
-    hello;h2;con123;dri130;mot110;1.12.3013;2;20
-    indix;i1;con456;dri130;mot090;1.12.3013;2;20
-    chiro;c1;con333;dri110;mot100;1.12.3013;2;20
-    chiro;c2;con331;dri100;mot130;1.12.3013;2;20
+    hello;h1;con123;dri120;mot100;1.01.3013;1
+    hello;h2;con123;dri130;mot110;1.02.3012;1
+    indix;i1;con456;dri130;mot090;5.11.3013;1
+    chiro;c1;con333;dri110;mot100;1.10.3011;1
+    chiro;c2;con331;dri100;mot130;3.05.3010;1
+
+Sort
+----
+
+Sort rows on specified columns as an example sort rows based on customer (string s) and contract date (date d)
+
+    $ sycsvpro -f in.csv -o out.csv sort -r 2-20 -c s:0,d:5
+    
+    hello;h2;con123;dri130;mot110;1.02.3012;1
+    hello;h1;con123;dri120;mot100;1.01.3013;1
+    indix;i1;con456;dri130;mot090;5.11.3013;1
+    chiro;c2;con331;dri100;mot130;3.05.3010;1
+    chiro;c1;con333;dri110;mot100;1.10.3011;1
 
 Insert
 ------
@@ -154,7 +168,7 @@ Creates or if it exists opens a file for editing. The file is created in the dir
 
 List
 ----
-List the scripts available in the scripts directory
+List the scripts or insert-file available in the scripts directory
 
     $ sycsvpro list -m
     script.rb
@@ -219,6 +233,7 @@ A work flow could be as follows
 * Extract rows and columns of interest `extract`
 * Count values `count`
 * Do arithmetic operations on the values `calc`
+* Sort the rows based on column values
 
 When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to create nice graphs. To create more sophisiticated analysis *R* is the right tool to use.
 

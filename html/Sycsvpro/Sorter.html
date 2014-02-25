@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class Sycsvpro::ScriptList - Your application title</title>
+<title>class Sycsvpro::Sorter - Your application title</title>
 
 <link href="../fonts.css" rel="stylesheet">
 <link href="../rdoc.css" rel="stylesheet">
@@ -65,7 +65,18 @@
   
 </div>
 
-    
+    <div id="includes-section" class="nav-section">
+  <h3>Included Modules</h3>
+
+  <ul class="link-list">
+  
+  
+    <li><a class="include" href="../Dsl.html">Dsl</a>
+  
+  
+  </ul>
+</div>
+
     
     <!-- Method Quickref -->
 <div id="method-list-section" class="nav-section">
@@ -83,16 +94,14 @@
   </div>
 </nav>
 
-<main role="main" aria-labelledby="class-Sycsvpro::ScriptList">
-  <h1 id="class-Sycsvpro::ScriptList" class="class">
-    class Sycsvpro::ScriptList
+<main role="main" aria-labelledby="class-Sycsvpro::Sorter">
+  <h1 id="class-Sycsvpro::Sorter" class="class">
+    class Sycsvpro::Sorter
   </h1>
 
   <section class="description">
     
-<p>Lists the contents of the script directory. Optionally listing a specific
-script file and also optionally the methods and associated description of
-the methods</p>
+<p>Sorts an input file based on a column sort filter</p>
 
   </section>
 
@@ -113,54 +122,67 @@ the methods</p>
       </header>
 
       
-      <div id="attribute-i-list" class="method-detail">
+      <div id="attribute-i-col_type_filter" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">list</span><span
+          <span class="method-name">col_type_filter</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Hash holding the list of scripts</p>
+        <p>column type filter</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-script_dir" class="method-detail">
+      <div id="attribute-i-infile" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">script_dir</span><span
+          <span class="method-name">infile</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Directory that holds the scripts</p>
+        <p>file of the data to sort</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-script_file" class="method-detail">
+      <div id="attribute-i-outfile" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">script_file</span><span
+          <span class="method-name">outfile</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Script file of interest</p>
+        <p>file to write the sorted data to</p>
         
         </div>
       </div>
       
-      <div id="attribute-i-show_methods" class="method-detail">
+      <div id="attribute-i-row_filter" class="method-detail">
         <div class="method-heading attribute-method-heading">
-          <span class="method-name">show_methods</span><span
+          <span class="method-name">row_filter</span><span
             class="attribute-access-type">[R]</span>
         </div>
 
         <div class="method-description">
         
-        <p>Switch indicating whether to show methods</p>
+        <p>row filter</p>
+        
+        </div>
+      </div>
+      
+      <div id="attribute-i-sorted_rows" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">sorted_rows</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>sorted rows</p>
         
         </div>
       </div>
@@ -188,25 +210,21 @@ the methods</p>
 
         <div class="method-description">
           
-          <p>Creates a new <a href="ScriptList.html">ScriptList</a>. Takes params <a
-href="ScriptList.html#attribute-i-script_dir">#script_dir</a>, <a
-href="ScriptList.html#attribute-i-script_file">#script_file</a> and <a
-href="ScriptList.html#attribute-i-show_methods">#show_methods</a></p>
+          <p>Creates a <a href="Sorter.html">Sorter</a> and takes as options infile,
+outfile, rows, cols including types and a date format for the date columns
+to sort (optional)</p>
           
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/script_list.rb, line 18</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 26</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
-  <span class="ruby-ivar">@script_dir</span>   = <span class="ruby-identifier">options</span>[<span class="ruby-value">:dir</span>]
-  <span class="ruby-ivar">@script_type</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:type</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@script_type</span>.<span class="ruby-identifier">downcase!</span>
-  <span class="ruby-ivar">@script_file</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:script</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;*.rb&#39;</span>  <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@script_file</span>  = <span class="ruby-identifier">options</span>[<span class="ruby-value">:script</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&#39;*.ins&#39;</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;insert&#39;</span>
-  <span class="ruby-ivar">@show_methods</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:show_methods</span>] <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;script&#39;</span>
-  <span class="ruby-ivar">@show_methods</span> = <span class="ruby-keyword">false</span> <span class="ruby-keyword">if</span> <span class="ruby-ivar">@script_type</span> <span class="ruby-operator">==</span> <span class="ruby-string">&#39;insert&#39;</span>
-  <span class="ruby-ivar">@list</span>         = {}
+  <span class="ruby-ivar">@infile</span>          = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
+  <span class="ruby-ivar">@outfile</span>         = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
+  <span class="ruby-ivar">@row_filter</span>      = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
+  <span class="ruby-ivar">@col_type_filter</span> = <span class="ruby-constant">ColumnTypeFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:cols</span>], <span class="ruby-identifier">df</span><span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:df</span>])
+  <span class="ruby-ivar">@sorted_rows</span>     = []
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -239,23 +257,27 @@ href="ScriptList.html#attribute-i-show_methods">#show_methods</a></p>
 
         <div class="method-description">
           
-          <p>Retrieves the information about scripts and methods from the script
-directory</p>
+          <p>Sorts the data of the infile</p>
           
           
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/script_list.rb, line 30</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 35</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
-  <span class="ruby-identifier">scripts</span> = <span class="ruby-constant">Dir</span>.<span class="ruby-identifier">glob</span>(<span class="ruby-constant">File</span>.<span class="ruby-identifier">join</span>(<span class="ruby-ivar">@script_dir</span>, <span class="ruby-ivar">@script_file</span>))
-  <span class="ruby-identifier">scripts</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">script</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">list</span>[<span class="ruby-identifier">script</span>] = []
-    <span class="ruby-keyword">if</span> <span class="ruby-identifier">show_methods</span>
-      <span class="ruby-identifier">list</span>[<span class="ruby-identifier">script</span>] = <span class="ruby-identifier">retrieve_methods</span>(<span class="ruby-identifier">script</span>)
+  <span class="ruby-identifier">rows</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">readlines</span>(<span class="ruby-identifier">infile</span>)
+
+  <span class="ruby-identifier">rows</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">filtered</span> = <span class="ruby-identifier">col_type_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">row_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">line</span>, <span class="ruby-identifier">row</span><span class="ruby-operator">:</span> <span class="ruby-identifier">index</span>))
+    <span class="ruby-keyword">next</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">filtered</span>.<span class="ruby-identifier">nil?</span>
+    <span class="ruby-identifier">sorted_rows</span> <span class="ruby-operator">&lt;&lt;</span> (<span class="ruby-identifier">filtered</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">index</span>)
+  <span class="ruby-keyword">end</span>
+
+  <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">outfile</span>, <span class="ruby-string">&#39;w&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">sorted_rows</span>.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">rows</span>[<span class="ruby-identifier">row</span>.<span class="ruby-identifier">last</span>])
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
-  <span class="ruby-identifier">list</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           

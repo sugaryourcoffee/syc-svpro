@@ -1,7 +1,10 @@
+# Operating csv files
 module Sycsvpro
 
+  # Create a filter based on a colum and its type
   class ColumnTypeFilter < ColumnFilter
 
+    # Processes the filter and returns the filtered columns
     def process(object, options={})
       filtered = super(object, options)
 
@@ -18,7 +21,12 @@ module Sycsvpro
           end
           values[index] = number_value
         elsif types[index] == 'd'
-          values[index] = Date.strptime(value, date_format) unless value.empty?
+          if value.empty?
+            date = Date.strptime('9999-9-9', '%Y-%m-%d')
+          else
+            date = Date.strptime(value, date_format)
+          end
+          values[index] = date
         end
       end 
 
