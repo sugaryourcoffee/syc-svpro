@@ -135,6 +135,19 @@
         </div>
       </div>
       
+      <div id="attribute-i-desc" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">desc</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>sort order descending or ascending</p>
+        
+        </div>
+      </div>
+      
       <div id="attribute-i-infile" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">infile</span><span
@@ -218,10 +231,11 @@ to sort (optional)</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 26</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 28</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@infile</span>          = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
   <span class="ruby-ivar">@outfile</span>         = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
+  <span class="ruby-ivar">@desc</span>            = <span class="ruby-identifier">options</span>[<span class="ruby-value">:desc</span>] <span class="ruby-operator">||</span> <span class="ruby-keyword">false</span>
   <span class="ruby-ivar">@row_filter</span>      = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
   <span class="ruby-ivar">@col_type_filter</span> = <span class="ruby-constant">ColumnTypeFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:cols</span>], <span class="ruby-identifier">df</span><span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:df</span>])
   <span class="ruby-ivar">@sorted_rows</span>     = []
@@ -263,7 +277,7 @@ to sort (optional)</p>
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 35</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/sorter.rb, line 38</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
   <span class="ruby-identifier">rows</span> = <span class="ruby-constant">File</span>.<span class="ruby-identifier">readlines</span>(<span class="ruby-identifier">infile</span>)
 
@@ -274,8 +288,14 @@ to sort (optional)</p>
   <span class="ruby-keyword">end</span>
 
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">outfile</span>, <span class="ruby-string">&#39;w&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">sorted_rows</span>.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
-      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">rows</span>[<span class="ruby-identifier">row</span>.<span class="ruby-identifier">last</span>])
+    <span class="ruby-keyword">if</span> <span class="ruby-identifier">desc</span>
+      <span class="ruby-identifier">sorted_rows</span>.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">reverse</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">rows</span>[<span class="ruby-identifier">row</span>.<span class="ruby-identifier">last</span>])
+      <span class="ruby-keyword">end</span>
+    <span class="ruby-keyword">else</span>
+      <span class="ruby-identifier">sorted_rows</span>.<span class="ruby-identifier">compact</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">row</span><span class="ruby-operator">|</span>
+        <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">rows</span>[<span class="ruby-identifier">row</span>.<span class="ruby-identifier">last</span>])
+      <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>

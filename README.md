@@ -33,7 +33,6 @@ chiro;c2;con331;dri100;mot130;3.05.3010;1
 
 Analyze
 -------
-
 Analyze the content of the provided file *in.csv*
 
     $ sycsvpro -f in.csv analyze
@@ -52,14 +51,12 @@ Analyze the content of the provided file *in.csv*
 
 Extract
 -------
-
 Extract row 1,2 and 10-20 as well as columns 4 and 6-7
 
     $ sycsvpro -f in.csv -o out.csv extract -r 1,2,10-20 -c 4,6-7
 
 Collect
 -------
-
 Collect all product rows (2, 3 and 4) to the category product
 
     $ sycsvpro -f in.csv -o out.csv collect -r 2-20 -c products:2-4
@@ -80,7 +77,6 @@ Collect all product rows (2, 3 and 4) to the category product
 
 Map
 ---
-
 Map the product names to new names
 
 The mapping file (mapping) uses the result from the collect command above
@@ -112,7 +108,6 @@ Allocate all the machine types to the customer
 
 Count
 -----
-
 Count all customers (key column) in rows 2 to 20 that have machines that start with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with title Total at column 1
 
     $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0 -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
@@ -128,7 +123,6 @@ The result in file out.csv is
 
 Calc
 ----
-
 Process arithmetic operations on the contract count and create a target column
 
     $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target -c 6:*2,7:target=c6*10
@@ -143,7 +137,6 @@ Process arithmetic operations on the contract count and create a target column
 
 Sort
 ----
-
 Sort rows on specified columns as an example sort rows based on customer (string s) and contract date (date d)
 
     $ sycsvpro -f in.csv -o out.csv sort -r 2-20 -c s:0,d:5
@@ -176,7 +169,6 @@ List the scripts or insert-file available in the scripts directory
 
 Execute
 -------
-
 Execute takes a Ruby script file as an argument and processes the script. The following command executes the script *script.rb* and invokes the method *calc*
 
     $ sycsvpro execute ./script.rb calc

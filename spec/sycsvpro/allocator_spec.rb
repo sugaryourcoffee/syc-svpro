@@ -11,7 +11,7 @@ module Sycsvpro
 
     it "should allocate one value to a key" do
       key  = "1"
-      rows = "1-10"
+      rows = "1-7"
       cols = "0"
       allocator = Allocator.new(infile: @in_file, outfile: @out_file, 
                                 key: key, rows: rows, cols: cols)
@@ -32,7 +32,7 @@ module Sycsvpro
 
     it "should allocate multiple values to a key" do
       key = "0"
-      rows = "1-10"
+      rows = "1-7"
       cols = "4-5"
       allocator = Allocator.new(infile: @in_file, outfile: @out_file,
                                key: key, rows: rows, cols: cols)
