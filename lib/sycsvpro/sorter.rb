@@ -20,12 +20,15 @@ module Sycsvpro
     attr_reader :col_type_filter
     # sorted rows
     attr_reader :sorted_rows
+    # sort order descending or ascending
+    attr_reader :desc
 
     # Creates a Sorter and takes as options infile, outfile, rows, cols including types and a
     # date format for the date columns to sort (optional)
     def initialize(options={})
       @infile          = options[:infile]
       @outfile         = options[:outfile]
+      @desc            = options[:desc] || false
       @row_filter      = RowFilter.new(options[:rows])
       @col_type_filter = ColumnTypeFilter.new(options[:cols], df: options[:df])
       @sorted_rows     = []
@@ -42,8 +45,14 @@ module Sycsvpro
       end
 
       File.open(outfile, 'w') do |out|
-        sorted_rows.compact.sort.each do |row|
-          out.puts unstring(rows[row.last])
+        if desc
+          sorted_rows.compact.sort.reverse.each do |row|
+            out.puts unstring(rows[row.last])
+          end
+        else
+          sorted_rows.compact.sort.each do |row|
+            out.puts unstring(rows[row.last])
+          end
         end
       end
     end
