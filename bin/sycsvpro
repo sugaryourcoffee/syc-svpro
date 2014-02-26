@@ -220,6 +220,34 @@ command :count do |c|
 
 end
 
+desc 'Sort rows based on column values'
+command :sort do |c|
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30|REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+
+  c.desc 'Columns to sort based on a type (n = number, s = string, d = date) and its value'
+  c.arg_name 'n:1,s:2-5,d:7'
+  c.flag [:c, :col], :must_match => /[d|n|s]:\d+(?:-\d+|,[d|n|s]:\d+)*/
+
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.default_value '%Y-%m-%d'
+  c.flag [:df]
+
+  c.desc 'Sort order descending - default ascending'
+  c.switch [:d, :desc]
+
+  c.action do |global_options,options,args|
+    sorter = Sycsvpro::Sorter.new(infile: global_options[:f], outfile: global_options[:o],
+                                  rows: options[:r], cols: options[:c], df: options[:df],
+                                  desc: options[:d])
+    print 'Sorting...'
+    sorter.execute
+    print 'done'
+  end
+end
+
 desc 'Inserts rows from a file to a csv-file'
 arg_name 'INSERT_FILE'
 command :insert do |c|
@@ -304,7 +332,7 @@ pre do |global,command,options,args|
   case command.name
   when :analyze
     help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
-  when :allocate, :calc, :collect, :count, :extract, :map
+  when :allocate, :calc, :collect, :count, :extract, :map, :sort
     help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global[:o].nil?
   end
