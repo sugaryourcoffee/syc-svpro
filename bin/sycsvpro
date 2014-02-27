@@ -33,6 +33,9 @@ desc 'CSV file to write the result to'
 arg_name 'OUT_FILE'
 flag [:o, :out]
 
+desc 'Silent progress doesn\'t show progress indicator'
+switch [:s, :silent]
+
 desc 'Analyze the CSV file regarding columns, rows and content'
 command :analyze do |c|
 
@@ -381,7 +384,7 @@ pre do |global,command,options,args|
 
   @stats = Stats.new(command.name, Time.now, Time.now, count)
 
-  unless command.name == :edit
+  unless command.name == :edit or global[:s]
     progress = Thread.new do
       sleep 3
       while true
