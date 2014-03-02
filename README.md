@@ -10,7 +10,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
 * arithmetic operations on values of columns
-* sort rows base on columns
+* sort rows base on columns (since version 0.0.9)
 * insert rows to a csv-file (since version 0.0.8)
 * create or edit a Ruby script
 * list scripts available optionally with methods (since version 0.0.7)
