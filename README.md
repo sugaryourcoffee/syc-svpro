@@ -141,11 +141,14 @@ Sort rows on specified columns as an example sort rows based on customer (string
 
     $ sycsvpro -f in.csv -o out.csv sort -r 2-20 -c s:0,d:5
     
+    customer;machine;control;drive;motor;date;contract;target
     hello;h2;con123;dri130;mot110;1.02.3012;1
     hello;h1;con123;dri120;mot100;1.01.3013;1
     indix;i1;con456;dri130;mot090;5.11.3013;1
     chiro;c2;con331;dri100;mot130;3.05.3010;1
     chiro;c1;con333;dri110;mot100;1.10.3011;1
+
+Sort expects the first non-empty row as the header row. If --headerless switch is set then sort assumes no header being available.
 
 Insert
 ------

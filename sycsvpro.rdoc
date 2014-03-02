@@ -7,12 +7,13 @@ SYNOPSIS
     sycsvpro [global options] command [command options] [arguments...]
 
 VERSION
-    0.0.8
+    0.0.9
 
 GLOBAL OPTIONS
     -f, --file=FILE    - CSV file to operate on (default: none)
     --help             - Show this message
     -o, --out=OUT_FILE - CSV file to write the result to (default: none)
+    -s, --[no-]silent  - Silent progress doesn't show progress indicator
     --version          - Display the program version
 
 COMMANDS

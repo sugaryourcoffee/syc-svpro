@@ -68,6 +68,8 @@
     
     <li ><a href="#method-i-rows">#rows</a>
     
+    <li ><a href="#method-i-str2utf8">#str2utf8</a>
+    
     <li ><a href="#method-i-unstring">#unstring</a>
     
     <li ><a href="#method-i-write_to">#write_to</a>
@@ -154,6 +156,39 @@ provided by the caller</p>
       </div>
 
     
+      <div id="method-i-str2utf8" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">str2utf8</span><span
+            class="method-args">(str)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          <p>Remove non-UTF chars from string</p>
+          
+          
+
+          
+          <div class="method-source-code" id="str2utf8-source">
+            <pre><span class="ruby-comment"># File lib/sycsvpro/dsl.rb, line 41</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">str2utf8</span>(<span class="ruby-identifier">str</span>)
+  <span class="ruby-identifier">str</span>.<span class="ruby-identifier">encode</span>(<span class="ruby-string">&#39;UTF-8&#39;</span>, <span class="ruby-string">&#39;binary&#39;</span>, <span class="ruby-identifier">invalid</span><span class="ruby-operator">:</span> <span class="ruby-value">:replace</span>, <span class="ruby-keyword">undef</span><span class="ruby-operator">:</span> <span class="ruby-value">:replace</span>, <span class="ruby-identifier">replace</span><span class="ruby-operator">:</span> <span class="ruby-string">&#39;&#39;</span>)
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
       <div id="method-i-unstring" class="method-detail ">
         
         <div class="method-heading">
@@ -168,8 +203,8 @@ provided by the caller</p>
         <div class="method-description">
           
           <p>Remove leading and trailing “ and spaces as well as reducing more than 2
-spaces between words from csv values like ”a“;ba   g;c;”d“;e to a;b
-ag;c;d;e</p>
+spaces between words from csv values. Replac ; with , from values as ; is
+used as value separator</p>
           
           
 
@@ -177,6 +212,10 @@ ag;c;d;e</p>
           <div class="method-source-code" id="unstring-source">
             <pre><span class="ruby-comment"># File lib/sycsvpro/dsl.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>)
+  <span class="ruby-identifier">line</span> = <span class="ruby-identifier">str2utf8</span>(<span class="ruby-identifier">line</span>)
+  <span class="ruby-identifier">line</span>.<span class="ruby-identifier">scan</span>(<span class="ruby-regexp">/(?&lt;=^&quot;|;&quot;)[^&quot;]+(?=;)+[^&quot;]*|;+[^&quot;](?=&quot;;|&quot;$)/</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">line</span> = <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-identifier">value</span>, <span class="ruby-identifier">value</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;;&#39;</span>, <span class="ruby-string">&#39;,&#39;</span>))
+  <span class="ruby-keyword">end</span>
   <span class="ruby-identifier">line</span>.<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/(?&lt;=^|;)\s*&quot;?\s*|\s*&quot;?\s*(?=;|$)/</span>, <span class="ruby-string">&quot;&quot;</span>).<span class="ruby-identifier">gsub</span>(<span class="ruby-regexp">/\s{2,}/</span>, <span class="ruby-string">&quot; &quot;</span>) <span class="ruby-keyword">unless</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">nil?</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
