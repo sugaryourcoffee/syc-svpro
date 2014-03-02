@@ -20,14 +20,17 @@ module Sycsvpro
     attr_reader :col_type_filter
     # sorted rows
     attr_reader :sorted_rows
+    # file doesn't contain a header
+    attr_reader :headerless
     # sort order descending or ascending
     attr_reader :desc
 
     # Creates a Sorter and takes as options infile, outfile, rows, cols including types and a
-    # date format for the date columns to sort (optional)
+    # date format for the date columns to sort (optional).
     def initialize(options={})
       @infile          = options[:infile]
       @outfile         = options[:outfile]
+      @headerless      = options[:headerless] || false
       @desc            = options[:desc] || false
       @row_filter      = RowFilter.new(options[:rows])
       @col_type_filter = ColumnTypeFilter.new(options[:cols], df: options[:df])
@@ -38,6 +41,11 @@ module Sycsvpro
     def execute
       rows = File.readlines(infile)
 
+      unless headerless
+        header = ""
+        header = rows.shift while header.chomp.strip.empty?
+      end
+
       rows.each_with_index do |line, index|
         filtered = col_type_filter.process(row_filter.process(line, row: index))
         next if filtered.nil?
@@ -45,6 +53,10 @@ module Sycsvpro
       end
 
       File.open(outfile, 'w') do |out|
+        unless headerless
+          out.puts header
+        end
+
         if desc
           sorted_rows.compact.sort.reverse.each do |row|
             out.puts unstring(rows[row.last])

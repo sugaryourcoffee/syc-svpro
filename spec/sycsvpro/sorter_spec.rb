@@ -16,7 +16,8 @@ module Sycsvpro
       cols = "s:0"
       df   = "%d.%m.%Y"
 
-      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df)
+      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df, 
+                          headerless: true)
 
       sorter.execute
 
@@ -38,7 +39,8 @@ module Sycsvpro
       cols = "n:1,s:0"
       df   = "%d.%m.%Y"
 
-      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df)
+      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df, 
+                          headerless: true)
 
       sorter.execute
 
@@ -60,7 +62,8 @@ module Sycsvpro
       cols = "s:3-5,s:0"
       df   = "%d.%m.%Y"
 
-      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df)
+      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: 
+                          df, headerless: true)
 
       sorter.execute
 
@@ -83,7 +86,8 @@ module Sycsvpro
       cols = "d:2,s:0"
       df   = "%d.%m.%Y"
 
-      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df)
+      sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df, 
+                          headerless: true)
 
       sorter.execute
 
@@ -106,7 +110,7 @@ module Sycsvpro
       df   = "%d.%m.%Y"
 
       sorter = Sorter.new(infile: @in_file, outfile: @out_file, rows: rows, cols: cols, df: df,
-                          desc: true)
+                          desc: true, headerless: true)
 
       sorter.execute
 
@@ -129,7 +133,7 @@ module Sycsvpro
       df   = "%d.%m.%Y"
 
       sorter = Sorter.new(infile: @in_2_file, outfile: @out_file, rows: rows, cols: cols, df: df,
-                          desc: false)
+                          desc: false, headerless: true)
 
       sorter.execute
 
@@ -148,7 +152,7 @@ module Sycsvpro
       df   = "%d.%m.%Y"
 
       sorter = Sorter.new(infile: @in_2_file, outfile: @out_file, rows: rows, cols: cols, df: df,
-                          desc: true)
+                          desc: true, headerless: true)
 
       sorter.execute
 
@@ -167,7 +171,7 @@ module Sycsvpro
       df   = "%d.%m.%Y"
 
       sorter = Sorter.new(infile: @in_2_file, outfile: @out_file, rows: rows, cols: cols, df: df,
-                          desc: false)
+                          desc: false, headerless: true)
 
       sorter.execute
 
@@ -186,7 +190,7 @@ module Sycsvpro
       df   = "%d.%m.%Y"
 
       sorter = Sorter.new(infile: @in_3_file, outfile: @out_file, rows: rows, cols: cols, df: df,
-                          desc: false)
+                          desc: false, headerless: true)
 
       sorter.execute
 
