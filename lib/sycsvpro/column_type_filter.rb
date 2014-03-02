@@ -21,10 +21,14 @@ module Sycsvpro
           end
           values[index] = number_value
         elsif types[index] == 'd'
-          if value.empty?
+          if value.strip.empty?
             date = Date.strptime('9999-9-9', '%Y-%m-%d')
           else
-            date = Date.strptime(value, date_format)
+            begin
+              date = Date.strptime(value, date_format)
+            rescue
+              puts "Error #{value}, #{index}"
+            end
           end
           values[index] = date
         end

@@ -10,12 +10,17 @@ module Sycsvpro
     def process(object, options={})
       return nil if object.nil? or object.empty?
       object = object.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+      object += " " if object =~ /;$/
       return object if filter.empty? and pivot.empty?
       filtered = object.split(';').values_at(*filter.flatten.uniq)
       pivot_each_column(object.split(';')) do |column, match|
         filtered << column if match
       end
-      filtered.compact.join(';')
+      if !filtered.last.nil? and filtered.last.empty?
+        filtered.compact.join(';') + " " 
+      else
+        filtered.compact.join(';')
+      end
     end
     
   end

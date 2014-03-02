@@ -28,9 +28,18 @@ module Dsl
   end
 
   # Remove leading and trailing " and spaces as well as reducing more than 2 spaces between words
-  # from csv values like "a";ba   g;c;"d";e to a;b ag;c;d;e
+  # from csv values. Replac ; with , from values as ; is used as value separator
   def unstring(line)
+    line = str2utf8(line)
+    line.scan(/(?<=^"|;")[^"]+(?=;)+[^"]*|;+[^"](?=";|"$)/).each do |value|
+      line = line.gsub(value, value.gsub(';', ','))
+    end
     line.gsub(/(?<=^|;)\s*"?\s*|\s*"?\s*(?=;|$)/, "").gsub(/\s{2,}/, " ") unless line.nil?
+  end
+
+  # Remove non-UTF chars from string
+  def str2utf8(str)
+    str.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
   end
 
   private
