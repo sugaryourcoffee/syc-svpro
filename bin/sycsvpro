@@ -58,8 +58,8 @@ end
 desc 'Extract specified rows and columns from the file'
 command :extract do |c|
   c.desc 'Rows to extract'
-  c.arg_name '1,2,10-30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to extract'
   c.arg_name '1,2,10-30'
@@ -78,11 +78,11 @@ desc 'Collect values of specified rows and columns from the file and group them 
 command :collect do |c|
 
   c.desc 'Rows to consider for collection'
-  c.arg_name 'ROW1,ROW2,ROW10-ROW30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to collect values from'
-  c.arg_name 'CATEGORY1:ROW1,ROW2,ROW10-ROW30+CATEGORY2:ROW3-ROW9'
+  c.arg_name 'CATEGORY1:COL1,COL2,COL10-COL30+CATEGORY2:COL3-COL9'
   c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
   c.action do |global_options,options,args|
@@ -97,8 +97,8 @@ end
 desc 'Allocate specified columns from the file to a key value'
 command :allocate do |c|
   c.desc 'Rows to consider'
-  c.arg_name '1,2,10-30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Key to allocate columns to'
   c.arg_name '0'
@@ -197,8 +197,8 @@ command :count do |c|
   c.flag [:k, :key], :must_match => /^\d+/
 
   c.desc 'Rows to consider'
-  c.arg_name '1,2,10-30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to count where column 2 is counted conditionally'
   c.arg_name '1,2:<14.2.2014,10-30'
@@ -226,8 +226,8 @@ end
 desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'
-  c.arg_name '1,2,10-30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to sort based on a type (n = number, s = string, d = date) and its value'
   c.arg_name 'n:1,s:2-5,d:7'
@@ -282,8 +282,8 @@ desc 'Map values in columns to new values'
 arg_name 'MAPPINGS-FILE'
 command :map do |c|
   c.desc 'Rows to consider'
-  c.arg_name 'ROW1,ROW2,ROW10-ROW30|REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to consider for mapping'
   c.arg_name 'COL1,COL2,COL10-COL30'
@@ -310,8 +310,8 @@ command :calc do |c|
     c.flag [:h, :header], :must_match => /\*(?:,\w+)*/
 
     c.desc 'Columns to consider for calculations'
-    c.arg_name 'ROW1,ROW2-ROW10|REGEXP'
-    c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/
+    c.arg_name 'ROW1,ROW2-ROW10,45-EOF,REGEXP'
+    c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
     c.desc 'Column to do calculations on'
     c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
@@ -349,6 +349,7 @@ pre do |global,command,options,args|
     analyzer = Sycsvpro::Analyzer.new(global[:f])
     result = analyzer.result
     count = result.row_count
+    set_max_row(options, count-1)
   end
 
   # Creates statistics on the command operation
@@ -367,6 +368,7 @@ pre do |global,command,options,args|
       end
     end
 
+    puts options.inspect
     # Prints the statistics
     def to_s
       if count > 0
@@ -416,6 +418,15 @@ on_error do |exception|
   # Error logic here
   # return false to skip default error handling
   true
+end
+
+def set_max_row(options, max_row)
+  options.each do |option, value|
+    case option
+    when "r", :r, "row", :row
+      options[option] = options[option].sub(/EOF/i, max_row.to_s) if options[option] =~ /EOF/i
+    end
+  end
 end
 
 exit run(ARGV)
