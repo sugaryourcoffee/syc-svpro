@@ -9,6 +9,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * map column values to new values
 * allocate column values to a key column (since version 0.0.4)
 * count values in columns and use the value as column name
+* aggregate row values and add the sum to the end of the row
 * arithmetic operations on values of columns
 * sort rows base on columns (since version 0.0.9)
 * insert rows to a csv-file (since version 0.0.8)
@@ -120,6 +121,19 @@ The result in file out.csv is
     hello;2;2
     indix;1;0
     chiro;2;0
+
+Aggregate row values and add the sum to the end of the row. In the example we aggregate the customer names.
+
+    $ sycsvpro -f in.csv -o out.csv aggregate -c 0 -s Total:1,Sum
+
+The aggregation result in out.csv is
+
+    $ cat out.csv
+    customer;Sum
+    Total;5
+    hello;2
+    indix;1
+    chiro;2
 
 Calc
 ----

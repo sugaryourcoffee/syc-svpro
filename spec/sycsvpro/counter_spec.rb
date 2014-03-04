@@ -29,7 +29,7 @@ module Sycsvpro
 
     end
 
-    it "should count date coloms" do
+    it "should count date columns" do
       counter = Counter.new(infile: @in_file, outfile: @out_file, rows: "1-10", 
                             cols: "2:<1.1.2013,2:1.1.2013-31.12.2014,2:>31.12.2014", key: "0",
                             df: "%d.%m.%Y")

@@ -223,6 +223,33 @@ command :count do |c|
 
 end
 
+desc 'Aggregator counts the occurences of row values. Optionally adds a sum row'
+
+command :aggregate do |c|
+
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+
+  c.desc 'Columns to count'
+  c.arg_name '1,2-4'
+  c.flag [:c, :col], :must_match => /^\d+(?:,\d+|-\d+)*/
+
+  c.desc 'Adds a sum row and a sum column with TITLE for the counted columns. The sum row is ' +
+         'specified by the row position. The sum column is the last column in the row'
+  c.arg_name 'SUM_ROW_TITLE:ROW_POSITION,SUM_COL_TITLE'
+  c.flag [:s, :sum], :must_match => /^\w+:\d+(?:,\w+)?|^\w+/
+
+  c.action do |global_options,options,args|
+    print "Aggregating..."
+    aggregator = Sycsvpro::Aggregator.new(infile: global_options[:f], outfile: global_options[:o], 
+                                          rows: options[:r], cols: options[:c], sum: options[:s])
+    aggregator.execute
+    puts "done"
+  end
+
+end
+
 desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'
@@ -338,7 +365,7 @@ pre do |global,command,options,args|
   case command.name
   when :analyze
     help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
-  when :allocate, :calc, :collect, :count, :extract, :map, :sort
+  when :aggregate, :allocate, :calc, :collect, :count, :extract, :map, :sort
     help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global[:o].nil?
   end

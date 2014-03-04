@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 
-<title>class Sycsvpro::Counter - Your application title</title>
+<title>class Sycsvpro::Aggregator - Your application title</title>
 
 <link href="../fonts.css" rel="stylesheet">
 <link href="../rdoc.css" rel="stylesheet">
@@ -88,7 +88,7 @@
     
     <li ><a href="#method-i-execute">#execute</a>
     
-    <li ><a href="#method-i-process_count">#process_count</a>
+    <li ><a href="#method-i-process_aggregation">#process_aggregation</a>
     
     <li ><a href="#method-i-write_result">#write_result</a>
     
@@ -98,15 +98,15 @@
   </div>
 </nav>
 
-<main role="main" aria-labelledby="class-Sycsvpro::Counter">
-  <h1 id="class-Sycsvpro::Counter" class="class">
-    class Sycsvpro::Counter
+<main role="main" aria-labelledby="class-Sycsvpro::Aggregator">
+  <h1 id="class-Sycsvpro::Aggregator" class="class">
+    class Sycsvpro::Aggregator
   </h1>
 
   <section class="description">
     
-<p><a href="Counter.html">Counter</a> counts values and uses the values as
-column names and uses the count as the column value</p>
+<p>An <a href="Aggregator.html">Aggregator</a> counts specified row values and
+adds a sum to the end of the row</p>
 
   </section>
 
@@ -140,6 +140,19 @@ column names and uses the count as the column value</p>
         </div>
       </div>
       
+      <div id="attribute-i-headerless" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">headerless</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>file doesn&#39;t contain a header</p>
+        
+        </div>
+      </div>
+      
       <div id="attribute-i-heading" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">heading</span><span
@@ -166,19 +179,6 @@ column names and uses the count as the column value</p>
         </div>
       </div>
       
-      <div id="attribute-i-key_column" class="method-detail">
-        <div class="method-heading attribute-method-heading">
-          <span class="method-name">key_column</span><span
-            class="attribute-access-type">[R]</span>
-        </div>
-
-        <div class="method-description">
-        
-        <p>values are assigned to the key column</p>
-        
-        </div>
-      </div>
-      
       <div id="attribute-i-key_values" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">key_values</span><span
@@ -187,7 +187,7 @@ column names and uses the count as the column value</p>
 
         <div class="method-description">
         
-        <p>values that are assigned to the key column</p>
+        <p>values that are aggregated</p>
         
         </div>
       </div>
@@ -306,24 +306,24 @@ column names and uses the count as the column value</p>
 
         <div class="method-description">
           
-          <p>Creates a new counter. Takes as attributes infile, outfile, key, rows,
-cols, date-format and indicator whether to add a sum row</p>
+          <p>Creates a new aggregator. Takes as attributes infile, outfile, key, rows,
+cols, date-format  and indicator whether to add a sum row</p>
           
           
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 41</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/aggregator.rb, line 40</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@infile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
   <span class="ruby-ivar">@outfile</span>    = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
-  <span class="ruby-ivar">@key_column</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:key</span>].<span class="ruby-identifier">to_i</span> 
+  <span class="ruby-ivar">@headerless</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:headerless</span>] <span class="ruby-operator">||</span> <span class="ruby-keyword">false</span>
   <span class="ruby-ivar">@row_filter</span> = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
   <span class="ruby-ivar">@col_filter</span> = <span class="ruby-constant">ColumnFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:cols</span>], <span class="ruby-identifier">df</span><span class="ruby-operator">:</span> <span class="ruby-identifier">options</span>[<span class="ruby-value">:df</span>])
-  <span class="ruby-ivar">@key_values</span> = {}
+  <span class="ruby-ivar">@key_values</span> = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>)
   <span class="ruby-ivar">@heading</span>    = []
-  <span class="ruby-identifier">init_sum_scheme</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:sum</span>])
   <span class="ruby-ivar">@sums</span>       = <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>)
+  <span class="ruby-identifier">init_sum_scheme</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:sum</span>])
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -356,15 +356,15 @@ cols, date-format and indicator whether to add a sum row</p>
 
         <div class="method-description">
           
-          <p>Executes the counter</p>
+          <p>Executes the aggregator</p>
           
           
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 54</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/aggregator.rb, line 53</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
-  <span class="ruby-identifier">process_count</span>
+  <span class="ruby-identifier">process_aggregation</span>
   <span class="ruby-identifier">write_result</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -377,10 +377,10 @@ cols, date-format and indicator whether to add a sum row</p>
       </div>
 
     
-      <div id="method-i-process_count" class="method-detail ">
+      <div id="method-i-process_aggregation" class="method-detail ">
         
         <div class="method-heading">
-          <span class="method-name">process_count</span><span
+          <span class="method-name">process_aggregation</span><span
             class="method-args">()</span>
           
           <span class="method-click-advice">click to toggle source</span>
@@ -390,26 +390,29 @@ cols, date-format and indicator whether to add a sum row</p>
 
         <div class="method-description">
           
-          <p>Processes the counting on the in file</p>
+          <p>Process the aggregation of the key values</p>
           
           
 
           
-          <div class="method-source-code" id="process_count-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 60</span>
-<span class="ruby-keyword">def</span> <span class="ruby-identifier">process_count</span>
+          <div class="method-source-code" id="process_aggregation-source">
+            <pre><span class="ruby-comment"># File lib/sycsvpro/aggregator.rb, line 59</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">process_aggregation</span>
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">infile</span>).<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">line</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">result</span> = <span class="ruby-identifier">col_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">row_filter</span>.<span class="ruby-identifier">process</span>(<span class="ruby-identifier">line</span>.<span class="ruby-identifier">chomp</span>, <span class="ruby-identifier">row</span><span class="ruby-operator">:</span> <span class="ruby-identifier">index</span>))
     <span class="ruby-keyword">unless</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">nil?</span> <span class="ruby-keyword">or</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">empty?</span>
-      <span class="ruby-identifier">key</span> = <span class="ruby-identifier">unstring</span>(<span class="ruby-identifier">line</span>).<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)[<span class="ruby-identifier">key_column</span>]
-      <span class="ruby-identifier">key_value</span> = <span class="ruby-identifier">key_values</span>[<span class="ruby-identifier">key</span>] <span class="ruby-operator">||</span> <span class="ruby-identifier">key_values</span>[<span class="ruby-identifier">key</span>] = { <span class="ruby-identifier">name</span><span class="ruby-operator">:</span> <span class="ruby-identifier">key</span>, <span class="ruby-identifier">elements</span><span class="ruby-operator">:</span> <span class="ruby-constant">Hash</span>.<span class="ruby-identifier">new</span>(<span class="ruby-value">0</span>) }
-      <span class="ruby-identifier">result</span>.<span class="ruby-identifier">chomp</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>).<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">heading</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">column</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">index</span>(<span class="ruby-identifier">column</span>).<span class="ruby-identifier">nil?</span>
-        <span class="ruby-identifier">key_value</span>[<span class="ruby-value">:elements</span>][<span class="ruby-identifier">column</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-        <span class="ruby-identifier">sums</span>[<span class="ruby-identifier">column</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+      <span class="ruby-keyword">if</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">and</span> <span class="ruby-keyword">not</span> <span class="ruby-identifier">headerless</span>
+        <span class="ruby-identifier">heading</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">result</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>)
+        <span class="ruby-keyword">next</span>
+      <span class="ruby-keyword">else</span>
+        <span class="ruby-ivar">@sum_col</span> = [<span class="ruby-identifier">result</span>.<span class="ruby-identifier">split</span>(<span class="ruby-string">&#39;;&#39;</span>).<span class="ruby-identifier">size</span>, <span class="ruby-identifier">sum_col</span>].<span class="ruby-identifier">max</span> 
       <span class="ruby-keyword">end</span>
+      <span class="ruby-identifier">key_values</span>[<span class="ruby-identifier">result</span>]  <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
+      <span class="ruby-identifier">sums</span>[<span class="ruby-identifier">sum_col_title</span>] <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
+  <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">flatten!</span>
+  <span class="ruby-identifier">heading</span>[<span class="ruby-identifier">sum_col</span>] = <span class="ruby-identifier">sum_col_title</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           
@@ -434,29 +437,24 @@ cols, date-format and indicator whether to add a sum row</p>
 
         <div class="method-description">
           
-          <p>Writes the horizontal count results</p>
+          <p>Writes the vertical count results</p>
           
           
 
           
           <div class="method-source-code" id="write_result-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/counter.rb, line 76</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/aggregator.rb, line 78</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">write_result</span>
   <span class="ruby-identifier">sum_line</span> = [<span class="ruby-identifier">sum_row_title</span>]
-  <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">h</span><span class="ruby-operator">|</span>
-    <span class="ruby-identifier">sum_line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">sums</span>[<span class="ruby-identifier">h</span>]
-  <span class="ruby-keyword">end</span>
+  (<span class="ruby-identifier">heading</span>.<span class="ruby-identifier">size</span> <span class="ruby-operator">-</span> <span class="ruby-value">2</span>).<span class="ruby-identifier">times</span> { <span class="ruby-identifier">sum_line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-string">&quot;&quot;</span> }
+  <span class="ruby-identifier">sum_line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">sums</span>[<span class="ruby-identifier">sum_col_title</span>]
   <span class="ruby-identifier">row</span> = <span class="ruby-value">0</span>;
   <span class="ruby-constant">File</span>.<span class="ruby-identifier">open</span>(<span class="ruby-identifier">outfile</span>, <span class="ruby-string">&#39;w&#39;</span>) <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">out</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">sum_line</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">row</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">sum_row</span> ; <span class="ruby-identifier">row</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-    <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> ([<span class="ruby-string">&quot;key&quot;</span>] <span class="ruby-operator">+</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>).<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
-    <span class="ruby-identifier">key_values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>,<span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
+    <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
+    <span class="ruby-identifier">key_values</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span><span class="ruby-operator">|</span>
       <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">sum_line</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">row</span> <span class="ruby-operator">==</span> <span class="ruby-identifier">sum_row</span> ; <span class="ruby-identifier">row</span> <span class="ruby-operator">+=</span> <span class="ruby-value">1</span>
-      <span class="ruby-identifier">line</span> = [<span class="ruby-identifier">k</span>]
-      <span class="ruby-identifier">heading</span>.<span class="ruby-identifier">sort</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">h</span><span class="ruby-operator">|</span>
-        <span class="ruby-identifier">line</span> <span class="ruby-operator">&lt;&lt;</span> <span class="ruby-identifier">v</span>[<span class="ruby-value">:elements</span>][<span class="ruby-identifier">h</span>]
-      <span class="ruby-keyword">end</span>
-      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-identifier">line</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
+      <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> [<span class="ruby-identifier">k</span>, <span class="ruby-identifier">v</span>].<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
     <span class="ruby-keyword">end</span>
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>

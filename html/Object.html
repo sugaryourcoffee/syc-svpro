@@ -78,7 +78,17 @@
 </div>
 
     
+    <!-- Method Quickref -->
+<div id="method-list-section" class="nav-section">
+  <h3>Methods</h3>
+
+  <ul class="link-list" role="directory">
     
+    <li ><a href="#method-i-set_max_row">#set_max_row</a>
+    
+  </ul>
+</div>
+
   </div>
 </nav>
 
@@ -118,6 +128,52 @@
     
 
     
+     <section id="public-instance-5Buntitled-5D-method-details" class="method-section">
+       <header>
+         <h3>Public Instance Methods</h3>
+       </header>
+
+    
+      <div id="method-i-set_max_row" class="method-detail ">
+        
+        <div class="method-heading">
+          <span class="method-name">set_max_row</span><span
+            class="method-args">(options, max_row)</span>
+          
+          <span class="method-click-advice">click to toggle source</span>
+          
+        </div>
+        
+
+        <div class="method-description">
+          
+          
+          
+          
+
+          
+          <div class="method-source-code" id="set_max_row-source">
+            <pre><span class="ruby-comment"># File bin/sycsvpro, line 450</span>
+<span class="ruby-keyword">def</span> <span class="ruby-identifier">set_max_row</span>(<span class="ruby-identifier">options</span>, <span class="ruby-identifier">max_row</span>)
+  <span class="ruby-identifier">options</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">option</span>, <span class="ruby-identifier">value</span><span class="ruby-operator">|</span>
+    <span class="ruby-keyword">case</span> <span class="ruby-identifier">option</span>
+    <span class="ruby-keyword">when</span> <span class="ruby-string">&quot;r&quot;</span>, <span class="ruby-value">:r</span>, <span class="ruby-string">&quot;row&quot;</span>, <span class="ruby-value">:row</span>
+      <span class="ruby-identifier">options</span>[<span class="ruby-identifier">option</span>] = <span class="ruby-identifier">options</span>[<span class="ruby-identifier">option</span>].<span class="ruby-identifier">sub</span>(<span class="ruby-regexp">/EOF/i</span>, <span class="ruby-identifier">max_row</span>.<span class="ruby-identifier">to_s</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">options</span>[<span class="ruby-identifier">option</span>] <span class="ruby-operator">=~</span> <span class="ruby-regexp">/EOF/i</span>
+    <span class="ruby-keyword">end</span>
+  <span class="ruby-keyword">end</span>
+<span class="ruby-keyword">end</span></pre>
+          </div>
+          
+        </div>
+
+        
+
+        
+      </div>
+
+    
+    </section>
+  
   </section>
 </main>
 

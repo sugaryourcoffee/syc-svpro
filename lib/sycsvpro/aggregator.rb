@@ -5,9 +5,8 @@ require_relative 'dsl'
 # Operating csv files
 module Sycsvpro
 
-  # Counter counts values and uses the values as column names and uses the count
-  # as the column value
-  class Counter
+  # An Aggregator counts specified row values and adds a sum to the end of the row
+  class Aggregator
 
     include Dsl
 
@@ -15,13 +14,13 @@ module Sycsvpro
     attr_reader :infile
     # outfile is the file where the result is written to
     attr_reader :outfile
-    # values are assigned to the key column
-    attr_reader :key_column
+    # file doesn't contain a header
+    attr_reader :headerless
     # filter that is used for rows
     attr_reader :row_filter
     # filter that is used for columns
     attr_reader :col_filter
-    # values that are assigned to the key column 
+    # values that are aggregated
     attr_reader :key_values
     # header of the out file
     attr_reader :heading
@@ -36,80 +35,76 @@ module Sycsvpro
     # sums of the column values
     attr_reader :sums
     
-    # Creates a new counter. Takes as attributes infile, outfile, key, rows, cols, date-format and
-    # indicator whether to add a sum row
+    # Creates a new aggregator. Takes as attributes infile, outfile, key, rows, cols, date-format 
+    # and indicator whether to add a sum row
     def initialize(options={})
       @infile     = options[:infile]
       @outfile    = options[:outfile]
-      @key_column = options[:key].to_i 
+      @headerless = options[:headerless] || false
       @row_filter = RowFilter.new(options[:rows])
       @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
-      @key_values = {}
+      @key_values = Hash.new(0)
       @heading    = []
-      init_sum_scheme(options[:sum])
       @sums       = Hash.new(0)
+      init_sum_scheme(options[:sum])
     end
 
-    # Executes the counter
+    # Executes the aggregator
     def execute
-      process_count
+      process_aggregation
       write_result
     end
 
-    # Processes the counting on the in file
-    def process_count
+    # Process the aggregation of the key values
+    def process_aggregation
       File.new(infile).each_with_index do |line, index|
         result = col_filter.process(row_filter.process(line.chomp, row: index))
         unless result.nil? or result.empty?
-          key = unstring(line).split(';')[key_column]
-          key_value = key_values[key] || key_values[key] = { name: key, elements: Hash.new(0) }
-          result.chomp.split(';').each do |column|
-            heading << column if heading.index(column).nil?
-            key_value[:elements][column] += 1
-            sums[column] += 1
+          if heading.empty? and not headerless
+            heading << result.split(';')
+            next
+          else
+            @sum_col = [result.split(';').size, sum_col].max 
           end
+          key_values[result]  += 1
+          sums[sum_col_title] += 1
         end
       end
+      heading.flatten!
+      heading[sum_col] = sum_col_title
     end
 
-   # Writes the horizontal count results
+    # Writes the aggration results
     def write_result
       sum_line = [sum_row_title]
-      heading.sort.each do |h|
-        sum_line << sums[h]
-      end
+      (heading.size - 2).times { sum_line << "" }
+      sum_line << sums[sum_col_title]
       row = 0;
       File.open(outfile, 'w') do |out|
         out.puts sum_line.join(';') if row == sum_row ; row += 1
-        out.puts (["key"] + heading.sort).join(';')
-        key_values.each do |k,v|
+        out.puts heading.join(';')
+        key_values.each do |k, v|
           out.puts sum_line.join(';') if row == sum_row ; row += 1
-          line = [k]
-          heading.sort.each do |h|
-            line << v[:elements][h]
-          end
-          out.puts line.join(';')
+          out.puts [k, v].join(';')
         end
       end
     end
 
     private
 
-      # Initializes the sum row title an positions as well as the cum column title and position
+      # Initializes the sum row title an positions as well as the sum column title and position
       def init_sum_scheme(sum_scheme)
-        return if sum_scheme.nil?
-
-        row_scheme, col_scheme = sum_scheme.split(',')
+        row_scheme, col_scheme = sum_scheme.split(',') unless sum_scheme.nil?
 
         unless row_scheme.nil?
           @sum_row_title, @sum_row = row_scheme.split(':') unless row_scheme.empty?
-          @sum_row                 = @sum_row.to_i unless @sum_row.nil?
         end
+        
+        @sum_row.nil? ? @sum_row = 0 : @sum_row = @sum_row.to_i
+        @sum_row_title = 'Total' if @sum_row_title.nil? 
 
-        unless col_scheme.nil?
-          @sum_col_title, @sum_col = col_scheme.split(':') unless col_scheme.empty?
-          @sum_col                 = @sum_col.to_i unless @sum_col.nil?
-        end
+        col_scheme.nil? ? @sum_col_title = 'Total' : @sum_col_title = col_scheme
+        @sum_col = 0
       end
 
   end

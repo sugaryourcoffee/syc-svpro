@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sycsvpro (0.0.9)
+    sycsvpro (0.1.0)
       gli (= 2.9.0)
 
 GEM
