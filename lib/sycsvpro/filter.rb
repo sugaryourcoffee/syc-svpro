@@ -55,9 +55,9 @@ module Sycsvpro
         value = value.strip.gsub(/^"|"$/, "") unless value.nil?
         match = false
         begin
-          puts parameters[:operation].gsub('[value]', value)
           match = eval(parameters[:operation].gsub('[value]', value))
-        rescue
+        rescue Exception => e
+
         end
         yield column, match
       end
