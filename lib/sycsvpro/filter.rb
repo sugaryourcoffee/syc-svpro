@@ -30,14 +30,16 @@ module Sycsvpro
 
     # Creates the filters based on the given patterns
     def method_missing(id, *args, &block)
-      return equal($1, args, block)              if id =~ /^(\d+)$/
-      return equal_type($1, $2, args, block)     if id =~ /^(s|n|d):(\d+)$/
-      return range($1, $2, args, block)          if id =~ /^(\d+)-(\d+)$/
-      return range_type($1, $2, $3, args, block) if id =~ /^(s|n|d):(\d+)-(\d+)$/
-      return regex($1, args, block)              if id =~ /^\/(.*)\/$/
-      return col_regex($1, $2, args, block)      if id =~ /^(\d+):\/(.*)\/$/
-      return date($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
-      return date_range($1, $2, $3, args, block) if id =~ /^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/
+      return equal($1, args, block)                if id =~ /^(\d+)$/
+      return equal_type($1, $2, args, block)       if id =~ /^(s|n|d):(\d+)$/
+      return range($1, $2, args, block)            if id =~ /^(\d+)-(\d+)$/
+      return range_type($1, $2, $3, args, block)   if id =~ /^(s|n|d):(\d+)-(\d+)$/
+      return regex($1, args, block)                if id =~ /^\/(.*)\/$/
+      return col_regex($1, $2, args, block)        if id =~ /^(\d+):\/(.*)\/$/
+      return date($1, $2, $3, args, block)         if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
+      return date_range($1, $2, $3, args, block)   if id =~ /^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/
+      return number($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+)/
+      return number_range($1, $2, $3, args, block) if id =~ /^(\d):(\d+)-(\d+)/
       super
     end
 
@@ -53,6 +55,7 @@ module Sycsvpro
         value = value.strip.gsub(/^"|"$/, "") unless value.nil?
         match = false
         begin
+          puts parameters[:operation].gsub('[value]', value)
           match = eval(parameters[:operation].gsub('[value]', value))
         rescue
         end
@@ -122,6 +125,19 @@ module Sycsvpro
                     "   Date.strptime(\"[value]\",        \"#{date_format}\") "    +
                     "<= Date.strptime(\"#{end_date}\",    \"#{date_format}\")"
         pivot["#{start_date}-#{end_date}"] = { col: col, operation: operation }
+      end
+
+      # Adds a number filter
+      def number(col, comparator, number, args, block)
+        comparator = '==' if comparator == '='
+        operation = "[value] #{comparator} #{number}"
+        pivot["#{comparator}#{number}"] = { col: col, operation: operation }
+      end
+
+      # Adds a number range filter
+      def number_range(col, start_number, end_number, arg, block)
+        operation = " #{start_number} <= [value] && [value] <= #{end_number}"
+        pivot["#{start_number}-#{end_number}"] = { col: col, operation: operation }
       end
 
   end
