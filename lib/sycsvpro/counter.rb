@@ -31,8 +31,6 @@ module Sycsvpro
     attr_reader :sum_row
     # Title of the sum column
     attr_reader :sum_col_title
-    # column where to add the sum of the row sum
-    attr_reader :sum_col
     # sums of the column values
     attr_reader :sums
     
@@ -62,13 +60,20 @@ module Sycsvpro
         result = col_filter.process(row_filter.process(line.chomp, row: index))
         unless result.nil? or result.empty?
           key = unstring(line).split(';')[key_column]
-          key_value = key_values[key] || key_values[key] = { name: key, elements: Hash.new(0) }
+          key_value = key_values[key] || key_values[key] = { name: key, 
+                                                             elements: Hash.new(0), 
+                                                             sum: 0 }
           result.chomp.split(';').each do |column|
             heading << column if heading.index(column).nil?
             key_value[:elements][column] += 1
+            key_value[:sum] += 1
             sums[column] += 1
           end
         end
+      end
+      unless sum_col_title.nil?
+        heading << sum_col_title
+        sums[sum_col_title] = sums.values.inject(:+)
       end
     end
 
@@ -86,8 +91,9 @@ module Sycsvpro
           out.puts sum_line.join(';') if row == sum_row ; row += 1
           line = [k]
           heading.sort.each do |h|
-            line << v[:elements][h]
+            line << v[:elements][h] unless h == sum_col_title
           end
+          line << v[:sum] unless sum_col_title.nil?
           out.puts line.join(';')
         end
       end
@@ -95,21 +101,22 @@ module Sycsvpro
 
     private
 
-      # Initializes the sum row title an positions as well as the cum column title and position
+      # Initializes the sum row title an positions as well as the cum column title
       def init_sum_scheme(sum_scheme)
+
         return if sum_scheme.nil?
 
-        row_scheme, col_scheme = sum_scheme.split(',')
+        re = /(\w+):(\d+)|(\w+)/
 
-        unless row_scheme.nil?
-          @sum_row_title, @sum_row = row_scheme.split(':') unless row_scheme.empty?
-          @sum_row                 = @sum_row.to_i unless @sum_row.nil?
+        sum_scheme.scan(re).each do |part|
+          if part.compact.size == 2
+            @sum_row_title = part[0]
+            @sum_row       = part[1].to_i
+          else
+            @sum_col_title = part[2]
+          end
         end
 
-        unless col_scheme.nil?
-          @sum_col_title, @sum_col = col_scheme.split(':') unless col_scheme.empty?
-          @sum_col                 = @sum_col.to_i unless @sum_col.nil?
-        end
       end
 
   end

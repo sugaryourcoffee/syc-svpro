@@ -205,8 +205,8 @@ command :count do |c|
   c.flag [:c, :col], :must_match => /^\d+(?:,\d+|(?::[<=>]\d+.\d+.\d+|:\d+.\d+.\d+-\d+.\d+.\d+|:\/.*?\/|-\d+)*)*/
 
   c.desc 'Adds a sum row with TITLE for the counted columns at the specified row position'
-  c.arg_name 'TITLE:ROW'
-  c.flag [:s, :sum], :must_match => /^\w+:\d+/
+  c.arg_name 'SUM_ROW_TITLE:ROW,SUM_COL_TITLE'
+  c.flag [:s, :sum], :must_match => /^\w+:\d+(?:,\w+)?|^\w+/
 
   c.desc 'Format of date values'
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
@@ -223,7 +223,7 @@ command :count do |c|
 
 end
 
-desc 'Aggregator counts the occurences of row values. Optionally adds a sum row'
+desc 'Aggregates the occurences of row values. Optionally adds a sum row'
 
 command :aggregate do |c|
 
@@ -237,7 +237,7 @@ command :aggregate do |c|
 
   c.desc 'Adds a sum row and a sum column with TITLE for the counted columns. The sum row is ' +
          'specified by the row position. The sum column is the last column in the row'
-  c.arg_name 'SUM_ROW_TITLE:ROW_POSITION,SUM_COL_TITLE'
+  c.arg_name 'SUM_ROW_TITLE:ROW,SUM_COL_TITLE'
   c.flag [:s, :sum], :must_match => /^\w+:\d+(?:,\w+)?|^\w+/
 
   c.action do |global_options,options,args|
