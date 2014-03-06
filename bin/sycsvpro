@@ -192,8 +192,8 @@ desc 'Counts the occurences of column values. Uses column values as headings wit
 
 command :count do |c|
 
-  c.desc 'Key column that is assigned the count of column values to'
-  c.arg_name 'KEY_COLUMN'
+  c.desc 'Key columns that are assigned the count of column values'
+  c.arg_name 'COLUMN:TITLE,COLUMN:TITLE'
   c.flag [:k, :key], :must_match => /^\d+:\w+(?:,\d+:\w+)*/
 
   c.desc 'Rows to consider'
@@ -327,7 +327,7 @@ command :map do |c|
   end
 end
 
-desc 'Process math operations on columns'
+desc 'Process math operations on columns. Optionally add a sum row'
 command :calc do |c|
     c.desc 'The first non-empty column is considered the header. '+
            'If additional columns are created then *,COL1,COL2 will create the additional header '+
@@ -344,12 +344,16 @@ command :calc do |c|
     c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
     c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
 
+    c.desc 'Indicate to add a sum row'
+    c.switch [:s, :sum]
+
   c.action do |global_options,options,args|
     help_now! "You need to provide the column flag" if options[:c].nil?
 
     print "Calculating..."
     calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
-                                          header: options[:h], rows: options[:r], cols: options[:c])
+                                          header: options[:h], rows: options[:r], cols: options[:c],
+                                          sum: options[:s])
     calculator.execute 
     puts "done"
   end
@@ -446,6 +450,7 @@ on_error do |exception|
   true
 end
 
+# the -r flag can take a EOF value which is replaced by the actual row value of the input file
 def set_max_row(options, max_row)
   options.each do |option, value|
     case option

@@ -24,16 +24,20 @@ module Sycsvpro
     attr_reader :header
     # filter that is used for columns
     attr_reader :columns
+    # if true add a sum row at the bottom of the out file
+    attr_reader :add_sum_row
 
     # Creates a new Calculator. Options expects :infile, :outfile, :rows and :columns. Optionally
     # a header can be provided. The header can be supplemented with additional column names that
     # are generated due to a arithmetic operation that creates new columns
     def initialize(options={})
-      @infile     = options[:infile]
-      @outfile    = options[:outfile]
-      @row_filter = RowFilter.new(options[:rows])
-      @header     = Header.new(options[:header])
-      @formulae   = {}
+      @infile      = options[:infile]
+      @outfile     = options[:outfile]
+      @row_filter  = RowFilter.new(options[:rows])
+      @header      = Header.new(options[:header])
+      @sum_row     = []
+      @add_sum_row = options[:sum] || false
+      @formulae    = {}
       create_calculator(options[:cols])
     end
 
@@ -64,7 +68,19 @@ module Sycsvpro
             @columns[col.to_i] = eval(formula)
           end
           out.puts @columns.join(';')
+
+          @columns.each_with_index do |column, index|
+            if @sum_row[index]
+              @sum_row[index] += to_number column
+            else
+              @sum_row[index] =  to_number column
+            end
+          end if add_sum_row
+
         end
+
+        out.puts @sum_row.join(';') if add_sum_row
+
       end
     end
 

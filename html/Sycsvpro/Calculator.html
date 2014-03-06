@@ -127,6 +127,19 @@ the value of column 1 with 2.</p>
       </header>
 
       
+      <div id="attribute-i-add_sum_row" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">add_sum_row</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>if true add a sum row at the bottom of the out file</p>
+        
+        </div>
+      </div>
+      
       <div id="attribute-i-columns" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">columns</span><span
@@ -237,13 +250,15 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 31</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 33</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
-  <span class="ruby-ivar">@infile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
-  <span class="ruby-ivar">@outfile</span>    = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
-  <span class="ruby-ivar">@row_filter</span> = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
-  <span class="ruby-ivar">@header</span>     = <span class="ruby-constant">Header</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:header</span>])
-  <span class="ruby-ivar">@formulae</span>   = {}
+  <span class="ruby-ivar">@infile</span>      = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
+  <span class="ruby-ivar">@outfile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
+  <span class="ruby-ivar">@row_filter</span>  = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
+  <span class="ruby-ivar">@header</span>      = <span class="ruby-constant">Header</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:header</span>])
+  <span class="ruby-ivar">@sum_row</span>     = []
+  <span class="ruby-ivar">@add_sum_row</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:sum</span>] <span class="ruby-operator">||</span> <span class="ruby-keyword">false</span>
+  <span class="ruby-ivar">@formulae</span>    = {}
   <span class="ruby-identifier">create_calculator</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:cols</span>])
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -283,7 +298,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 46</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 50</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
   <span class="ruby-identifier">processed_header</span> = <span class="ruby-keyword">false</span>
 
@@ -305,7 +320,19 @@ generated due to a arithmetic operation that creates new columns</p>
         <span class="ruby-ivar">@columns</span>[<span class="ruby-identifier">col</span>.<span class="ruby-identifier">to_i</span>] = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">formula</span>)
       <span class="ruby-keyword">end</span>
       <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-ivar">@columns</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>)
+
+      <span class="ruby-ivar">@columns</span>.<span class="ruby-identifier">each_with_index</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span>, <span class="ruby-identifier">index</span><span class="ruby-operator">|</span>
+        <span class="ruby-keyword">if</span> <span class="ruby-ivar">@sum_row</span>[<span class="ruby-identifier">index</span>]
+          <span class="ruby-ivar">@sum_row</span>[<span class="ruby-identifier">index</span>] <span class="ruby-operator">+=</span> <span class="ruby-identifier">to_number</span> <span class="ruby-identifier">column</span>
+        <span class="ruby-keyword">else</span>
+          <span class="ruby-ivar">@sum_row</span>[<span class="ruby-identifier">index</span>] =  <span class="ruby-identifier">to_number</span> <span class="ruby-identifier">column</span>
+        <span class="ruby-keyword">end</span>
+      <span class="ruby-keyword">end</span> <span class="ruby-keyword">if</span> <span class="ruby-identifier">add_sum_row</span>
+
     <span class="ruby-keyword">end</span>
+
+    <span class="ruby-identifier">out</span>.<span class="ruby-identifier">puts</span> <span class="ruby-ivar">@sum_row</span>.<span class="ruby-identifier">join</span>(<span class="ruby-string">&#39;;&#39;</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">add_sum_row</span>
+
   <span class="ruby-keyword">end</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -337,7 +364,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="method_missing-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 41</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 45</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">id</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
   <span class="ruby-identifier">to_number</span>(<span class="ruby-identifier">columns</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/c(\d+)/</span>
 <span class="ruby-keyword">end</span></pre>

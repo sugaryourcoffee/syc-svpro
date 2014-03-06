@@ -259,7 +259,7 @@ otherwise false</p>
 
           
           <div class="method-source-code" id="has_filter-3F-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 64</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 67</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">has_filter?</span>
   <span class="ruby-keyword">return</span> <span class="ruby-operator">!</span>(<span class="ruby-identifier">filter</span>.<span class="ruby-identifier">empty?</span> <span class="ruby-keyword">and</span> <span class="ruby-identifier">pattern</span>.<span class="ruby-identifier">empty?</span>)
 <span class="ruby-keyword">end</span></pre>
@@ -299,14 +299,16 @@ otherwise false</p>
           <div class="method-source-code" id="method_missing-source">
             <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 32</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">id</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">equal</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)              <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+)$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">equal_type</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)     <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(s|n|d):(\d+)$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">range</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)          <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+)-(\d+)$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">range_type</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(s|n|d):(\d+)-(\d+)$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">regex</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)              <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^\/(.*)\/$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">col_regex</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)      <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):\/(.*)\/$/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">date</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)       <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):(&lt;|=|&gt;)(\d+.\d+.\d+)/</span>
-  <span class="ruby-keyword">return</span> <span class="ruby-identifier">date_range</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">equal</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)                <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">equal_type</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)       <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(s|n|d):(\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">range</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)            <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+)-(\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">range_type</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)   <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(s|n|d):(\d+)-(\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">regex</span>(<span class="ruby-node">$1</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)                <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^\/(.*)\/$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">col_regex</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)        <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):\/(.*)\/$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">date</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)         <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):(&lt;|=|&gt;)(\d+.\d+.\d+)/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">date_range</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)   <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">number</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>)       <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d+):(&lt;|=|&gt;)(\d+)/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">number_range</span>(<span class="ruby-node">$1</span>, <span class="ruby-node">$2</span>, <span class="ruby-node">$3</span>, <span class="ruby-identifier">args</span>, <span class="ruby-identifier">block</span>) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/^(\d):(\d+)-(\d+)/</span>
   <span class="ruby-keyword">super</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
@@ -338,7 +340,7 @@ otherwise false</p>
 
           
           <div class="method-source-code" id="pivot_each_column-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 52</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">pivot_each_column</span>(<span class="ruby-identifier">values</span>=[])
   <span class="ruby-identifier">pivot</span>.<span class="ruby-identifier">each</span> <span class="ruby-keyword">do</span> <span class="ruby-operator">|</span><span class="ruby-identifier">column</span>, <span class="ruby-identifier">parameters</span><span class="ruby-operator">|</span>
     <span class="ruby-identifier">value</span> = <span class="ruby-identifier">values</span>[<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:col</span>].<span class="ruby-identifier">to_i</span>]
@@ -346,7 +348,8 @@ otherwise false</p>
     <span class="ruby-identifier">match</span> = <span class="ruby-keyword">false</span>
     <span class="ruby-keyword">begin</span>
       <span class="ruby-identifier">match</span> = <span class="ruby-identifier">eval</span>(<span class="ruby-identifier">parameters</span>[<span class="ruby-value">:operation</span>].<span class="ruby-identifier">gsub</span>(<span class="ruby-string">&#39;[value]&#39;</span>, <span class="ruby-identifier">value</span>))
-    <span class="ruby-keyword">rescue</span>
+    <span class="ruby-keyword">rescue</span> <span class="ruby-constant">Exception</span> =<span class="ruby-operator">&gt;</span> <span class="ruby-identifier">e</span>
+
     <span class="ruby-keyword">end</span>
     <span class="ruby-keyword">yield</span> <span class="ruby-identifier">column</span>, <span class="ruby-identifier">match</span>
   <span class="ruby-keyword">end</span>
@@ -380,7 +383,7 @@ otherwise false</p>
 
           
           <div class="method-source-code" id="process-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 45</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/filter.rb, line 47</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">process</span>(<span class="ruby-identifier">object</span>, <span class="ruby-identifier">options</span>={})
   <span class="ruby-identifier">raise</span> <span class="ruby-string">&#39;Needs to be overridden by sub class&#39;</span>
 <span class="ruby-keyword">end</span></pre>

@@ -40,6 +40,28 @@ module Sycsvpro
         expect(line.chomp).to eq result[index]
       end
     end
+
+    it "should sum specified rows" do
+      header = "*,drives,motors"
+      rows = "1-8"
+      cols = "5:c3+c4,6:c3*2"
+      sums = "1,3-5"
+      calculator = Calculator.new(infile: @in_file, outfile: @out_file, 
+                                  header: header, rows: rows, cols: cols, sum: true)
+      calculator.execute
+
+      result = ["customer;machines;controls;contracts;visits;drives;motors",
+                "Fink;2;2;1;1;2;2",
+                "Haas;3;3;1;1.0;2.0;2",
+                "Gent;4;4;1;1;2;2",
+                "Rank;5;5;1;1;2;2",
+                "0;14;14;4;4.0;8;8"]
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+      end
+    end
+
   end
 
 end

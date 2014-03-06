@@ -11,7 +11,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * count values in columns and use the value as column name
 * aggregate row values and add the sum to the end of the row
 * arithmetic operations on values of columns
-* sort rows base on columns (since version 0.0.9)
+* sort rows based on columns (since version 0.0.9)
 * insert rows to a csv-file (since version 0.0.8)
 * create or edit a Ruby script
 * list scripts available optionally with methods (since version 0.0.7)
@@ -111,7 +111,7 @@ Count
 -----
 Count all customers (key column) in rows 2 to 20 that have machines that start with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with title Total at column 1
 
-    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0 -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
+    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0:customer -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
 
 The result in file out.csv is
 
@@ -122,6 +122,10 @@ The result in file out.csv is
     indix;1;0
     chiro;2;0
 
+It is possible to use multiple key columns `-k 0:customer,1:machines`
+
+Aggregate
+---------
 Aggregate row values and add the sum to the end of the row. In the example we aggregate the customer names.
 
     $ sycsvpro -f in.csv -o out.csv aggregate -c 0 -s Total:1,Sum
@@ -137,17 +141,20 @@ The aggregation result in out.csv is
 
 Calc
 ----
-Process arithmetic operations on the contract count and create a target column
+Process arithmetic operations on the contract count and create a target column and a sum which is added at the end of the result file
 
     $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target -c 6:*2,7:target=c6*10
 
     $ cat out.csv
     customer;machine;control;drive;motor;date;contract;target
-    hello;h1;con123;dri120;mot100;1.01.3013;1
-    hello;h2;con123;dri130;mot110;1.02.3012;1
-    indix;i1;con456;dri130;mot090;5.11.3013;1
-    chiro;c1;con333;dri110;mot100;1.10.3011;1
-    chiro;c2;con331;dri100;mot130;3.05.3010;1
+    hello;h1;con123;dri120;mot100;1.01.3013;2;20
+    hello;h2;con123;dri130;mot110;1.02.3012;2;20
+    indix;i1;con456;dri130;mot090;5.11.3013;2;20
+    chiro;c1;con333;dri110;mot100;1.10.3011;2;20
+    chiro;c2;con331;dri100;mot130;3.05.3010;2;20
+    0;0;0;0;0;0;10;100
+
+In the sum row non-numbers in the colums are converted to 0. Therefore column 0 is summed up to 0 as all strings are converted to 0.
 
 Sort
 ----

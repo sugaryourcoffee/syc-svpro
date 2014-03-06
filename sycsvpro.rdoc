@@ -17,10 +17,10 @@ GLOBAL OPTIONS
     --version          - Display the program version
 
 COMMANDS
-    aggregate - Aggregate counts the occurences of row values. Optionally adds a sum row
+    aggregate - Aggregates the occurences of row values. Optionally adds a sum row
     allocate  - Allocate specified columns from the file to a key value
     analyze   - Analyze the CSV file regarding columns, rows and content
-    calc      - Process math operations on columns
+    calc      - Process math operations on columns. Optionally adds a sum row
     collect   - Collect values of specified rows and columns from the file and group them in
                 categories
     count     - Counts the occurences of column values. Uses column values as headings with count as
