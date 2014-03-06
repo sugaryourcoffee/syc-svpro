@@ -194,7 +194,7 @@ command :count do |c|
 
   c.desc 'Key column that is assigned the count of column values to'
   c.arg_name 'KEY_COLUMN'
-  c.flag [:k, :key], :must_match => /^\d+/
+  c.flag [:k, :key], :must_match => /^\d+:\w+(?:,\d+:\w+)*/
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
@@ -376,7 +376,7 @@ pre do |global,command,options,args|
     analyzer = Sycsvpro::Analyzer.new(global[:f])
     result = analyzer.result
     count = result.row_count
-    set_max_row(options, count-1)
+    set_max_row(options, count)
   end
 
   # Creates statistics on the command operation

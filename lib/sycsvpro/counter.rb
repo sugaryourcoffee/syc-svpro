@@ -15,8 +15,10 @@ module Sycsvpro
     attr_reader :infile
     # outfile is the file where the result is written to
     attr_reader :outfile
-    # values are assigned to the key column
-    attr_reader :key_column
+    # values are assigned to the key columns
+    attr_reader :key_columns
+    # key columns headers
+    attr_reader :key_titles
     # filter that is used for rows
     attr_reader :row_filter
     # filter that is used for columns
@@ -39,7 +41,7 @@ module Sycsvpro
     def initialize(options={})
       @infile     = options[:infile]
       @outfile    = options[:outfile]
-      @key_column = options[:key].to_i 
+      init_key_columns(options[:key])
       @row_filter = RowFilter.new(options[:rows])
       @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
       @key_values = {}
@@ -59,7 +61,7 @@ module Sycsvpro
       File.new(infile).each_with_index do |line, index|
         result = col_filter.process(row_filter.process(line.chomp, row: index))
         unless result.nil? or result.empty?
-          key = unstring(line).split(';')[key_column]
+          key = unstring(line).split(';').values_at(*key_columns)
           key_value = key_values[key] || key_values[key] = { name: key, 
                                                              elements: Hash.new(0), 
                                                              sum: 0 }
@@ -77,16 +79,16 @@ module Sycsvpro
       end
     end
 
-   # Writes the horizontal count results
+   # Writes the count results
     def write_result
-      sum_line = [sum_row_title]
+      sum_line = [sum_row_title] + [''] * (key_titles.size - 1)
       heading.sort.each do |h|
         sum_line << sums[h]
       end
       row = 0;
       File.open(outfile, 'w') do |out|
         out.puts sum_line.join(';') if row == sum_row ; row += 1
-        out.puts (["key"] + heading.sort).join(';')
+        out.puts (key_titles + heading.sort).join(';')
         key_values.each do |k,v|
           out.puts sum_line.join(';') if row == sum_row ; row += 1
           line = [k]
@@ -115,6 +117,21 @@ module Sycsvpro
           else
             @sum_col_title = part[2]
           end
+        end
+
+      end
+
+      # Initialize the key columns and headers
+      def init_key_columns(key_scheme)
+
+        @key_titles  = []
+        @key_columns = []
+
+        keys = key_scheme.scan(/(\d+):(\w+)/)
+
+        keys.each do |key|
+          @key_titles  << key[1]
+          @key_columns << key[0].to_i
         end
 
       end
