@@ -31,7 +31,6 @@ module Sycsvpro
         row = row_filter.process(line, row: index)
         next if row.nil? or row.empty?
         key = key_filter.process(row)
-        puts "#{row.inspect} - #{key.inspect}"
         allocation[key] = [] if allocation[key].nil?
         allocation[key] << col_filter.process(row).split(';') 
       end
