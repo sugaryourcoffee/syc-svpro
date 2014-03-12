@@ -1,6 +1,7 @@
 require_relative 'row_filter'
 require_relative 'header'
 require_relative 'dsl'
+require 'date'
 
 # Operating csv files
 module Sycsvpro
@@ -18,6 +19,8 @@ module Sycsvpro
     attr_reader :outfile
     # filter that is used for rows
     attr_reader :row_filter
+    # date format for date operations
+    attr_reader :date_format
     # the operations on columns
     attr_reader :formulae
     # header of the outfile
@@ -33,6 +36,7 @@ module Sycsvpro
     def initialize(options={})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
+      @date_format = options[:df] || "%Y-%m-%d"
       @row_filter  = RowFilter.new(options[:rows])
       @header      = Header.new(options[:header])
       @sum_row     = []
@@ -43,7 +47,8 @@ module Sycsvpro
 
     # Retrieves the values from a row as the result of a arithmetic operation
     def method_missing(id, *args, &block)
-      to_number(columns[$1.to_i]) if id =~ /c(\d+)/
+      return to_number(columns[$1.to_i]) if id =~ /c(\d+)/
+      return to_date(columns[$1.to_i])   if id =~ /d(\d+)/
     end
 
     # Executes the calculator
@@ -95,9 +100,9 @@ module Sycsvpro
       # 4:c1+1 means create a new column and assign to it the result of the sum of the value of 
       # column 1 + 1 c[4] = c[1] + 1
       def create_calculator(code)
-        code.split(',').each do |operation|
+        code.split(/,(?=\d+:)/).each do |operation|
           col, term = operation.split(':')
-          term = "c#{col}#{term}" unless term =~ /^c\d+/
+          term = "c#{col}#{term}" unless term =~ /^c\d+|^\[/
           formulae[col] = term
         end
       end
@@ -106,6 +111,11 @@ module Sycsvpro
       def to_number(value)
         return value.to_i unless value =~ /\./
         return value.to_f if     value =~ /\./ 
+      end
+
+      # Casts a string to a date
+      def to_date(value)
+        return Date.strptime(value, date_format)
       end
 
   end

@@ -6,6 +6,8 @@ module Sycsvpro
 
     before do
       @in_file = File.join(File.dirname(__FILE__), "files/machines.csv")
+      @in_date_file = File.join(File.dirname(__FILE__), "files/machine-delivery.csv")
+      @in_number_file = File.join(File.dirname(__FILE__), "files/machine-count.csv")
       @out_file = File.join(File.dirname(__FILE__), "files/machines_out.csv")
     end
 
@@ -56,6 +58,90 @@ module Sycsvpro
                 "Gent;4;4;1;1;2;2",
                 "Rank;5;5;1;1;2;2",
                 "0;14;14;4;4.0;8;8"]
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+      end
+    end
+
+    it "should find maximum of specified date rows" do
+      header = "*,Max Date"
+      cols   = "3:[d1,d2].max"
+      rows   = "1-8"
+      df     = "%d.%m.%Y"
+
+      calculator = Calculator.new(infile: @in_date_file, outfile: @out_file, 
+                                  header: header, rows: rows, cols: cols, df: df)
+      calculator.execute
+
+      result = ["customer;delivery;registration;Max Date",
+                "Fink;1.10.2014;30.9.2013;2014-10-01",
+                "Haas;3.3.2012;10.10.2013;2013-10-10",
+                "Gent;8.5.1995;11.2.1999;1999-02-11",
+                "Rank;1.3.2002;1.3.2002;2002-03-01" ]
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+      end
+    end
+
+    it "should find minimum of specified date rows" do
+      header = "*,Min Date"
+      cols   = "3:[d1,d2].min"
+      rows   = "1-8"
+      df     = "%d.%m.%Y"
+
+      calculator = Calculator.new(infile: @in_date_file, outfile: @out_file, 
+                                  header: header, rows: rows, cols: cols, df: df)
+      calculator.execute
+
+      result = ["customer;delivery;registration;Min Date",
+                "Fink;1.10.2014;30.9.2013;2013-09-30",
+                "Haas;3.3.2012;10.10.2013;2012-03-03",
+                "Gent;8.5.1995;11.2.1999;1995-05-08",
+                "Rank;1.3.2002;1.3.2002;2002-03-01" ]
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+      end
+    end
+
+    it "should find maximum of specified number rows" do
+      header = "*,Max Number"
+      cols   = "4:[c1,c2,c3].max"
+      rows   = "1-8"
+      df     = "%d.%m.%Y"
+
+      calculator = Calculator.new(infile: @in_number_file, outfile: @out_file, 
+                                  header: header, rows: rows, cols: cols, df: df)
+      calculator.execute
+
+      result = ["customer;before;between;after;Max Number",
+                "Fink;2;3;1;3",
+                "Haas;3;1;6;6",
+                "Gent;4;4;4;4",
+                "Rank;5;4;1;5"]
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+      end
+    end
+
+    it "should find minimum of specified number rows" do
+      header = "*,Min Number"
+      cols   = "4:[c1,c2,c3].min"
+      rows   = "1-8"
+      df     = "%d.%m.%Y"
+
+      calculator = Calculator.new(infile: @in_number_file, outfile: @out_file, 
+                                  header: header, rows: rows, cols: cols, df: df)
+      calculator.execute
+
+      result = ["customer;before;between;after;Min Number",
+                "Fink;2;3;1;1",
+                "Haas;3;1;6;1",
+                "Gent;4;4;4;4",
+                "Rank;5;4;1;1"]
 
       File.new(@out_file, 'r').each_with_index do |line, index|
         expect(line.chomp).to eq result[index]
