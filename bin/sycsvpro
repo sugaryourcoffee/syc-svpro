@@ -345,6 +345,10 @@ command :calc do |c|
     #c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
     c.flag [:c, :col], :must_match => /\d+:(?:[\*\+\-\/\d\w=\[\],\.:()]*)/
 
+    c.desc 'Date format of date columns'
+    c.arg_name '%d.%m.%Y|%Y-%m-%d|...'
+    c.flag [:df]
+
     c.desc 'Indicate to add a sum row'
     c.switch [:s, :sum]
 
@@ -354,7 +358,7 @@ command :calc do |c|
     print "Calculating..."
     calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
                                           header: options[:h], rows: options[:r], cols: options[:c],
-                                          sum: options[:s])
+                                          sum: options[:s], df: options[:df])
     calculator.execute 
     puts "done"
   end

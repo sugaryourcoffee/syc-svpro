@@ -153,6 +153,19 @@ the value of column 1 with 2.</p>
         </div>
       </div>
       
+      <div id="attribute-i-date_format" class="method-detail">
+        <div class="method-heading attribute-method-heading">
+          <span class="method-name">date_format</span><span
+            class="attribute-access-type">[R]</span>
+        </div>
+
+        <div class="method-description">
+        
+        <p>date format for date operations</p>
+        
+        </div>
+      </div>
+      
       <div id="attribute-i-formulae" class="method-detail">
         <div class="method-heading attribute-method-heading">
           <span class="method-name">formulae</span><span
@@ -250,10 +263,11 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="new-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 33</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 36</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">initialize</span>(<span class="ruby-identifier">options</span>={})
   <span class="ruby-ivar">@infile</span>      = <span class="ruby-identifier">options</span>[<span class="ruby-value">:infile</span>]
   <span class="ruby-ivar">@outfile</span>     = <span class="ruby-identifier">options</span>[<span class="ruby-value">:outfile</span>]
+  <span class="ruby-ivar">@date_format</span> = <span class="ruby-identifier">options</span>[<span class="ruby-value">:df</span>] <span class="ruby-operator">||</span> <span class="ruby-string">&quot;%Y-%m-%d&quot;</span>
   <span class="ruby-ivar">@row_filter</span>  = <span class="ruby-constant">RowFilter</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:rows</span>])
   <span class="ruby-ivar">@header</span>      = <span class="ruby-constant">Header</span>.<span class="ruby-identifier">new</span>(<span class="ruby-identifier">options</span>[<span class="ruby-value">:header</span>])
   <span class="ruby-ivar">@sum_row</span>     = []
@@ -298,7 +312,7 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="execute-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 50</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 55</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">execute</span>
   <span class="ruby-identifier">processed_header</span> = <span class="ruby-keyword">false</span>
 
@@ -364,9 +378,10 @@ generated due to a arithmetic operation that creates new columns</p>
 
           
           <div class="method-source-code" id="method_missing-source">
-            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 45</span>
+            <pre><span class="ruby-comment"># File lib/sycsvpro/calculator.rb, line 49</span>
 <span class="ruby-keyword">def</span> <span class="ruby-identifier">method_missing</span>(<span class="ruby-identifier">id</span>, <span class="ruby-operator">*</span><span class="ruby-identifier">args</span>, <span class="ruby-operator">&amp;</span><span class="ruby-identifier">block</span>)
-  <span class="ruby-identifier">to_number</span>(<span class="ruby-identifier">columns</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/c(\d+)/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_number</span>(<span class="ruby-identifier">columns</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>]) <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/c(\d+)/</span>
+  <span class="ruby-keyword">return</span> <span class="ruby-identifier">to_date</span>(<span class="ruby-identifier">columns</span>[<span class="ruby-node">$1</span>.<span class="ruby-identifier">to_i</span>])   <span class="ruby-keyword">if</span> <span class="ruby-identifier">id</span> <span class="ruby-operator">=~</span> <span class="ruby-regexp">/d(\d+)/</span>
 <span class="ruby-keyword">end</span></pre>
           </div>
           

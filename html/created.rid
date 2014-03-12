@@ -1,10 +1,10 @@
-Thu, 06 Mar 2014 19:02:19 +0100
+Wed, 12 Mar 2014 23:51:45 +0100
 README.rdoc	Thu, 06 Mar 2014 18:59:37 +0100
 lib/sycsvpro.rb	Tue, 04 Mar 2014 21:03:44 +0100
 lib/sycsvpro/aggregator.rb	Tue, 04 Mar 2014 21:40:52 +0100
-lib/sycsvpro/allocator.rb	Wed, 19 Feb 2014 20:34:28 +0100
+lib/sycsvpro/allocator.rb	Fri, 07 Mar 2014 22:30:55 +0100
 lib/sycsvpro/analyzer.rb	Tue, 18 Feb 2014 19:57:28 +0100
-lib/sycsvpro/calculator.rb	Thu, 06 Mar 2014 18:44:54 +0100
+lib/sycsvpro/calculator.rb	Wed, 12 Mar 2014 23:47:35 +0100
 lib/sycsvpro/collector.rb	Sun, 16 Feb 2014 20:59:27 +0100
 lib/sycsvpro/column_filter.rb	Fri, 28 Feb 2014 08:24:47 +0100
 lib/sycsvpro/column_type_filter.rb	Fri, 28 Feb 2014 18:17:46 +0100
@@ -20,5 +20,5 @@ lib/sycsvpro/row_filter.rb	Tue, 18 Feb 2014 19:45:25 +0100
 lib/sycsvpro/script_creator.rb	Sun, 23 Feb 2014 20:35:21 +0100
 lib/sycsvpro/script_list.rb	Sun, 23 Feb 2014 21:03:22 +0100
 lib/sycsvpro/sorter.rb	Sun, 02 Mar 2014 21:07:30 +0100
-lib/sycsvpro/version.rb	Tue, 04 Mar 2014 21:35:59 +0100
-bin/sycsvpro	Thu, 06 Mar 2014 19:02:12 +0100
+lib/sycsvpro/version.rb	Wed, 12 Mar 2014 21:37:56 +0100
+bin/sycsvpro	Wed, 12 Mar 2014 23:41:41 +0100
