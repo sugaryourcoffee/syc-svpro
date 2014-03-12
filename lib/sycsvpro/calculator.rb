@@ -115,7 +115,11 @@ module Sycsvpro
 
       # Casts a string to a date
       def to_date(value)
-        return Date.strptime(value, date_format)
+        if value.strip.empty?
+          nil
+        else
+          Date.strptime(value, date_format)
+        end
       end
 
   end

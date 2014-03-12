@@ -342,7 +342,8 @@ command :calc do |c|
 
     c.desc 'Column to do calculations on'
     c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
-    c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
+    #c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
+    c.flag [:c, :col], :must_match => /\d+:(?:[\*\+\-\/\d\w=\[\],\.:()]*)/
 
     c.desc 'Indicate to add a sum row'
     c.switch [:s, :sum]
