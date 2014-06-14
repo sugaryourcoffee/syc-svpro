@@ -72,7 +72,9 @@ module Sycsvpro
 
       # Creates a filter based on the provided rows and columns
       def create_filter(values)
-        values.split(',').each { |f| send(f) } unless values.nil?
+        values.scan(/(?<=,|^)(\/.*?\/|.*?)(?=,|$)/).flatten.each do |value|
+          send(value)
+        end unless values.nil?
       end
 
       # Adds a single value to the filter

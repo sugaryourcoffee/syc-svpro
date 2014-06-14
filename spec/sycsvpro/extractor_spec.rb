@@ -5,7 +5,8 @@ module Sycsvpro
   describe Extractor do
 
     before do
-      @in_file = File.join(File.dirname(__FILE__), "files/in.csv")
+      @in_file  = File.join(File.dirname(__FILE__), "files/in.csv")
+      @in_file2 = File.join(File.dirname(__FILE__), "files/in4.csv")
       @out_file = File.join(File.dirname(__FILE__), "files/out.csv")
     end
 
@@ -35,6 +36,20 @@ module Sycsvpro
         line.chomp.should eq result[index]
       end
 
+    end
+
+    it "should extract rows base on regex including commas" do
+      extractor = Extractor.new(infile: @in_file2, outfile: @out_file, rows: "/[56789]\\d+|\\d{3,}/")
+
+      extractor.execute
+
+      result = [ "Gent;50",
+                 "Haas;100",
+                 "Klig;80" ]
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end 
     end
 
   end
