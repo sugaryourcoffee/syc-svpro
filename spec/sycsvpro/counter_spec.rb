@@ -33,15 +33,15 @@ module Sycsvpro
     it "should count date columns" do
       counter = Counter.new(infile: @in_file, outfile: @out_file, rows: "1-10", 
                             cols: "2:<1.1.2013,2:1.1.2013-31.12.2014,2:>31.12.2014", 
-                            key: "0:customer", df: "%d.%m.%Y")
+                            key: "0:customer", df: "%d.%m.%Y", sort: false)
 
       counter.execute
 
-      result = [ "customer;1.1.2013-31.12.2014;<1.1.2013;>31.12.2014",
+      result = [ "customer;<1.1.2013;1.1.2013-31.12.2014;>31.12.2014",
                  "Fink;0;0;2",
-                 "Haas;0;1;0",
-                 "Gent;1;0;0",
-                 "Rank;1;0;0" ]
+                 "Haas;1;0;0",
+                 "Gent;0;1;0",
+                 "Rank;0;1;0" ]
 
       File.open(@out_file).each_with_index do |line, index|
         line.chomp.should eq result[index]

@@ -201,7 +201,7 @@ command :count do |c|
 
   c.desc 'Key columns that are assigned the count of column values'
   c.arg_name 'COLUMN:TITLE,COLUMN:TITLE'
-  c.flag [:k, :key], :must_match => /^\d+:\w+(?:,\d+:\w+)*/
+  c.flag [:k, :key], :required => true, :must_match => /^\d+:\w+(?:,\d+:\w+)*/
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
@@ -219,11 +219,19 @@ command :count do |c|
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
 
+  c.desc 'Sort headline values'
+  c.switch [:sort], :default_value => true
+
   c.action do |global_options,options,args|
     print "Counting..."
-    counter = Sycsvpro::Counter.new(infile: global_options[:f], outfile: global_options[:o], 
-                                    key: options[:k], rows: options[:r], cols: options[:c],
-                                    df: options[:df], sum: options[:s])
+    counter = Sycsvpro::Counter.new(infile: global_options[:f], 
+                                    outfile: global_options[:o], 
+                                    key: options[:k], 
+                                    rows: options[:r], 
+                                    cols: options[:c],
+                                    df: options[:df], 
+                                    sum: options[:s],
+                                    sort: options[:sort])
     counter.execute
     puts "done"
   end

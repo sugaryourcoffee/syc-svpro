@@ -27,6 +27,8 @@ module Sycsvpro
     attr_reader :key_values
     # header of the out file
     attr_reader :heading
+    # indicates whether the headline values should be sorted
+    attr_reader :heading_sort
     # Title of the sum row
     attr_reader :sum_row_title
     # row where to add the sums of the columns
@@ -39,15 +41,16 @@ module Sycsvpro
     # Creates a new counter. Takes as attributes infile, outfile, key, rows, cols, date-format and
     # indicator whether to add a sum row
     def initialize(options={})
-      @infile     = options[:infile]
-      @outfile    = options[:outfile]
+      @infile       = options[:infile]
+      @outfile      = options[:outfile]
       init_key_columns(options[:key])
-      @row_filter = RowFilter.new(options[:rows])
-      @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
-      @key_values = {}
-      @heading    = []
+      @row_filter   = RowFilter.new(options[:rows])
+      @col_filter   = ColumnFilter.new(options[:cols], df: options[:df])
+      @key_values   = {}
+      @heading      = []
+      @heading_sort = options[:sort].nil? ? true : options[:sort]
       init_sum_scheme(options[:sum])
-      @sums       = Hash.new(0)
+      @sums         = Hash.new(0)
     end
 
     # Executes the counter
@@ -82,17 +85,18 @@ module Sycsvpro
    # Writes the count results
     def write_result
       sum_line = [sum_row_title] + [''] * (key_titles.size - 1)
-      heading.sort.each do |h|
+      headline = heading_sort ? heading.sort : col_filter.pivot.keys
+      headline.each do |h|
         sum_line << sums[h]
       end
       row = 0;
       File.open(outfile, 'w') do |out|
         out.puts sum_line.join(';') if row == sum_row ; row += 1
-        out.puts (key_titles + heading.sort).join(';')
+        out.puts (key_titles + headline).join(';')
         key_values.each do |k,v|
           out.puts sum_line.join(';') if row == sum_row ; row += 1
           line = [k]
-          heading.sort.each do |h|
+          headline.each do |h|
             line << v[:elements][h] unless h == sum_col_title
           end
           line << v[:sum] unless sum_col_title.nil?
