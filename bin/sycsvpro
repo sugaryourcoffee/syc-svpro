@@ -136,10 +136,10 @@ end
 
 desc 'Lists script or insert files in the scripts directory with optionally listing methods of script files'
 command :list do |c|
-  c.desc 'Type of script (Ruby or insert file)'
+  c.desc 'Type of script (Ruby, insert or all files)'
   c.default_value 'script'
-  c.arg_name 'SCRIPT|INSERT'
-  c.flag [:t, :type], :must_match => /script|insert/i
+  c.arg_name 'SCRIPT|INSERT|ALL'
+  c.flag [:t, :type], :must_match => /script|insert|all/i
 
   c.desc 'Name of the script file'
   c.arg_name 'SCRIPT_NAME.rb|INSERT_NAME.ins'
@@ -148,11 +148,18 @@ command :list do |c|
   c.desc 'Show methods'
   c.switch [:m, :method]
 
+  c.desc 'Show script directory'
+  c.switch [:d, :dir]
+
   c.action do |global_options,options,args|
-    script_list = Sycsvpro::ScriptList.new(dir: script_directory, type: options[:t],
-                                           script: options[:s], show_methods: options[:m])
+    script_list = Sycsvpro::ScriptList.new(dir: script_directory, 
+                                           type: options[:t],
+                                           script: options[:s], 
+                                           show_methods: options[:m])
 
     scripts = script_list.execute
+
+    puts "script directory: #{script_directory}" if options[:d]; puts
 
     if scripts.empty?
       help_now! "No scripts available. You can create scripts with the edit command"

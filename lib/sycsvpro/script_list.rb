@@ -21,6 +21,7 @@ module Sycsvpro
       @script_type.downcase!
       @script_file  = options[:script] || '*.rb'  if @script_type == 'script'
       @script_file  = options[:script] || '*.ins' if @script_type == 'insert'
+      @script_file  = options[:script] || '*.{rb,ins}' if @script_type == 'all'
       @show_methods = options[:show_methods] if @script_type == 'script'
       @show_methods = false if @script_type == 'insert'
       @list         = {}
