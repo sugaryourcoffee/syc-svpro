@@ -29,7 +29,7 @@ module Sycsvpro
     end
 
     it "should filter rows on logical expression" do
-      rows = "1:c1>50&&c2=Ruby||c3<10"
+      rows = "n1>50&&s2=='Ruby'||n3<10"
       row_filter = Sycsvpro::RowFilter.new(rows)
       row_filter.process("a;49;Rub;9").should eq "a;49;Rub;9"
       row_filter.process("a;51;Ruby;11").should eq "a;51;Ruby;11"
