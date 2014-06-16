@@ -11,12 +11,10 @@ module Sycsvpro
 
     # Processes the filter on the given row
     def process(object, options={})
-#      STDERR.puts "object = #{object}"
       object = unstring(object)
       return object unless has_filter?
       filtered = !filter.flatten.uniq.index(options[:row]).nil?
       pattern.each do |p|
-#        STDERR.puts "pattern = #{pattern}"
         filtered = (filtered or !(object =~ Regexp.new(p)).nil?)
       end
       filtered = (filtered or match_boolean_filter?(object.split(';')))

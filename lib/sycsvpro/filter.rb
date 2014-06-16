@@ -33,27 +33,12 @@ module Sycsvpro
 
     # Creates the filters based on the given patterns
     def method_missing(id, *args, &block)
-=begin
       boolean_row_regex = %r{
-        (c\d+[<=>](?:\d{4}-\d{1,2}-\d{1,2}|\d+|\w+|\/.*?\/)
-        (?:(?:&&|\|\||$)c\d+[<=>](?:\d{4}-\d{1,2}-\d{1,2}|\d+|\w+|\/.*?\/))*)
-      }xi 
-=end
-
-=begin
-      boolean_row_regex = %r{
-        (c\d+[<!=~>]{1,2}(?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|\w+)
-         (?:(?:&&|\|\||$)
-         c\d+[<!=~>]{1,2}(?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|\w+))*)      
-      }xi
-=end
-
-      boolean_row_regex = %r{
-        (\(*[nsd]\d+[<!=~>]{1,2}
-         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"]\w+['"])
+        &(\(*[nsd]\d+[<!=~>]{1,2}
+         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"].*?['"])
          (?:\)*(?:&&|\|\||$)
          \(*[nsd]\d+[<!=~>]{1,2}
-         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"]\w+['"])\)*)*)
+         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"].*?['"])\)*)*)&
       }xi
 
       return equal($1, args, block)                if id =~ /^(\d+)$/
@@ -67,6 +52,7 @@ module Sycsvpro
       return date_range($1, $2, $3, args, block)   if id =~ /^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/
       return number($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+)/
       return number_range($1, $2, $3, args, block) if id =~ /^(\d):(\d+)-(\d+)/
+
       super
     end
 
@@ -77,20 +63,19 @@ module Sycsvpro
 
     # Checks whether the values match the boolean filter
     def match_boolean_filter?(values=[])
-      STDERR.puts "boolean_filter = #{boolean_filter.inspect}"
       return false if boolean_filter.empty?
       expression = boolean_filter
       columns = expression.scan(/(([nsd])(\d+))(?:[<!=~>])/)
-      STDERR.puts "cols = #{columns.inspect}"
+      STDERR.puts "expr = #{expression.inspect}"
       STDERR.puts "vals = #{values.inspect}"
+      STDERR.puts "cols = #{columns.inspect}"
       columns.each do |c|
         value = values[c[2].to_i]                              if c[1] == 'n'
         value = "'#{values[c[2].to_i]}'"                       if c[1] == 's'
-        value = Date.strptime(values[c[2].to_i],  date_format) if c[1] == 'd' 
+        value = "Date.strptime('#{values[c[2].to_i]}', '#{date_format}')" if c[1] == 'd' 
         expression = expression.gsub(c[0], value)
-        STDERR.puts "--> #{expression}"
       end
-      STDERR.puts "eval(#{expression}) #{eval(expression)}"
+      STDERR.puts "exp = #{expression.inspect}"
       eval(expression)
     end
 
@@ -116,9 +101,10 @@ module Sycsvpro
 
     private
 
-      # Creates a filter based on the provided rows and columns
+      # Creates a filter based on the provided rows and columns select criteria
       def create_filter(values)
-        values.scan(/(?<=,|^)(\/.*?\/|.*?)(?=,|$)/).flatten.each do |value|
+        values.scan(/(?<=,|^)(&.*?&|\/.*?\/|.*?)(?=,|$)/).flatten.each do |value|
+          STDERR.puts "value = #{value}"
           send(value)
         end unless values.nil?
       end
@@ -160,8 +146,7 @@ module Sycsvpro
 
       # Adds a boolean row filter
       def boolean_row(operation, args, block)
-        STDERR.puts "operation = #{operation}"
-        boolean_filter << operation
+        boolean_filter.clear << operation
       end
 
       # Adds a date filter

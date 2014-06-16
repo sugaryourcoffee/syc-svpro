@@ -29,11 +29,32 @@ module Sycsvpro
     end
 
     it "should filter rows on logical expression" do
-      rows = "n1>50&&s2=='Ruby'||n3<10"
+      rows = "&n1>50&&s2=='Ruby'||n3<10&"
       row_filter = Sycsvpro::RowFilter.new(rows)
       row_filter.process("a;49;Rub;9").should eq "a;49;Rub;9"
       row_filter.process("a;51;Ruby;11").should eq "a;51;Ruby;11"
       row_filter.process("a;49;Ruby;11").should be_nil
+    end
+
+    it "should filter rows on Ruby classes" do
+      rows = "&n1==50&&d2==Date.new(2014,6,16)||s3=~Regexp.new('[56789]\\d{2,}')&"
+      row_filter = Sycsvpro::RowFilter.new(rows)
+      row_filter.process("x;50;2014-06-16;99").should eq "x;50;2014-06-16;99"
+    end
+
+    it "should filter rows on row number filter and boolean filter" do
+      rows = "1,3-4,&n1==50&&d2<Date.new(2014,6,16)||s3=='Works?'&"
+      row_filter = Sycsvpro::RowFilter.new(rows)
+      row_filter.process("x;50;2014-06-15;Works?").should eq "x;50;2014-06-15;Works?"
+      row_filter.process("x;50;2014-06-15;Works?", row: 1).should eq "x;50;2014-06-15;Works?"
+    end
+
+    it "should filter rows on boolean filter with brackets" do
+      rows = "&n1==50&&(d2<Date.new(2014,6,16)||s3=='Works?')&"
+      row_filter = Sycsvpro::RowFilter.new(rows)
+      row_filter.process("x;50;2014-6-15;Works?").should eq "x;50;2014-6-15;Works?"
+      row_filter.process("x;49;2014-6-15;Works?").should be_nil
+      row_filter.process("x;50;2014-6-17;Worx?").should be_nil
     end
 
   end
