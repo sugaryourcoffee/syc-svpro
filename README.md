@@ -109,7 +109,9 @@ Allocate all the machine types to the customer
 
 Count
 -----
-Count all customers (key column) in rows 2 to 20 that have machines that start with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with title Total at column 1
+Count all customers (key column) in rows 2 to 20 that have machines that start 
+with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with
+title Total at column 1
 
     $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0:customer -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
 
@@ -126,7 +128,8 @@ It is possible to use multiple key columns `-k 0:customer,1:machines`
 
 Aggregate
 ---------
-Aggregate row values and add the sum to the end of the row. In the example we aggregate the customer names.
+Aggregate row values and add the sum to the end of the row. In the example we 
+aggregate the customer names.
 
     $ sycsvpro -f in.csv -o out.csv aggregate -c 0 -s Total:1,Sum
 
@@ -141,7 +144,8 @@ The aggregation result in out.csv is
 
 Calc
 ----
-Process arithmetic operations on the contract count and create a target column and a sum which is added at the end of the result file
+Process arithmetic operations on the contract count and create a target column 
+and a sum which is added at the end of the result file
 
     $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target -c 6:*2,7:target=c6*10
 
@@ -154,11 +158,13 @@ Process arithmetic operations on the contract count and create a target column a
     chiro;c2;con331;dri100;mot130;3.05.3010;2;20
     0;0;0;0;0;0;10;100
 
-In the sum row non-numbers in the colums are converted to 0. Therefore column 0 is summed up to 0 as all strings are converted to 0.
+In the sum row non-numbers in the colums are converted to 0. Therefore column 0
+is summed up to 0 as all strings are converted to 0.
 
 Sort
 ----
-Sort rows on specified columns as an example sort rows based on customer (string s) and contract date (date d)
+Sort rows on specified columns as an example sort rows based on customer 
+(string s) and contract date (date d)
 
     $ sycsvpro -f in.csv -o out.csv sort -r 2-20 -c s:0,d:5
     
@@ -169,17 +175,22 @@ Sort rows on specified columns as an example sort rows based on customer (string
     chiro;c2;con331;dri100;mot130;3.05.3010;1
     chiro;c1;con333;dri110;mot100;1.10.3011;1
 
-Sort expects the first non-empty row as the header row. If --headerless switch is set then sort assumes no header being available.
+Sort expects the first non-empty row as the header row. If --headerless switch 
+is set then sort assumes no header being available.
 
 Insert
 ------
-Add rows at the bottom or on top of a file. The command below adds the content of the file file-with-rows-to-insert.text on top of the file in.csv and saves it to out.csv
+Add rows at the bottom or on top of a file. The command below adds the content
+of the file file-with-rows-to-insert.text on top of the file in.csv and saves 
+it to out.csv
 
     $ sycsvpro -f in.csv -o out.csv insert file-with-rows-to-insert.txt -p top
 
 Edit
 ----
-Creates or if it exists opens a file for editing. The file is created in the directory ~/.syc/sycsvpro/scripts. Following command creates a Ruby script with the name script.rb and a method call_me
+Creates or if it exists opens a file for editing. The file is created in the 
+directory ~/.syc/sycsvpro/scripts. Following command creates a Ruby script with
+the name script.rb and a method call_me
 
     $ sycsvpro edit -s script.rb -m call_me
 
@@ -195,11 +206,13 @@ which is also displayed
 
 Execute
 -------
-Execute takes a Ruby script file as an argument and processes the script. The following command executes the script *script.rb* and invokes the method *calc*
+Execute takes a Ruby script file as an argument and processes the script. The 
+following command executes the script *script.rb* and invokes the method *calc*
 
     $ sycsvpro execute ./script.rb calc
 
-Below is an example script file that is ultimately doing the same as the count command
+Below is an example script file that is ultimately doing the same as the count 
+command
 
     $ sycsvpro -f in.csv -o out.csv count -r 1-20 -k 0 -c 4,5
 
@@ -234,15 +247,20 @@ def calc
 end
 ```
 
-*rows* and *write_to* are convenience methods provided by sycsvpro that can be used in script files to operate on files.
+*rows* and *write_to* are convenience methods provided by sycsvpro that can be 
+used in script files to operate on files.
 
-*rows* will return values at the specified columns in the order they are provided in the call to
-rows. The columns to be returned in the block have to end with _column_ or _columns_ dependent if a value or an array should be returned. You can find the *rows* and *write_to* methods at _lib/sycsvpro/dsl.rb_.
+*rows* will return values at the specified columns in the order they are 
+provided in the call to rows. The columns to be returned in the block have to 
+end with _column_ or _columns_ dependent if a value or an array should be 
+returned. You can find the *rows* and *write_to* methods at 
+_lib/sycsvpro/dsl.rb_.
 
 Working with sycsvpro
 =====================
 
-sycsvpro emerged from my daily work when cleaning and anaylzing data. If you want to dig deeper I would recommend [R](http://www.r-project.org/).
+sycsvpro emerged from my daily work when cleaning and anaylzing data. If you 
+want to dig deeper I would recommend [R](http://www.r-project.org/).
 
 A work flow could be as follows
 
@@ -253,7 +271,9 @@ A work flow could be as follows
 * Do arithmetic operations on the values `calc`
 * Sort the rows based on column values
 
-When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to create nice graphs. To create more sophisiticated analysis *R* is the right tool to use.
+When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to 
+create nice graphs. To create more sophisiticated analysis *R* is the right tool 
+to use.
 
 Release notes
 =============
@@ -262,9 +282,18 @@ Version 0.1.2
 -------------
 * Now it is possible to have , in the filter as non separating values. You can
 now define filter like 1-2,4,/[56789]{2,}/,10
-* Filtering rows on boolean expression based on values contained in columns
-* ''list'' shows the directory of the script file and has has the flag 'all' to
-show all scripts *insert files* and *Ruby files*
+* Filtering rows on boolean expression based on values contained in columns.
+  The boolean expression has to be enclosed between BEGIN and END
+  Example:
+    -r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END
+    s0 - string in column 0
+    n1 - number in column 1
+    d2 - date   in column 2
+* ``list`` shows the directory of the script file and has the flag *all* to
+show all scripts, that is _insert files_ and _Ruby files_
+* When counting columns with *count* the column headers are sorted
+alphabetically. No it is possible to set ``sort: false`` to keep the column
+headers in the sequence they are specified
 
 Installation
 ============
