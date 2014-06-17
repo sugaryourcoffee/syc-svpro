@@ -11,6 +11,12 @@ end
 
 include GLI::App
 
+row_regex = %r{
+  \d+(?:,\d+|-\d+|-eof|,\/.*\/)*|
+  \/.*\/(?:,\/.*\/|\d+)*|
+  BEGIN.*?END
+}xi
+
 # Directory holding configuration files
 sycsvpro_directory = File.expand_path("~/.syc/sycsvpro")
 
@@ -58,17 +64,24 @@ end
 desc 'Extract specified rows and columns from the file'
 command :extract do |c|
   c.desc 'Rows to extract'
-  c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.arg_name '1,2,10-30,45-EOF,REGEXP,BEGINlogical_expressionEND'
+  c.flag [:r, :row], :must_match => row_regex 
 
   c.desc 'Columns to extract'
   c.arg_name '1,2,10-30'
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
   c.action do |global_options,options,args|
     print "Extracting ..."
-    extractor = Sycsvpro::Extractor.new(infile: global_options[:f], outfile: global_options[:o],
-                                        rows: options[:r], cols: options[:c])
+    extractor = Sycsvpro::Extractor.new(infile:  global_options[:f], 
+                                        outfile: global_options[:o],
+                                        rows:    options[:r], 
+                                        cols:    options[:c],
+                                        df:      options[:df])
     extractor.execute
     puts "done"    
   end
@@ -79,16 +92,23 @@ command :collect do |c|
 
   c.desc 'Rows to consider for collection'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to collect values from'
   c.arg_name 'CATEGORY1:COL1,COL2,COL10-COL30+CATEGORY2:COL3-COL9'
   c.flag [:c, :col], :must_match => /^\w*:\d+(?:,\d+|-\d+|\+\w*:\d+(?:,\d+|-\d+)*)*/
 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
   c.action do |global_options,options,args|
     print "Collecting ..."
-    collector = Sycsvpro::Collector.new(infile: global_options[:f], outfile: global_options[:o],
-                                        rows: options[:r], cols: options[:c])
+    collector = Sycsvpro::Collector.new(infile:  global_options[:f],
+                                        outfile: global_options[:o],
+                                        rows:    options[:r], 
+                                        cols:    options[:c],
+                                        df:      options[:df])
     collector.execute
     puts "done"    
   end
@@ -98,7 +118,7 @@ desc 'Allocate specified columns from the file to a key value'
 command :allocate do |c|
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Key to allocate columns to'
   c.arg_name '0'
@@ -108,10 +128,18 @@ command :allocate do |c|
   c.arg_name '1,2,10-30'
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
   c.action do |global_options,options,args|
     print "Allocating ..."
-    allocator = Sycsvpro::Allocator.new(infile: global_options[:f], outfile: global_options[:o],
-                                        key: options[:k], rows: options[:r], cols: options[:c])
+    allocator = Sycsvpro::Allocator.new(infile:  global_options[:f], 
+                                        outfile: global_options[:o],
+                                        key:     options[:k], 
+                                        rows:    options[:r], 
+                                        cols:    options[:c],
+                                        df:      options[:df])
     allocator.execute
     puts "done"    
   end
@@ -205,7 +233,7 @@ command :count do |c|
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to count where columns 2 and 3 are counted conditionally'
   c.arg_name '1,2:<14.2.2014,10-30,3:>10'
@@ -244,7 +272,7 @@ command :aggregate do |c|
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to count'
   c.arg_name '1,2-4'
@@ -255,10 +283,18 @@ command :aggregate do |c|
   c.arg_name 'SUM_ROW_TITLE:ROW,SUM_COL_TITLE'
   c.flag [:s, :sum], :must_match => /^\w+:\d+(?:,\w+)?|^\w+/
 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
   c.action do |global_options,options,args|
     print "Aggregating..."
-    aggregator = Sycsvpro::Aggregator.new(infile: global_options[:f], outfile: global_options[:o], 
-                                          rows: options[:r], cols: options[:c], sum: options[:s])
+    aggregator = Sycsvpro::Aggregator.new(infile:  global_options[:f], 
+                                          outfile: global_options[:o], 
+                                          rows:    options[:r], 
+                                          cols:    options[:c], 
+                                          sum:     options[:s],
+                                          df:      options[:df])
     aggregator.execute
     puts "done"
   end
@@ -269,7 +305,7 @@ desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to sort based on a type (n = number, s = string, d = date) and its value'
   c.arg_name 'n:1,s:2-5,d:7'
@@ -325,18 +361,27 @@ arg_name 'MAPPINGS-FILE'
 command :map do |c|
   c.desc 'Rows to consider'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
   c.desc 'Columns to consider for mapping'
   c.arg_name 'COL1,COL2,COL10-COL30'
   c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
+ 
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.default_value '%Y-%m-%d'
+  c.flag [:df]
 
   c.action do |global_options,options,args|
     help_now! "You need to provide a mapping file" if args.size == 0
 
     print "Mapping..."
-    mapper = Sycsvpro::Mapper.new(infile: global_options[:f], outfile: global_options[:o],
-                                  mapping: args[0], rows: options[:r], cols: options[:c])
+    mapper = Sycsvpro::Mapper.new(infile:  global_options[:f], 
+                                  outfile: global_options[:o],
+                                  mapping: args[0], 
+                                  rows:    options[:r], 
+                                  cols:    options[:c],
+                                  df:      options[:df])
     mapper.execute
     puts "done"
   end
@@ -351,9 +396,9 @@ command :calc do |c|
     default_value '*'
     c.flag [:h, :header], :must_match => /\*(?:,\w+)*/
 
-    c.desc 'Columns to consider for calculations'
+    c.desc 'Rows to consider for calculations'
     c.arg_name 'ROW1,ROW2-ROW10,45-EOF,REGEXP'
-    c.flag [:r, :row], :must_match => /\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+    c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
 
     c.desc 'Column to do calculations on'
     c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
@@ -371,9 +416,13 @@ command :calc do |c|
     help_now! "You need to provide the column flag" if options[:c].nil?
 
     print "Calculating..."
-    calculator = Sycsvpro::Calculator.new(infile: global_options[:f], outfile: global_options[:o],
-                                          header: options[:h], rows: options[:r], cols: options[:c],
-                                          sum: options[:s], df: options[:df])
+    calculator = Sycsvpro::Calculator.new(infile:  global_options[:f], 
+                                          outfile: global_options[:o],
+                                          header:  options[:h], 
+                                          rows:    options[:r], 
+                                          cols:    options[:c],
+                                          sum:     options[:s], 
+                                          df:      options[:df])
     calculator.execute 
     puts "done"
   end

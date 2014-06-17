@@ -34,24 +34,24 @@ module Sycsvpro
     # Creates the filters based on the given patterns
     def method_missing(id, *args, &block)
       boolean_row_regex = %r{
-        &(\(*[nsd]\d+[<!=~>]{1,2}
+        BEGIN(\(*[nsd]\d+[<!=~>]{1,2}
          (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"].*?['"])
          (?:\)*(?:&&|\|\||$)
          \(*[nsd]\d+[<!=~>]{1,2}
-         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"].*?['"])\)*)*)&
+         (?:[A-Z][A-Za-z]*\.new\(.*?\)|\d+|['"].*?['"])\)*)*)END
       }xi
 
+      return boolean_row($1, args, block)          if id =~ boolean_row_regex
       return equal($1, args, block)                if id =~ /^(\d+)$/
       return equal_type($1, $2, args, block)       if id =~ /^(s|n|d):(\d+)$/
       return range($1, $2, args, block)            if id =~ /^(\d+)-(\d+)$/
       return range_type($1, $2, $3, args, block)   if id =~ /^(s|n|d):(\d+)-(\d+)$/
       return regex($1, args, block)                if id =~ /^\/(.*)\/$/
       return col_regex($1, $2, args, block)        if id =~ /^(\d+):\/(.*)\/$/
-      return boolean_row($1, args, block)          if id =~ boolean_row_regex
-      return date($1, $2, $3, args, block)         if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)/
+      return date($1, $2, $3, args, block)         if id =~ /^(\d+):(<|=|>)(\d+.\d+.\d+)$/
       return date_range($1, $2, $3, args, block)   if id =~ /^(\d+):(\d+.\d+.\d+.)-(\d+.\d+.\d+)$/
-      return number($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+)/
-      return number_range($1, $2, $3, args, block) if id =~ /^(\d):(\d+)-(\d+)/
+      return number($1, $2, $3, args, block)       if id =~ /^(\d+):(<|=|>)(\d+)$/
+      return number_range($1, $2, $3, args, block) if id =~ /^(\d):(\d+)-(\d+)$/
 
       super
     end
@@ -63,19 +63,39 @@ module Sycsvpro
 
     # Checks whether the values match the boolean filter
     def match_boolean_filter?(values=[])
-      return false if boolean_filter.empty?
+      return false if boolean_filter.empty? or values.empty?
       expression = boolean_filter
-      columns = expression.scan(/(([nsd])(\d+))(?:[<!=~>])/)
-      STDERR.puts "expr = #{expression.inspect}"
-      STDERR.puts "vals = #{values.inspect}"
-      STDERR.puts "cols = #{columns.inspect}"
+      columns = expression.scan(/(([nsd])(\d+))([<!=~>]{1,2})(.*?)(?:[\|&]{2}|$)/)
+#      STDERR.puts "expr = #{expression.inspect}"
+#      STDERR.puts "vals = #{values.inspect}"
+#      STDERR.puts "cols = #{columns.inspect}"
       columns.each do |c|
-        value = values[c[2].to_i]                              if c[1] == 'n'
-        value = "'#{values[c[2].to_i]}'"                       if c[1] == 's'
-        value = "Date.strptime('#{values[c[2].to_i]}', '#{date_format}')" if c[1] == 'd' 
+#        STDERR.puts "val = #{values[c[2].to_i].inspect}"
+        value = case c[1]
+        when 'n'
+          values[c[2].to_i].empty? ? '0' : values[c[2].to_i]
+        when 's'
+          "'#{values[c[2].to_i]}'"
+        when 'd'
+          begin
+            Date.strptime(values[c[2].to_i], date_format)
+          rescue Exception => e
+            case c[3]
+            when '<', '<=', '=='
+              "#{c[4]}+1"
+            when '>', '>='
+              '0'
+            when '!='
+              c[4]
+            end
+          else
+            "Date.strptime('#{values[c[2].to_i]}', '#{date_format}')"
+          end 
+        end
         expression = expression.gsub(c[0], value)
+#        STDERR.puts "val2 = #{value}"
       end
-      STDERR.puts "exp = #{expression.inspect}"
+#      STDERR.puts "exp = #{expression.inspect}"
       eval(expression)
     end
 
@@ -103,8 +123,8 @@ module Sycsvpro
 
       # Creates a filter based on the provided rows and columns select criteria
       def create_filter(values)
-        values.scan(/(?<=,|^)(&.*?&|\/.*?\/|.*?)(?=,|$)/).flatten.each do |value|
-          STDERR.puts "value = #{value}"
+        values.scan(/(?<=,|^)(BEGIN.*?END|\/.*?\/|.*?)(?=,|$)/i).flatten.each do |value|
+#          STDERR.puts "value = #{value}"
           send(value)
         end unless values.nil?
       end

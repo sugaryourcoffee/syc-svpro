@@ -20,8 +20,8 @@ module Sycsvpro
     def initialize(options={})
       @in_file  = options[:infile]
       @out_file = options[:outfile]
-      @row_filter = RowFilter.new(options[:rows])
-      @col_filter = ColumnFilter.new(options[:cols])
+      @row_filter = RowFilter.new(options[:rows], df: options[:df])
+      @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
     end
 
     # Executes the extractor

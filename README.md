@@ -185,8 +185,10 @@ Creates or if it exists opens a file for editing. The file is created in the dir
 
 List
 ----
-List the scripts or insert-file available in the scripts directory
+List the scripts, insert-file or all scripts available in the scripts directory
+which is also displayed
 
+    script directory: ~/.syc/sycsvpro/scripts
     $ sycsvpro list -m
     script.rb
       call_me
@@ -252,6 +254,17 @@ A work flow could be as follows
 * Sort the rows based on column values
 
 When I have analyzed the data I use _Microsoft Excel_ or _LibreOffice Calc_ to create nice graphs. To create more sophisiticated analysis *R* is the right tool to use.
+
+Release notes
+=============
+
+Version 0.1.2
+-------------
+* Now it is possible to have , in the filter as non separating values. You can
+now define filter like 1-2,4,/[56789]{2,}/,10
+* Filtering rows on boolean expression based on values contained in columns
+* ''list'' shows the directory of the script file and has has the flag 'all' to
+show all scripts *insert files* and *Ruby files*
 
 Installation
 ============

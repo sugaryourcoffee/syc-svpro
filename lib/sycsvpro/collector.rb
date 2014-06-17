@@ -20,7 +20,7 @@ module Sycsvpro
     def initialize(options={})
       @infile = options[:infile]
       @outfile = options[:outfile]
-      @row_filter = RowFilter.new(options[:rows])
+      @row_filter = RowFilter.new(options[:rows], df: options[:df])
       @collection = {}
       init_collection(options[:cols])
     end

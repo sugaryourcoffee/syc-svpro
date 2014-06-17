@@ -19,8 +19,8 @@ module Sycsvpro
     def initialize(options={})
       @infile = options[:infile]
       @outfile = options[:outfile]
-      @row_filter = RowFilter.new(options[:row_filter])
-      @col_filter = ColumnFilter.new(options[:col_filter])
+      @row_filter = RowFilter.new(options[:row_filter], df: options[:df])
+      @col_filter = ColumnFilter.new(options[:col_filter], df: options[:df])
       @mapper = {}
       init_mapper(options[:mapping])
     end

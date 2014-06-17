@@ -37,7 +37,7 @@ module Sycsvpro
       @infile      = options[:infile]
       @outfile     = options[:outfile]
       @date_format = options[:df] || "%Y-%m-%d"
-      @row_filter  = RowFilter.new(options[:rows])
+      @row_filter  = RowFilter.new(options[:rows], df: options[:df])
       @header      = Header.new(options[:header])
       @sum_row     = []
       @add_sum_row = options[:sum] || false

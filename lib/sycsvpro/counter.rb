@@ -44,7 +44,7 @@ module Sycsvpro
       @infile       = options[:infile]
       @outfile      = options[:outfile]
       init_key_columns(options[:key])
-      @row_filter   = RowFilter.new(options[:rows])
+      @row_filter   = RowFilter.new(options[:rows], df: options[:df])
       @col_filter   = ColumnFilter.new(options[:cols], df: options[:df])
       @key_values   = {}
       @heading      = []

@@ -32,7 +32,7 @@ module Sycsvpro
       @outfile         = options[:outfile]
       @headerless      = options[:headerless] || false
       @desc            = options[:desc] || false
-      @row_filter      = RowFilter.new(options[:rows])
+      @row_filter      = RowFilter.new(options[:rows], df: options[:df])
       @col_type_filter = ColumnTypeFilter.new(options[:cols], df: options[:df])
       @sorted_rows     = []
     end
