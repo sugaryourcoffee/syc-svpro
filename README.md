@@ -295,6 +295,18 @@ show all scripts, that is _insert files_ and _Ruby files_
 alphabetically. No it is possible to set ``sort: false`` to keep the column
 headers in the sequence they are specified
 
+Version 0.1.3
+-------------
+* In counter `sort: false` didn't work with column filters like `cols: "1,2"`.
+Now all filters work
+* Sorter now accepts a start row where to start sorting. Rows before the start
+row are added on top of the sorted file
+* `sycsvpro -f infile analyze` now lists the columns with sample data
+* Add `params` method to *Dsl* that retrieves the params provided in the execute
+command: `sycsvpro execute script.rb method infile param1 param2`
+* Add `clean\_up` to *Dsl* that takes files to be deleted after the script has
+run: `clean\_up(%w{file1 file2})`
+
 Installation
 ============
 [![Gem Version](https://badge.fury.io/rb/sycsvpro.png)](http://badge.fury.io/rb/sycsvpro)

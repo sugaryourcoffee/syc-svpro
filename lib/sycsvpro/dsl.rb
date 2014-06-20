@@ -3,6 +3,49 @@ require_relative 'row_filter'
 # Methods to be used in customer specific script files
 module Dsl
 
+  # read arguments provided at invocation
+  # :call-seq:
+  #   params => infile, Result, other_params
+  #
+  # Result methods are #cols, #col_count, #row_count, #sample_row
+  def params
+
+    script = ARGV.shift
+    method = ARGV.shift
+    infile = ARGV.shift
+
+    if infile.nil?
+      STDERR.puts "You must provide an input file"
+      exit -1
+    elsif !File.exists? infile
+      STDERR.puts "#{infile} does not exist. You must provide a valid input file"
+      exit -1
+    end
+
+    if ARGV.empty?
+      print "#{method}(#{infile})"
+    else
+      print "#{method}(#{infile}, #{ARGV.join(', ')})"
+    end
+
+    puts; print "Analyzing #{infile}..."
+
+    result = Sycsvpro::Analyzer.new(infile).result
+    puts; print "> #{result.col_count} cols | #{result.row_count} rows"
+
+    [infile, result, ARGV].flatten
+
+  end
+
+  # Delete obsolete files
+  # :call-seq:
+  #   clean_up(%w{ file1 file2 }) -> nil
+  def clean_up(files)
+    puts; print "Cleaning up directory..."
+
+    files.each { |file| File.delete(file) }
+  end
+  
   # Retrieves rows and columns from the file and returns them to the block provided by the caller
   def rows(options={})
     infile     = File.expand_path(options[:infile])
