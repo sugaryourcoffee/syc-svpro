@@ -318,6 +318,10 @@ command :sort do |c|
   c.default_value '%Y-%m-%d'
   c.flag [:df]
 
+  c.desc 'First row to sort, row numbers are 0 based'
+  c.arg_name 'ROW_NUMBER'
+  c.flag [:start]
+
   c.desc 'File doesn\'t contain a header'
   c.switch [:h, :headerless]
 
@@ -325,9 +329,14 @@ command :sort do |c|
   c.switch [:d, :desc]
 
   c.action do |global_options,options,args|
-    sorter = Sycsvpro::Sorter.new(infile: global_options[:f], outfile: global_options[:o],
-                                  rows: options[:r], cols: options[:c], df: options[:df],
-                                  headerless: options[:h], desc: options[:d])
+    sorter = Sycsvpro::Sorter.new(infile: global_options[:f], 
+                                  outfile: global_options[:o],
+                                  rows: options[:r], 
+                                  cols: options[:c], 
+                                  df: options[:df],
+                                  start: options[:start],
+                                  headerless: options[:h], 
+                                  desc: options[:d])
     print 'Sorting...'
     sorter.execute
     print 'done'
