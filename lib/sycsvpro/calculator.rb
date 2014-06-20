@@ -49,6 +49,7 @@ module Sycsvpro
     def method_missing(id, *args, &block)
       return to_number(columns[$1.to_i]) if id =~ /c(\d+)/
       return to_date(columns[$1.to_i])   if id =~ /d(\d+)/
+      super
     end
 
     # Executes the calculator
@@ -75,6 +76,8 @@ module Sycsvpro
           out.puts @columns.join(';')
 
           @columns.each_with_index do |column, index|
+            column = 0 unless column.to_s =~ /^[\d\.,]*$/
+
             if @sum_row[index]
               @sum_row[index] += to_number column
             else
