@@ -281,11 +281,11 @@ Release notes
 Version 0.1.2
 -------------
 * Now it is possible to have comma ',' in the filter as non separating values. 
-You can now define a filter like 1-2,4,/[56789]{2,}/,10
+  You can now define a filter like 1-2,4,/[56789]{2,}/,10
 * Filtering rows on boolean expression based on values contained in columns.
-The boolean expression has to be enclosed between BEGIN and END
+  The boolean expression has to be enclosed between BEGIN and END
 
-Example:
+  Example:
     + ``-r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END``
     + s0 - string in column 0
     + n1 - number in column 1
