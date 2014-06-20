@@ -285,10 +285,10 @@ You can now define a filter like 1-2,4,/[56789]{2,}/,10
 * Filtering rows on boolean expression based on values contained in columns.
   The boolean expression has to be enclosed between BEGIN and END
   Example:
-      - ``-r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END``
-      - s0 - string in column 0
-      - n1 - number in column 1
-      - d2 - date   in column 2
+         - ``-r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END``
+         - s0 - string in column 0
+         - n1 - number in column 1
+         - d2 - date   in column 2
 * ``list`` shows the directory of the script file (`dir: true`) and has the 
 flag *all* to show all scripts, that is _insert files_ and _Ruby files_
 * When counting columns with *count* the column headers are sorted
