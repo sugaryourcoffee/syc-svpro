@@ -280,17 +280,17 @@ Release notes
 
 Version 0.1.2
 -------------
-* Now it is possible to have , in the filter as non separating values. You can
-now define filter like 1-2,4,/[56789]{2,}/,10
+* Now it is possible to have comma ',' in the filter as non separating values. 
+You can now define a filter like 1-2,4,/[56789]{2,}/,10
 * Filtering rows on boolean expression based on values contained in columns.
   The boolean expression has to be enclosed between BEGIN and END
   Example:
-    -r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END
-    s0 - string in column 0
-    n1 - number in column 1
-    d2 - date   in column 2
-* ``list`` shows the directory of the script file and has the flag *all* to
-show all scripts, that is _insert files_ and _Ruby files_
+      ``-r BEGINs0=='Ruby'&&n1<1||d2==Date.new(2014,6,17)END``
+      s0 - string in column 0
+      n1 - number in column 1
+      d2 - date   in column 2
+* ``list`` shows the directory of the script file (`dir: true`) and has the 
+flag *all* to show all scripts, that is _insert files_ and _Ruby files_
 * When counting columns with *count* the column headers are sorted
 alphabetically. No it is possible to set ``sort: false`` to keep the column
 headers in the sequence they are specified
@@ -304,8 +304,8 @@ row are added on top of the sorted file
 * `sycsvpro -f infile analyze` now lists the columns with sample data
 * Add `params` method to *Dsl* that retrieves the params provided in the execute
 command: `sycsvpro execute script.rb method infile param1 param2`
-* Add `clean\_up` to *Dsl* that takes files to be deleted after the script has
-run: `clean\_up(%w{file1 file2})`
+* Add `clean_up` to *Dsl* that takes files to be deleted after the script has
+run: `clean_up(%w{file1 file2})`
 
 Installation
 ============
