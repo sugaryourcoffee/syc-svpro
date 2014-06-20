@@ -76,16 +76,13 @@ module Sycsvpro
           end
         end
       end
-      unless sum_col_title.nil?
-        heading << sum_col_title
-        sums[sum_col_title] = sums.values.inject(:+)
-      end
     end
 
-   # Writes the count results
+    # Writes the count results
     def write_result
       sum_line = [sum_row_title] + [''] * (key_titles.size - 1)
-      headline = heading_sort ? heading.sort : col_filter.pivot.keys
+      headline = heading_sort ? heading.sort : original_pivot_sequence_heading
+      headline << add_sum_col unless sum_col_title.nil?
       headline.each do |h|
         sum_line << sums[h]
       end
@@ -107,7 +104,8 @@ module Sycsvpro
 
     private
 
-      # Initializes the sum row title an positions as well as the cum column title
+      # Initializes the sum row title an positions as well as the sum column 
+      # title
       def init_sum_scheme(sum_scheme)
 
         return if sum_scheme.nil?
@@ -138,6 +136,18 @@ module Sycsvpro
           @key_columns << key[0].to_i
         end
 
+      end
+
+      # Arrange heading in the original sequence regarding conditional column
+      # filters
+      def original_pivot_sequence_heading
+        (heading.sort - col_filter.pivot.keys << col_filter.pivot.keys).flatten
+      end
+
+      # Add a sum column to the end of the heading
+      def add_sum_col
+        sums[sum_col_title] = sums.values.inject(:+)
+        sum_col_title
       end
 
   end
