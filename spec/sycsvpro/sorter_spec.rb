@@ -6,6 +6,7 @@ module Sycsvpro
 
     before do
       @in_file   = File.join(File.dirname(__FILE__), "files/in.csv")
+      @in_start  = File.join(File.dirname(__FILE__), "files/in_start.csv")
       @in_2_file = File.join(File.dirname(__FILE__), "files/in2.csv")
       @in_3_file = File.join(File.dirname(__FILE__), "files/in3.csv")
       @out_file  = File.join(File.dirname(__FILE__), "files/out.csv")
@@ -80,6 +81,55 @@ module Sycsvpro
       end
     end
 
+    it "should start sorting at specified row with headerless false" do
+      rows = "0-7"
+      cols = "s:3-5,s:0"
+      df   = "%d.%m.%Y"
+
+      sorter = Sorter.new(infile: @in_start, outfile: @out_file, rows: rows,
+                          cols: cols, df: df, start: "1")
+
+      sorter.execute
+
+      result = [ "customer;contract-number;expires-on;machine;product1;product2",
+                 "Total;0;0;0;0;0",
+                 "Fink;1234;20.12.2015;f1;con123;dri222",
+                 "Fink;1234;30.12.2016;f2;con333;dri321",
+                 "fink;1234;;f3;con332;dri321",
+                 "Gent;4323;1.3.2014;g1;con123;dri111",
+                 "Haas;3322;1.10.2011;h1;con332;dri111",
+                 "Klig;4432;;k1;con332;dri222",
+                 "Rank;3232;1.5.2013;r1;con332;dri321" ]
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end
+    end
+
+    it "should start sorting at specified row with header true" do
+      rows = "0-7"
+      cols = "s:3-5,s:0"
+      df   = "%d.%m.%Y"
+
+      sorter = Sorter.new(infile: @in_start, outfile: @out_file, rows: rows,
+                          cols: cols, df: df, headerless: true, start: "2")
+
+      sorter.execute
+
+      result = [ "customer;contract-number;expires-on;machine;product1;product2",
+                 "Total;0;0;0;0;0",
+                 "Fink;1234;20.12.2015;f1;con123;dri222",
+                 "Fink;1234;30.12.2016;f2;con333;dri321",
+                 "fink;1234;;f3;con332;dri321",
+                 "Gent;4323;1.3.2014;g1;con123;dri111",
+                 "Haas;3322;1.10.2011;h1;con332;dri111",
+                 "Klig;4432;;k1;con332;dri222",
+                 "Rank;3232;1.5.2013;r1;con332;dri321" ]
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end
+    end
 
     it "should sort a date column" do
       rows = "1-7"

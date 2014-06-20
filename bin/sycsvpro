@@ -53,11 +53,13 @@ command :analyze do |c|
     puts "Analysis of #{global_options[:f]}"
     puts "#{result.col_count} columns: #{result.cols}"
     puts "#{result.row_count} rows"
-    result.cols.each_with_index do |col, index|
-      puts "#{index}: #{col}"
-    end
-    puts "Row sample data:"
+    puts; puts "Row sample data:"
     puts "#{result.sample_row}"
+    puts; puts "Column index: Column name | Column sample value"
+    sample_cols = result.sample_row.split(';')
+    result.cols.each_with_index do |col, index|
+      puts "#{index}: #{col} | #{sample_cols[index]}"
+    end
   end
 end
 
