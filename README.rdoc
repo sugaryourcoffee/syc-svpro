@@ -4,7 +4,8 @@ Author:: Pierre Sugar (mailto:pierre@sugaryourcoffee.de)
 Copyright:: Copyright (c) 2014 by Pierre Sugar
 License:: Distributed uder the MIT license, see LICENSE in the source distro
 
-The application provides an interface for analyzing, cleaning and operating on csv files
+The application provides an interface for analyzing, cleaning and operating on 
+csv files
 
 {<img src="https://badge.fury.io/rb/sycsvpro.png" alt="Gem Version" />}[http://badge.fury.io/rb/sycsvpro]
 
@@ -41,5 +42,5 @@ Test files are in
 
     spec/sycsvpro/files
 
-:include:sycsvpro.rdoc
+:include: sycsvpro.rdoc
 

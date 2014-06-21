@@ -30,9 +30,18 @@ module Sycsvpro
     # if true add a sum row at the bottom of the out file
     attr_reader :add_sum_row
 
-    # Creates a new Calculator. Options expects :infile, :outfile, :rows and :columns. Optionally
-    # a header can be provided. The header can be supplemented with additional column names that
-    # are generated due to a arithmetic operation that creates new columns
+    # Creates a new Calculator. Options expects :infile, :outfile, :rows and 
+    # :columns. Optionally a header can be provided. The header can be 
+    # supplemented with additional column names that are generated due to a 
+    # arithmetic operation that creates new columns
+    # :call-seq:
+    #   Sycsvpro::Calculator.new(infile:  "in.csv",
+    #                            outfile: "out.csv",
+    #                            df:      "%d.%m.%Y",
+    #                            rows:    "1,2,BEGINn3>20END",
+    #                            header:  "*,Count",
+    #                            cols:    "4:Count=c1+c2*2",
+    #                            sum:     true).execute
     def initialize(options={})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
@@ -46,13 +55,14 @@ module Sycsvpro
     end
 
     # Retrieves the values from a row as the result of a arithmetic operation
+    # with #eval
     def method_missing(id, *args, &block)
       return to_number(columns[$1.to_i]) if id =~ /c(\d+)/
       return to_date(columns[$1.to_i])   if id =~ /d(\d+)/
       super
     end
 
-    # Executes the calculator
+    # Executes the calculator and writes the result to the _outfile_
     def execute
       processed_header = false
 
@@ -110,7 +120,8 @@ module Sycsvpro
         end
       end
 
-      # Casts a string to an integer or float depending whether the value has a decimal point
+      # Casts a string to an integer or float depending whether the value has a 
+      # decimal point
       def to_number(value)
         return value.to_i unless value =~ /\./
         return value.to_f if     value =~ /\./ 

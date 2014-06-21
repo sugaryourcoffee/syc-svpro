@@ -66,11 +66,7 @@ module Sycsvpro
       return false if boolean_filter.empty? or values.empty?
       expression = boolean_filter
       columns = expression.scan(/(([nsd])(\d+))([<!=~>]{1,2})(.*?)(?:[\|&]{2}|$)/)
-#      STDERR.puts "expr = #{expression.inspect}"
-#      STDERR.puts "vals = #{values.inspect}"
-#      STDERR.puts "cols = #{columns.inspect}"
       columns.each do |c|
-#        STDERR.puts "val = #{values[c[2].to_i].inspect}"
         value = case c[1]
         when 'n'
           values[c[2].to_i].empty? ? '0' : values[c[2].to_i]
@@ -93,9 +89,7 @@ module Sycsvpro
           end 
         end
         expression = expression.gsub(c[0], value)
-#        STDERR.puts "val2 = #{value}"
       end
-#      STDERR.puts "exp = #{expression.inspect}"
       eval(expression)
     end
 
@@ -124,7 +118,6 @@ module Sycsvpro
       # Creates a filter based on the provided rows and columns select criteria
       def create_filter(values)
         values.scan(/(?<=,|^)(BEGIN.*?END|\/.*?\/|.*?)(?=,|$)/i).flatten.each do |value|
-#          STDERR.puts "value = #{value}"
           send(value)
         end unless values.nil?
       end

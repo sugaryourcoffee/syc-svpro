@@ -5,7 +5,8 @@ require_relative 'dsl'
 # Operating csv files
 module Sycsvpro
 
-  # An Aggregator counts specified row values and adds a sum to the end of the row
+  # An Aggregator counts specified row values and adds a sum to the end of 
+  # the row
   class Aggregator
 
     include Dsl
@@ -35,8 +36,16 @@ module Sycsvpro
     # sums of the column values
     attr_reader :sums
     
-    # Creates a new aggregator. Takes as attributes infile, outfile, key, rows, cols, date-format 
-    # and indicator whether to add a sum row
+    # Creates a new aggregator. Takes as attributes infile, outfile, key, rows, 
+    # cols, date-format and indicator whether to add a sum row
+    # :call-seq:
+    #   Sycsvpro::Aggregator.new(infile:     "in.csv",
+    #                            outfile:    "out.csv",
+    #                            headerless: false,
+    #                            rows:       "1,2-4,/\S/"
+    #                            cols:       "0,5",
+    #                            df:         "%d.%m.%Y",
+    #                            sum:        "Total:1,Items").execute
     def initialize(options={})
       @infile     = options[:infile]
       @outfile    = options[:outfile]
@@ -55,7 +64,8 @@ module Sycsvpro
       write_result
     end
 
-    # Process the aggregation of the key values
+    # Process the aggregation of the key values. The result will be written to
+    # _outfile_
     def process_aggregation
       File.new(infile).each_with_index do |line, index|
         result = col_filter.process(row_filter.process(line.chomp, row: index))
@@ -92,7 +102,8 @@ module Sycsvpro
 
     private
 
-      # Initializes the sum row title an positions as well as the sum column title and position
+      # Initializes the sum row title an positions as well as the sum column 
+      # title and position
       def init_sum_scheme(sum_scheme)
         row_scheme, col_scheme = sum_scheme.split(',') unless sum_scheme.nil?
 
