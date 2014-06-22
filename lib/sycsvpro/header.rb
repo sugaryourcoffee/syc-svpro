@@ -21,11 +21,32 @@ module Sycsvpro
       end
     end
 
+    def method_missing(id)
+      return @row_cols[$1.to_i] if id =~ /^c(\d+)$/
+    end
+
     # Returns the header
     def process(line)
       return "" if @header_cols.empty?
-      @header_cols[0] = unstring(line).split(';')
-      @header_cols.flatten.join(';')
+      header_patterns = {}
+      @row_cols = unstring(line).split(';')
+      if @header_cols[0] == '*'
+        @header_cols[0] = @row_cols
+      else
+        @header_cols.each_with_index do |h,i|
+          if h =~ /^c\d+(?:[=~]{,2}).*$/ 
+            if col = eval(h)
+              last_eval = $1
+              @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
+              header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+            end
+          else
+            @header_cols[i] = h
+          end
+        end
+      end
+      header_patterns.each { |i,h| @header_cols.insert(i,h) }
+      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }.join(';')
     end
   end
 
