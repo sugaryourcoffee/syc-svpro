@@ -27,7 +27,7 @@ module Sycsvpro
     end
 
     # Returns the header
-    def process(line)
+    def process(line, values = true)
       return "" if @header_cols.empty?
       header_patterns = {}
       @row_cols = unstring(line).split(';')
@@ -39,8 +39,12 @@ module Sycsvpro
             if col = eval(h)
               last_eval = $1
               unless @header_cols.index(last_eval) || @header_cols.index(col)
-                @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
-                header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+                if values
+                  @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
+                  header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+                else
+                  @header_cols[i] = col if h =~ /^c\d+$/
+                end
               end
             end
           else

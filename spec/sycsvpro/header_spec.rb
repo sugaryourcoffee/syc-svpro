@@ -17,6 +17,16 @@ module Sycsvpro
       header.process("x0;x1;x2;x3;x4;x5;x6").should eq "A;a6;a1"
     end
 
+    it "should not create columns on arithmetic operation" do
+      header = Header.new("A,c1,c2+c3")
+
+      header.process("h0;h1;h2;h3;h4;h5", false).should eq "A;h1"
+      header.process("a0;a1;a2;a3;a4;a5").should eq "A;h1;a2a3"
+      header.process("b0;b1;b2;b3;b4;b5").should eq "A;h1;a2a3;b2b3"
+      header.process("c0;a1;a2;c3;a4;a5").should eq "A;h1;a2a3;b2b3;a2c3"
+
+    end
+
     it "should create a header from 'A,c1,c2+c3'" do
       header = Header.new("A,c1,c2+c3")
 
