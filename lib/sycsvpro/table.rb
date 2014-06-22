@@ -73,7 +73,7 @@ module Sycsvpro
 
         next if line.empty?
         
-        header.process line
+        header.process line, processed_header
 
         unless processed_header
           processed_header = true
@@ -94,8 +94,11 @@ module Sycsvpro
       File.open(outfile, 'w') do |out|
         out.puts header.to_s
         rows.each do |key, row|
-          line = []
-          line << row[:key] << row[:cols].values
+          line = [] << row[:key]
+          header.clear_header_cols.each_with_index do |col, index|
+            next if index < row[:key].size
+            line << row[:cols][col]
+          end
           out.puts line.flatten.join(';')
         end
       end
@@ -116,12 +119,11 @@ module Sycsvpro
 
     def create_row(key, line)
       # Value:+c1
+      # Value:+n1,c2+c3:+n1
       row = rows[key] || rows[key] = { key: key, cols: Hash.new(0) }  
-      STDERR.puts "row = #{row.inspect}"
       @cols.each do |col|
         column, formula = col.split(':')
-        STDERR.puts "row[:cols][column] = #{row[:cols][column].inspect}"
-        STDERR.puts "#{row[:cols][column]}#{formula}"
+        column = eval(column) if column =~ /^c\d+[=~+]/
         row[:cols][column] = eval("#{row[:cols][column]}#{formula}")
       end
     end

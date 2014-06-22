@@ -56,14 +56,19 @@ module Sycsvpro
       to_s
     end
 
+    # Returns @header_cols without pattern
+    def clear_header_cols
+      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
+    end
+
     # Returns the index of the column
     def column_of(value)
-      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }.index(value)
+      clear_header_cols.index(value)
     end
 
     # Returns the header
     def to_s
-      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }.join(';')
+      clear_header_cols.join(';')
     end
 
   end
