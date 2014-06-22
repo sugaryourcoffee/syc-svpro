@@ -37,8 +37,10 @@ module Sycsvpro
           if h =~ /^c\d+(?:[=~]{,2}).*$/ 
             if col = eval(h)
               last_eval = $1
-              @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
-              header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+              unless @header_cols.index(last_eval) || @header_cols.index(col)
+                @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
+                header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+              end
             end
           else
             @header_cols[i] = h
@@ -46,8 +48,14 @@ module Sycsvpro
         end
       end
       header_patterns.each { |i,h| @header_cols.insert(i,h) }
+      to_s
+    end
+
+    # Returns the header
+    def to_s
       @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }.join(';')
     end
+
   end
 
 end
