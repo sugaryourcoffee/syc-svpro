@@ -21,8 +21,9 @@ module Sycsvpro
       end
     end
 
-    def method_missing(id)
+    def method_missing(id, *args, &block)
       return @row_cols[$1.to_i] if id =~ /^c(\d+)$/
+      super
     end
 
     # Returns the header
@@ -49,6 +50,11 @@ module Sycsvpro
       end
       header_patterns.each { |i,h| @header_cols.insert(i,h) }
       to_s
+    end
+
+    # Returns the index of the column
+    def column_of(value)
+      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }.index(value)
     end
 
     # Returns the header

@@ -53,6 +53,17 @@ module Sycsvpro
       header.to_s.should eq "a4;A;2012;2013;a1;B"
     end
 
+    it "should return the index of the coloum" do
+      header = Header.new("c4,A,c0=~/\\.(\\d{4})/,c1,B")
+
+      header.process("a0;a1;a2;a3;a4;a5").should eq "a4;A;a1;B"
+      header.column_of("a1").should eq 2
+      header.process("1.1.2012;b1;b2;b3;b4;b5").should eq "a4;A;2012;a1;B"
+      header.column_of("a1").should eq 3
+      header.process("3.4.2013;c1;c2;c3;c4;c5").should eq "a4;A;2012;2013;a1;B"
+      header.column_of("B").should eq 5
+     end
+
   end
 
 end
