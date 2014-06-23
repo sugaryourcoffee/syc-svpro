@@ -16,6 +16,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * create or edit a Ruby script
 * list scripts available optionally with methods (since version 0.0.7)
 * execute a Ruby script file that operates a csv file
+* create a table from a source file with dynamically create columns (since version 0.1.4)
 
 To get help type
 
@@ -307,6 +308,26 @@ row are added on top of the sorted file
 command: `sycsvpro execute script.rb method infile param1 param2`
 * Add `clean_up` to *Dsl* that takes files to be deleted after the script has
 run: `clean_up(%w{file1 file2})`
+
+Version 0.1.4
+-------------
+* A new Table class is available with following features
+    * Create dynamic headline columns based on source table data
+    * Associate values to multi keys
+    * Create values based on arithmetic operations of source table data
+  Example
+    `sycsvpro -f in.csv -o out.csv table -h "c4,c5,c0=~/\\.(\\d{4})/" \
+                                         -k "c4,c5" \
+                                         -c "c0=~/\\.(\\d{4})/:+n1"`
+  h:: the header is created from the source table header of column 4 and 5.
+      Another header column is created dynamicall based on the year part of a
+      date in column 0
+  k:: the key is based on source table of column 4 and 5
+  c:: the column operation is in the form HeaderName:Operation. In this case the
+      HeaderName is dynamically determined based on column 0 and added the value
+      of column 1 to this column that is associated to the key
+
+  c4, n4, d4 are string, number and date values respectively
 
 Installation
 ============

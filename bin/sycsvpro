@@ -303,6 +303,45 @@ command :aggregate do |c|
 
 end
 
+desc 'Creates a table from a source file'
+
+command :table do |c|
+
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => row_regex
+
+  c.desc 'Header can be defined by Words (Year), references to source header (c1) and dynamically created header values (c1+c2,c0=~/\\.(\\d{4})/)'
+  c.arg_name "COL_A,c6,c2+c4,c0=~/\\.(\\d{4})/"
+  c.flag [:h, :header]
+
+  c.desc 'Key to that the other columns are associated to. A key can be created dynamically'
+  c.arg_name "c0=~/\\.(\\d{4})/,c6"
+  c.flag [:k, :key]
+
+  c.desc 'Columns to be associated to the key. Columns are identified by the column name. The operation to create the column value is separated by a colon (:) from the column name'
+  c.arg_name "c0=~/\\.(\\d{4})/:+n1,Value:+n2"
+  c.flag [:c, :col]
+
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
+  c.action do |global_options,options,args|
+    print "Table..."
+    table = Sycsvpro::Table.new(infile:  global_options[:f], 
+                                outfile: global_options[:o], 
+                                df:      options[:df],
+                                rows:    options[:r], 
+                                header:  options[:h],
+                                key:     options[:k],
+                                cols:    options[:c]) 
+    table.execute
+    puts "done"
+  end
+
+end
+
 desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'
