@@ -323,6 +323,10 @@ command :table do |c|
   c.arg_name "c0=~/\\.(\\d{4})/:+n1,Value:+n2"
   c.flag [:c, :col]
 
+  c.desc 'Adds a sum row after the heading or at the end of the file for col values'
+  c.arg_name "TOP|EOF:c0=~/\\.(\\d{4})/,Value"
+  c.flag [:s, :sum]
+
   c.desc 'Format of date values'
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
@@ -341,7 +345,8 @@ command :table do |c|
                                 rows:    options[:r], 
                                 header:  options[:h],
                                 key:     options[:k],
-                                cols:    options[:c]) 
+                                cols:    options[:c],
+                                sum:     options[:s]) 
     table.execute
     puts "done"
   end
