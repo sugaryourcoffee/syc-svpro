@@ -66,6 +66,11 @@ module Sycsvpro
       clear_header_cols.index(value)
     end
 
+    # Returns the value of column number
+    def value_of(column)
+      clear_header_cols[column]
+    end
+
     # Returns the header
     def to_s
       clear_header_cols.join(';')

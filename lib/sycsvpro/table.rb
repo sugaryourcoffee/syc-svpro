@@ -44,6 +44,7 @@ module Sycsvpro
       @keys        = options[:key].split(',')
       @cols        = options[:cols].split(',')
       @number_format = options[:nf] || 'EN'
+      prepare_sum_row options[:sum]
       @rows        = {}
     end
 
@@ -93,6 +94,7 @@ module Sycsvpro
     def write_to_file
       File.open(outfile, 'w') do |out|
         out.puts header.to_s
+        out.puts create_sum_row if @sum_row_pos == 'TOP'
         rows.each do |key, row|
           line = [] << row[:key]
           header.clear_header_cols.each_with_index do |col, index|
@@ -101,6 +103,7 @@ module Sycsvpro
           end
           out.puts line.flatten.join(';')
         end
+        out.puts create_sum_row if @sum_row_pos == 'EOF'
       end
     end
 
@@ -123,6 +126,7 @@ module Sycsvpro
         column, formula = col.split(':')
         column = evaluate(column) if column =~ /^c\d+[=~+]/
         row[:cols][column] = eval("#{row[:cols][column]}#{formula}")
+        add_to_sum_row(row[:cols][column], column)
       end
     end
 
@@ -166,6 +170,37 @@ module Sycsvpro
         else
           fail_result
         end   
+      end
+
+      def prepare_sum_row(pattern)
+        return if pattern.nil? || pattern.empty?
+        @sum_row_pos, sum_row_pattern = pattern.split(':')
+        @sum_row = Hash.new
+        @sum_row_patterns = sum_row_pattern.split(',')
+      end
+
+      def add_to_sum_row(value, column)
+        return unless @sum_row_patterns
+        @sum_row_patterns.each do |pattern|
+          if pattern =~ /^c\d+[=~+]/
+            header_column = evaluate(pattern, "")
+          else
+            header_column = pattern
+          end
+
+          if header_column == column
+            @sum_row[header_column] ||= 0
+            @sum_row[header_column] += value
+          end
+        end
+      end
+
+      def create_sum_row
+        line = []
+        header.clear_header_cols.each_with_index do |col, index|
+          line << @sum_row[col] || ""
+        end
+        line.flatten.join(';')
       end
 
   end

@@ -60,6 +60,54 @@ module Sycsvpro
       end
     end
 
+    it "should add a sum row at after the heading" do
+      Sycsvpro::Table.new(infile: @in_file,
+                          outfile: @out_file,
+                          header:  "c4,c5,c0=~/\\.(\\d{4})/",
+                          key:     "c4,c5",
+                          cols:    "c0=~/\\.(\\d{4})/:+n1",
+                          sum:     "TOP:c0=~/\\.(\\d{4})/").execute
+
+      result = [ "Customer Name;Customer-ID;2013;2014", 
+                 ";;53.7;41.5",
+                 "Hank;133;20.5;20.5",
+                 "Hans;234;0;21.0",
+                 "Jack;432;33.2;0" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
+    it "should add a sum row at the bottom" do
+      Sycsvpro::Table.new(infile: @in_file,
+                          outfile: @out_file,
+                          header:  "c4,c5,c0=~/\\.(\\d{4})/",
+                          key:     "c4,c5",
+                          cols:    "c0=~/\\.(\\d{4})/:+n1",
+                          sum:     "EOF:c0=~/\\.(\\d{4})/").execute
+
+      result = [ "Customer Name;Customer-ID;2013;2014", 
+                 "Hank;133;20.5;20.5",
+                 "Hans;234;0;21.0",
+                 "Jack;432;33.2;0",
+                 ";;53.7;41.5" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
   end
 
 end
