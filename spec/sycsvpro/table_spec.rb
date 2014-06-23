@@ -60,6 +60,25 @@ module Sycsvpro
       end
     end
 
+    it "should add a sum row" do
+      Sycsvpro::Table.new(infile: @in_file,
+                          outfile: @out_file,
+                          header:  "Year,c6,c1,c2+c3",
+                          key:     "c0=~/\\.(\\d{4})/,c6",
+                          cols:    "Value:+n1,c2+c3:+n1",
+                          sum:     "top:Value,c2+c3").execute
+
+      result = [ "Year;Country;Value;A1;B2;B4", 
+                 ";;95.2;41.0;21.0;33.2",
+                 "2013;AT;53.7;20.5;0;33.2", 
+                 "2014;DE;21.0;0;21.0;0",
+                 "2014;AT;20.5;20.5;0;0" ] 
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end
+    end
+
     it "should add a sum row at after the heading" do
       Sycsvpro::Table.new(infile: @in_file,
                           outfile: @out_file,

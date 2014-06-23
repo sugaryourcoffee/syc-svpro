@@ -34,7 +34,8 @@ module Sycsvpro
     #                       header:  "Year,c6,c1",
     #                       key:     "c0=~/\\.(\\d{4})/,c6",
     #                       cols:    "Value:+n1,c2+c3:+n1",
-    #                       nf:      "DE").execute
+    #                       nf:      "DE",
+    #                       sum:     "TOP:Value,c2+c3").execute
     def initialize(options = {})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
@@ -125,8 +126,9 @@ module Sycsvpro
       @cols.each do |col|
         column, formula = col.split(':')
         column = evaluate(column) if column =~ /^c\d+[=~+]/
+        previous_value = row[:cols][column]
         row[:cols][column] = eval("#{row[:cols][column]}#{formula}")
-        add_to_sum_row(row[:cols][column], column)
+        add_to_sum_row(row[:cols][column] - previous_value, column)
       end
     end
 
@@ -175,6 +177,7 @@ module Sycsvpro
       def prepare_sum_row(pattern)
         return if pattern.nil? || pattern.empty?
         @sum_row_pos, sum_row_pattern = pattern.split(':')
+        @sum_row_pos.upcase!
         @sum_row = Hash.new
         @sum_row_patterns = sum_row_pattern.split(',')
       end
