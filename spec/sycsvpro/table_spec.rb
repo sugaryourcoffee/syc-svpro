@@ -43,11 +43,23 @@ module Sycsvpro
 
     end
 
-    it "should create key from operation"
+    it "should create key from operation" do
+      Sycsvpro::Table.new(infile: @in_file,
+                          outfile: @out_file,
+                          header:  "c4,c5,c0=~/\\.(\\d{4})/",
+                          key:     "c4,c5",
+                          cols:    "c0=~/\\.(\\d{4})/:+n1").execute
 
-    it "should assign values to columns from operation"
+      result = [ "Customer Name;Customer-ID;2013;2014", 
+                 "Hank;133;20.5;20.5",
+                 "Hans;234;0;21.0",
+                 "Jack;432;33.2;0" ]
 
- 
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+      end
+    end
+
   end
 
 end

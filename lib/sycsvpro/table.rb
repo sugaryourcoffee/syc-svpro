@@ -17,8 +17,6 @@ module Sycsvpro
     attr_reader :row_filter
     # date format for date operations
     attr_reader :date_format
-    # the operations on columns
-    attr_reader :formulae
     # header of the outfile
     attr_reader :header
     # rows of the created table
@@ -32,10 +30,10 @@ module Sycsvpro
     #   Sycsvpro::Table.new(infile:  "in.csv",
     #                       outfile: "out.csv",
     #                       df:      "%d.%m.%Y",
+    #                       rows:    "1,2,BEGINn3>20END",
     #                       header:  "Year,c6,c1",
     #                       key:     "c0=~/\\.(\\d{4})/,c6",
-    #                       rows:    "1,2,BEGINn3>20END",
-    #                       cols:    "o2:+c",
+    #                       cols:    "Value:+n1,c2+c3:+n1",
     #                       sum:     true).execute
     def initialize(options = {})
       @infile      = options[:infile]
@@ -43,10 +41,9 @@ module Sycsvpro
       @date_format = options[:df] || "%Y-%m-%d"
       @row_filter  = RowFilter.new(options[:rows], df: options[:df])
       @header      = Header.new(options[:header])
-      @rows        = {}
       @keys        = options[:key].split(',')
       @cols        = options[:cols].split(',')
-      @formulae    = {}
+      @rows        = {}
     end
 
     # Retrieves the values from a row as the result of a arithmetic operation
@@ -104,26 +101,24 @@ module Sycsvpro
       end
     end
 
+    # Creates a key from the provided key pattern
     def create_key
       key = []
-      @keys.each do |k|
-        if value = eval(k)
-          last_match = $1
-          key << ((k =~ /^c\d+=~/) ? last_match : value)
-        else
-          key << ""
-        end   
-      end
+      @keys.each { |k| key << evaluate(k, "") }
       key
     end
 
+    # Creates a table row based on the column pattern
+    # Examples of column patterns
+    # * Value:+n1             Adds content of column 1 to Value column
+    # * Value:+n1,c2+c3:+n1   Creates a dynamic column and adds column 1 value
+    # * c0=~/\\.(\\d{4})/:+n1 Creates dynamic column from regex and adds
+    #                         column 1 value
     def create_row(key, line)
-      # Value:+c1
-      # Value:+n1,c2+c3:+n1
       row = rows[key] || rows[key] = { key: key, cols: Hash.new(0) }  
       @cols.each do |col|
         column, formula = col.split(':')
-        column = eval(column) if column =~ /^c\d+[=~+]/
+        column = evaluate(column) if column =~ /^c\d+[=~+]/
         row[:cols][column] = eval("#{row[:cols][column]}#{formula}")
       end
     end
@@ -144,6 +139,20 @@ module Sycsvpro
         else
           Date.strptime(value, date_format)
         end
+      end
+
+      # Evaluate a formula
+      # Example invokation
+      #     evaluate("n1+n2", 0)
+      #     evaluate("c1+c2", "failed")
+      #     evaluate("c0=~/\\.(\\d{4})/", "0")
+      def evaluate(formula, fail_result = 0)
+        if value = eval(formula)
+          last_match = $1
+          (formula =~ /^c\d+=~/) ? last_match : value
+        else
+          fail_result
+        end   
       end
 
   end
