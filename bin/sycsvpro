@@ -327,11 +327,17 @@ command :table do |c|
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
 
+  c.desc 'Format of number values'
+  c.arg_name 'DE|EN'
+  c.default_value 'EN'
+  c.flag [:nf]
+
   c.action do |global_options,options,args|
     print "Table..."
     table = Sycsvpro::Table.new(infile:  global_options[:f], 
                                 outfile: global_options[:o], 
                                 df:      options[:df],
+                                nf:      options[:nf],
                                 rows:    options[:r], 
                                 header:  options[:h],
                                 key:     options[:k],

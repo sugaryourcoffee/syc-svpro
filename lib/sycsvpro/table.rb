@@ -34,7 +34,7 @@ module Sycsvpro
     #                       header:  "Year,c6,c1",
     #                       key:     "c0=~/\\.(\\d{4})/,c6",
     #                       cols:    "Value:+n1,c2+c3:+n1",
-    #                       sum:     true).execute
+    #                       nf:      "DE").execute
     def initialize(options = {})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
@@ -43,6 +43,7 @@ module Sycsvpro
       @header      = Header.new(options[:header])
       @keys        = options[:key].split(',')
       @cols        = options[:cols].split(',')
+      @number_format = options[:nf] || 'EN'
       @rows        = {}
     end
 
@@ -70,6 +71,8 @@ module Sycsvpro
 
         next if line.empty?
         
+        line = unstring(line).chomp
+
         header.process line, processed_header
 
         unless processed_header
@@ -128,6 +131,7 @@ module Sycsvpro
       # Casts a string to an integer or float depending whether the value has a 
       # decimal point
       def to_number(value)
+        value = convert_to_en(value)
         return value.to_i unless value =~ /\./
         return value.to_f if     value =~ /\./ 
       end
@@ -138,6 +142,15 @@ module Sycsvpro
           nil
         else
           Date.strptime(value, date_format)
+        end
+      end
+
+      # Localize the number to EN
+      def convert_to_en(value)
+        if @number_format == 'DE'
+          value.gsub('.', '_').gsub(',', '.')
+        else
+          value
         end
       end
 
