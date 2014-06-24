@@ -4,8 +4,10 @@ module Sycsvpro
 
   describe Table do
     before do
-      @in_file = File.join(File.dirname(__FILE__), "files/table.csv")
-      @out_file = File.join(File.dirname(__FILE__), "files/out.csv")
+      @in_file          = File.join(File.dirname(__FILE__), "files/table.csv")
+      @in_file_revenues = File.join(File.dirname(__FILE__), 
+                                    "files/table_revenues.csv")
+      @out_file         = File.join(File.dirname(__FILE__), "files/out.csv")
     end
 
     it "should create headings from String and column values" do
@@ -116,6 +118,36 @@ module Sycsvpro
                  "Hans;234;0;21.0",
                  "Jack;432;33.2;0",
                  ";;53.7;41.5" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
+    it "should process cols with commas within expression" do
+
+      sp_order_type = %w{ ZE ZEI Z0 }
+      rp_order_type = %w{ ZRN ZRK }
+
+      Sycsvpro::Table.new(infile: @in_file_revenues,
+                          outfile: @out_file,
+                          header:  "Year,SP,RP,Total",
+                          key:     "c0=~/\\.(\\d{4})/",
+                          cols:    "SP:+n2 if #{sp_order_type}.index(c1),"+
+                                   "RP:+n2 if #{rp_order_type}.index(c1),"+
+                                   "Total:+n2",
+                          nf:      "DE",
+                          sum:     "top:SP,RP,Total").execute
+
+      result = [ "Year;SP;RP;Total", 
+                 ";345.2;3925.73;4270.93",
+                 "2012;300.7;3580.1;3880.8", 
+                 "2013;44.5;345.63;390.13" ] 
 
       rows = 0
 

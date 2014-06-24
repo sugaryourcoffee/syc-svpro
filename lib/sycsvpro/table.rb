@@ -9,6 +9,8 @@ module Sycsvpro
 
     include Dsl
 
+    # Regex to split parameters
+    COL_SPLITTER = /,(?=[\w +]*:)/
     # infile contains the data that is operated on
     attr_reader :infile
     # outfile is the file where the result is written to
@@ -35,7 +37,21 @@ module Sycsvpro
     #                       key:     "c0=~/\\.(\\d{4})/,c6",
     #                       cols:    "Value:+n1,c2+c3:+n1",
     #                       nf:      "DE",
+    #                       pr:      "2",
     #                       sum:     "TOP:Value,c2+c3").execute
+    #
+    # infile:: csv file to operate on
+    # outfile:: csv file with the result
+    # df:: date format
+    # nf:: number format of number values. "DE" e.g. is 1.000,00 where as 
+    #      US is 1,000.00
+    # pr:: precision of number values. Default 2
+    # rows: rows to consider for operation. Rows that don't match the pattern
+    #       will be skipped for operation
+    # header:: Header of the csv file
+    # key:: Values located at value 0 and subsequent columns
+    # cols:: Values added to columns base on a operation or assignment
+    # sum:: sum row at specified position top or eof
     def initialize(options = {})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
@@ -43,8 +59,9 @@ module Sycsvpro
       @row_filter  = RowFilter.new(options[:rows], df: options[:df])
       @header      = Header.new(options[:header])
       @keys        = options[:key].split(',')
-      @cols        = options[:cols].split(',')
+      @cols        = options[:cols].split(COL_SPLITTER)
       @number_format = options[:nf] || 'EN'
+      @precision     = options[:pr] || 2
       prepare_sum_row options[:sum]
       @rows        = {}
     end
@@ -127,8 +144,10 @@ module Sycsvpro
         column, formula = col.split(':')
         column = evaluate(column) if column =~ /^c\d+[=~+]/
         previous_value = row[:cols][column]
-        row[:cols][column] = eval("#{row[:cols][column]}#{formula}")
-        add_to_sum_row(row[:cols][column] - previous_value, column)
+        if value = eval("#{row[:cols][column]}#{formula}")
+          row[:cols][column] = value.round(@precision)
+          add_to_sum_row(row[:cols][column] - previous_value, column)
+        end
       end
     end
 

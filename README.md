@@ -339,6 +339,7 @@ Version 0.1.5
   This will sum up the dynamically created column.
 * Table takes a number format now with `--nf DE` which will convert numbers
   from DE locale like 1.000,00 to 1000.00
+* Table uses a precision for numbers. Default is 2. Can be assigned with `pr: 2`
 
 Installation
 ============
