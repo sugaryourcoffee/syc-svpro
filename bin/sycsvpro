@@ -89,12 +89,13 @@ command :extract do |c|
   end
 end
 
-desc 'Collect values of specified rows and columns from the file and group them in categories'
+desc 'Collect values of specified rows and columns from the file and group '+
+     'them in categories'
 command :collect do |c|
 
   c.desc 'Rows to consider for collection'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex
 
   c.desc 'Columns to collect values from'
   c.arg_name 'CATEGORY1:COL1,COL2,COL10-COL30+CATEGORY2:COL3-COL9'
@@ -120,7 +121,7 @@ desc 'Allocate specified columns from the file to a key value'
 command :allocate do |c|
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex 
 
   c.desc 'Key to allocate columns to'
   c.arg_name '0'
@@ -147,7 +148,8 @@ command :allocate do |c|
   end
 end
 
-desc 'Creates a script/insert file or opens a script/insert file for editing if it exists'
+desc 'Creates a script/insert file or opens a script/insert file for editing '+
+     'if it exists'
 command :edit do |c|
   c.desc 'Name of the script/insert file'
   c.arg_name 'SCRIPT_NAME.rb|INSERT_NAME.ins'
@@ -159,12 +161,14 @@ command :edit do |c|
 
   c.action do |global_options,options,args|
     script_creator = Sycsvpro::ScriptCreator.new(dir: sycsvpro_directory, 
-                                                 script: options[:s], method: options[:m])  
+                                                 script: options[:s], 
+                                                 method: options[:m])  
     system "vi #{script_creator.script_file}"
   end
 end
 
-desc 'Lists script or insert files in the scripts directory with optionally listing methods of script files'
+desc 'Lists script or insert files in the scripts directory with optionally '+
+     'listing methods of script files'
 command :list do |c|
   c.desc 'Type of script (Ruby, insert or all files)'
   c.default_value 'script'
@@ -235,7 +239,7 @@ command :count do |c|
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex
 
   c.desc 'Columns to count where columns 2 and 3 are counted conditionally'
   c.arg_name '1,2:<14.2.2014,10-30,3:>10'
@@ -274,7 +278,7 @@ command :aggregate do |c|
 
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex
 
   c.desc 'Columns to count'
   c.arg_name '1,2-4'
@@ -311,19 +315,24 @@ command :table do |c|
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
   c.flag [:r, :row], :must_match => row_regex
 
-  c.desc 'Header can be defined by Words (Year), references to source header (c1) and dynamically created header values (c1+c2,c0=~/\\.(\\d{4})/)'
+  c.desc 'Header can be defined by Words (Year), references to source header '+
+         '(c1) and dynamically created header values (c1+c2,c0=~/\\.(\\d{4})/)'
   c.arg_name "COL_A,c6,c2+c4,c0=~/\\.(\\d{4})/"
   c.flag [:h, :header]
 
-  c.desc 'Key to that the other columns are associated to. A key can be created dynamically'
+  c.desc 'Key to that the other columns are associated to. A key can be '+
+         'created dynamically'
   c.arg_name "c0=~/\\.(\\d{4})/,c6"
   c.flag [:k, :key]
 
-  c.desc 'Columns to be associated to the key. Columns are identified by the column name. The operation to create the column value is separated by a colon (:) from the column name'
+  c.desc 'Columns to be associated to the key. Columns are identified by the '+
+         'column name. The operation to create the column value is separated '+
+         'by a colon (:) from the column name'
   c.arg_name "c0=~/\\.(\\d{4})/:+n1,Value:+n2"
   c.flag [:c, :col]
 
-  c.desc 'Adds a sum row after the heading or at the end of the file for col values'
+  c.desc 'Adds a sum row after the heading or at the end of the file for col '+
+         'values'
   c.arg_name "TOP|EOF:c0=~/\\.(\\d{4})/,Value"
   c.flag [:s, :sum]
 
@@ -357,9 +366,10 @@ desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex 
 
-  c.desc 'Columns to sort based on a type (n = number, s = string, d = date) and its value'
+  c.desc 'Columns to sort based on a type (n = number, s = string, d = date) '+
+         'and its value'
   c.arg_name 'n:1,s:2-5,d:7'
   c.flag [:c, :col], :must_match => /[d|n|s]:\d+(?:-\d+|,[d|n|s]:\d+)*/
 
@@ -448,29 +458,33 @@ command :map do |c|
   end
 end
 
-desc 'Process math operations on columns. Optionally add a sum row'
+desc 'Process operations on columns. Optionally add a sum row for columns with'+
+     'number values'
 command :calc do |c|
     c.desc 'The first non-empty column is considered the header. '+
-           'If additional columns are created then *,COL1,COL2 will create the additional header '+
-           'columns COL1 and COL2'
-    c.arg_name '*,COL2,COL2'
+           'If additional columns are created then *,COL1,COL2 will create '+
+           'the additional header columns COL1 and COL2. It is also possible '+
+           'to specify different header columns like COL1,COL2,COL3'
+    c.arg_name '*,COL2,COL2|COL1,COL2,COL3'
     default_value '*'
-    c.flag [:h, :header], :must_match => /\*(?:,\w+)*/
+    c.flag [:h, :header], :must_match => /^[*|\w ]+(?:,[\w ]+)*/
 
     c.desc 'Rows to consider for calculations'
     c.arg_name 'ROW1,ROW2-ROW10,45-EOF,REGEXP'
-    c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+    c.flag [:r, :row], :must_match => row_regex
 
-    c.desc 'Column to do calculations on'
-    c.arg_name 'COL1:*2,COL2:-C3,COL3:*2+(4+C5),COL6:NEW_COL=C1+5'
-    #c.flag [:c, :col], :must_match => /\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*(?:,\d+:(?:[\*\/\+\-]|\w+=[\d|(]*)[\*\/\+\-\dc()]*)*/
-    c.flag [:c, :col], :must_match => /\d+:(?:[\*\+\-\/\d\w=\[\],\.:()]*)/
+    c.desc 'Column to do operations on. s0 = String in column 0, c1 = number '+
+           'in column 1 and d2 = date in column 2. Examples: 2:c1+1,3:s0,'+
+           '4:s0.scan(/(\\d+)\//).flatten[0]'
+    c.arg_name "COL1:*2,COL2:-C3,COL3:*2+(4+C5)"
+    c.flag [:c, :col], :must_match => /^\d+:.+/
 
     c.desc 'Date format of date columns'
     c.arg_name '%d.%m.%Y|%Y-%m-%d|...'
     c.flag [:df]
 
-    c.desc 'Indicate to add a sum row'
+    c.desc 'Indicate to add a sum row at end of file. Will sum up values with '+
+           'numbers. Columns with non-number values will be set to 0.'
     c.switch [:s, :sum]
 
   c.action do |global_options,options,args|

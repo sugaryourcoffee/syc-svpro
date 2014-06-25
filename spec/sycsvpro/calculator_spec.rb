@@ -8,6 +8,7 @@ module Sycsvpro
       @in_file = File.join(File.dirname(__FILE__), "files/machines.csv")
       @in_date_file = File.join(File.dirname(__FILE__), "files/machine-delivery.csv")
       @in_number_file = File.join(File.dirname(__FILE__), "files/machine-count.csv")
+      @in_customer_file = File.join(File.dirname(__FILE__), "files/customers.csv")
       @out_file = File.join(File.dirname(__FILE__), "files/machines_out.csv")
     end
 
@@ -87,7 +88,7 @@ module Sycsvpro
 
     it "should find minimum of specified date rows" do
       header = "*,Min_Date"
-      cols   = "3:Min_Date=[d1,d2].compact.min"
+      cols   = "3:[d1,d2].compact.min"
       rows   = "1-8"
       df     = "%d.%m.%Y"
 
@@ -146,6 +147,35 @@ module Sycsvpro
       File.new(@out_file, 'r').each_with_index do |line, index|
         expect(line.chomp).to eq result[index]
       end
+    end
+
+    it "should split column value into multiple column values" do
+      header = "ID,Customer,Country"
+      cols   = [ "2:s0.scan(/([A-Z]+)/).flatten[0]",
+                 "0:s0.scan(/(?<=\\/)(.*)$/).flatten[0]",
+                 "1:s1" ].join(',')
+      rows   = "1-8"
+
+      Calculator.new(infile:  @in_customer_file,
+                     outfile: @out_file,
+                     header:  header,
+                     rows:    rows,
+                     cols:    cols).execute
+
+      result = [ "ID;Customer;Country",
+                 "123945;Hank;DE",
+                 "339339;Frank;AT",
+                 "449399;Jane;DE",
+                 "33A398;Jean;US" ]
+
+      rows = 0
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
     end
 
   end

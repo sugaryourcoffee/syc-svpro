@@ -6,9 +6,42 @@ require 'date'
 # Operating csv files
 module Sycsvpro
 
-  # Processes arithmetic operations on columns of a csv file. A column value has to be a number.
-  # Possible operations are +, -, * and /. It is also possible to use values of columns as an
-  # operator like c1*2 will multiply the value of column 1 with 2.
+  # Processes operations on columns of a csv file. 
+  #
+  # A column value has to be a number in case of arithmetical operations. 
+  #
+  # Possible operations are +, -, *, /, % and **. 
+  #
+  # It is possible to use values of columns as an operator like multiply 
+  # column 1 of the csv file with 2 and assign it to column 4 of the result 
+  # file: c1*2
+  #
+  # Other values might be dates or strings.
+  #
+  # d1:: date value in column 1
+  # s2:: string value in column 2
+  # c3:: number value in column 3
+  #
+  # To assign a string from column 1 of the csv file to column 3 of the 
+  # resulting file you can do like so: 3:s1
+  #
+  # You can also use Ruby expressions to assign values: 0:[d1,d2,d3].min - This
+  # will assign the least date value from columns 1, 2 and 3 to column 0.
+  #
+  # Note: If you assign a value to column 1 and subsequently are using column 1
+  # in other assignments then column 1 will have the result of a previous
+  # operation.
+  #
+  # Example:
+  # Having a row "CA/123456" and you want to have 123456 in column 0
+  # of the resulting csv file and CA in column 2. If you conduct following
+  # operations it will fail
+  #     1:s0.scan(/\/(.+)/).flatten[0]   -> 123456 
+  #     2:s0.scan(/([A-Z]+)/).flatten[0] -> nil
+  # To achieve the required result you have to change the operational sequence
+  # like so
+  #     2:s0.scan(/([A-Z]+)/).flatten[0] -> CA
+  #     1.so.scan(/\/(.+)/).flatten[0]   -> 123456
   class Calculator
 
     include Dsl
@@ -30,18 +63,24 @@ module Sycsvpro
     # if true add a sum row at the bottom of the out file
     attr_reader :add_sum_row
 
-    # Creates a new Calculator. Options expects :infile, :outfile, :rows and 
-    # :columns. Optionally a header can be provided. The header can be 
-    # supplemented with additional column names that are generated due to a 
-    # arithmetic operation that creates new columns
+    # Creates a new Calculator. Optionally a header can be provided. The header 
+    # can be supplemented with additional column names that are generated due 
+    # to an arithmetic operation that creates new columns
     # :call-seq:
     #   Sycsvpro::Calculator.new(infile:  "in.csv",
     #                            outfile: "out.csv",
     #                            df:      "%d.%m.%Y",
     #                            rows:    "1,2,BEGINn3>20END",
     #                            header:  "*,Count",
-    #                            cols:    "4:Count=c1+c2*2",
+    #                            cols:    "4:c1+c2*2",
     #                            sum:     true).execute
+    # infile:: File that contains the rows to be operated on
+    # outfile:: Result of the operations
+    # df:: Date format
+    # rows:: Row filter that indicates which rows to consider
+    # header:: Header of the columns
+    # cols:: Operations on the column values
+    # sum:: Indicate whether to add a sum row
     def initialize(options={})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
@@ -59,6 +98,7 @@ module Sycsvpro
     def method_missing(id, *args, &block)
       return to_number(columns[$1.to_i]) if id =~ /c(\d+)/
       return to_date(columns[$1.to_i])   if id =~ /d(\d+)/
+      return columns[$1.to_i]            if id =~ /s(\d+)/
       super
     end
 
@@ -68,7 +108,7 @@ module Sycsvpro
 
       File.open(outfile, 'w') do |out|
         File.open(infile).each_with_index do |line, index|
-          next if line.chomp.empty?
+          next if line.chomp.empty? || unstring(line).chomp.split(';').empty?
 
           unless processed_header
             header_row = header.process(line.chomp)
@@ -115,7 +155,7 @@ module Sycsvpro
       def create_calculator(code)
         code.split(/,(?=\d+:)/).each do |operation|
           col, term = operation.split(':')
-          term = "c#{col}#{term}" unless term =~ /^c\d+|^\[/
+          term = "c#{col}#{term}" if term =~ /^[+\-*\/%]/
           formulae[col] = term
         end
       end
