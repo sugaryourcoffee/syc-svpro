@@ -337,6 +337,10 @@ Version 0.1.5
                                            -c   "c0=~/\\.(\\d{4})/:+n1"
                                            -s   "c0=~/\\.(\\d{4})/"`
   This will sum up the dynamically created column.
+
+Version 0.1.6
+-------------
+* Commas within collon expression are now ignored while splitting collons
 * Table takes a number format now with `--nf DE` which will convert numbers
   from DE locale like 1.000,00 to 1000.00
 * Table uses a precision for numbers. Default is 2. Can be assigned with `pr: 2`
