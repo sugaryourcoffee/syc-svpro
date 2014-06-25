@@ -67,7 +67,10 @@ module Sycsvpro
     end
 
     # Retrieves the values from a row as the result of a arithmetic operation
-    # with #eval
+    # with #eval. It reconizes
+    # c:: string value
+    # n:: number value
+    # d:: date value
     def method_missing(id, *args, &block)
       return @columns[$1.to_i]            if id =~ /c(\d+)/
       return to_number(@columns[$1.to_i]) if id =~ /n(\d+)/
