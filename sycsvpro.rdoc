@@ -7,7 +7,7 @@ SYNOPSIS
     sycsvpro [global options] command [command options] [arguments...]
 
 VERSION
-    0.1.0
+    0.1.7
 
 GLOBAL OPTIONS
     -f, --file=FILE    - CSV file to operate on (default: none)
@@ -20,16 +20,21 @@ COMMANDS
     aggregate - Aggregates the occurences of row values. Optionally adds a sum row
     allocate  - Allocate specified columns from the file to a key value
     analyze   - Analyze the CSV file regarding columns, rows and content
-    calc      - Process math operations on columns. Optionally adds a sum row
+    calc      - Process operations on columns. Optionally add a sum row for columns withnumber
+                values
     collect   - Collect values of specified rows and columns from the file and group them in
                 categories
     count     - Counts the occurences of column values. Uses column values as headings with count as
                 values. Columns with a condition will be added as new columns and the condition will
                 be set as column name. Optionally adds a sum row
+    edit      - Creates a script/insert file or opens a script/insert file for editing if it exists
     execute   - Executes the code provided in a file
     extract   - Extract specified rows and columns from the file
     help      - Shows a list of commands or help for one command
     insert    - Inserts rows from a file to a csv-file
-    list      - List scripts in the scripts directory with optionally listing methods
+    join      - Join two files based on a joint column value
+    list      - Lists script or insert files in the scripts directory with optionally listing
+                methods of script files
     map       - Map values in columns to new values
-    sort      - Sort columns based on column values
+    sort      - Sort rows based on column values
+    table     - Creates a table from a source file

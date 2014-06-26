@@ -17,6 +17,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * list scripts available optionally with methods (since version 0.0.7)
 * execute a Ruby script file that operates a csv file
 * create a table from a source file with dynamically create columns (since version 0.1.4)
+* join two file based on a joint column value (since version 0.1.7)
 
 To get help type
 
@@ -257,6 +258,8 @@ end with _column_ or _columns_ dependent if a value or an array should be
 returned. You can find the *rows* and *write_to* methods at 
 _lib/sycsvpro/dsl.rb_.
 
+Examples for scripts using sycsvpro can be found at [sugaryourcoffee/sycsvpro-scripts](https://github.com/sugaryourcoffee/sycsvpro-scripts)
+
 Working with sycsvpro
 =====================
 
@@ -340,7 +343,8 @@ Version 0.1.5
 
 Version 0.1.6
 -------------
-* Commas within collon expression are now ignored while splitting collons
+* Commas within columns expression are now ignored while splitting columns of
+  table columns
 * Table takes a number format now with `--nf DE` which will convert numbers
   from DE locale like 1.000,00 to 1000.00
 * Table uses a precision for numbers. Default is 2. Can be assigned with `pr: 2`
