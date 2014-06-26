@@ -154,7 +154,7 @@ module Sycsvpro
                          insert_header:  insert_header,
                          pos:            insert_col_pos,
                          header:         header,
-                         has_header:     false,
+                         headerless:     true,
                          rows:           rows).execute
 
       result = [ "Hank;A4;AT;123",

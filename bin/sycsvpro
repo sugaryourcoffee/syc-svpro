@@ -362,6 +362,60 @@ command :table do |c|
 
 end
 
+desc 'Join two files based on a joint column value'
+arg_name 'SOURCE_FILE'
+command :join do |c|
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => row_regex 
+  
+  c.desc 'Columns to merge into the infile'
+  c.arg_name '1,5,7'
+  c.flag [:c, :cols], :must_match => /^\d+(?:,\d+)*/
+
+  c.desc 'The position at which column position to insert the columns within '+
+         'the infile. The sequence of the position is assigned to the columns '+
+         'to be inserted'
+  c.arg_name '5,1'
+  c.flag [:p, :pos], :must_match => /^\d+(?:,\d+)*/
+
+  c.desc 'The join columns in the source file, which contains the columns to '+
+         'be inserted into the infile'
+  c.arg_name '2=1'
+  c.flag [:j, :join], :must_match => /^\d+=\d+$/
+
+  c.desc 'Indicates whether the infile headerless'
+  c.default_value false
+  c.switch [:headerless]
+
+  c.desc 'Header columns of the infile'
+  c.arg_name '*,COL1,COL2'
+  c.default_value '*'
+  c.flag [:h, :header]
+
+  c.desc 'Header columns to be used for the inserted columns from the source '+
+         'file. The position (-p 5,1) determines where to insert the header '+
+         'columns'
+  c.arg_name 'INS_COL1,INS_COL2'
+  c.flag [:i, :insert]
+
+  c.action do |global_options,options,args|
+    join = Sycsvpro::Join.new(infile:        global_options[:f], 
+                              outfile:       global_options[:o],
+                              source:        args[0],
+                              rows:          options[:r], 
+                              cols:          options[:c], 
+                              pos:           options[:p],
+                              joins:         options[:j],
+                              headerless:    options[:headerless], 
+                              header:        options[:h],
+                              insert_header: options[:i])
+    print 'Joining...'
+    join.execute
+    print 'done'
+  end
+end
+
 desc 'Sort rows based on column values'
 command :sort do |c|
   c.desc 'Rows to consider'

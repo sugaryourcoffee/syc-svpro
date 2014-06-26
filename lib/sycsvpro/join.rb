@@ -40,8 +40,8 @@ module Sycsvpro
     attr_reader :positions
     # header of the outfile
     attr_reader :header
-    # indicates whether a header should be added
-    attr_reader :has_header
+    # indicates whether the infile is headerless
+    attr_reader :headerless
     # lookup table where the assigned values are stored at
     attr_reader :lookup_table
 
@@ -54,7 +54,7 @@ module Sycsvpro
     #                      cols:    "0,1",
     #                      pos:     "2,3",
     #                      joins:   "2=1",
-    #                      has_header: true,
+    #                      headerless: true,
     #                      header:  "*",
     #                      insert_header: "Company,Phone").execute
     #
@@ -68,7 +68,7 @@ module Sycsvpro
     #       columns
     # joins:: columns that match in infile and source.
     #         source_column=infile_column
-    # has_header:: indicates whether the infile has a header (default true)
+    # headerless:: indicates whether the infile has a header (default true)
     # header:: Header of the csv file
     # insert_header:: column names of the to be inserted values
     def initialize(options = {})
@@ -79,7 +79,7 @@ module Sycsvpro
       @columns    = options[:cols].split(',').collect { |c| c.to_i }
       @positions  = col_positions(options[:pos], @columns)
       @joins      = options[:joins].split('=').collect { |j| j.to_i }
-      @has_header = options[:has_header].nil? ? true : options[:has_header]
+      @headerless = options[:headerless].nil? ? false : options[:headerless]
       @header     = Header.new(options[:header] || '*', 
                                pos:    @positions, 
                                insert: options[:insert_header])
@@ -88,7 +88,7 @@ module Sycsvpro
 
     # Executes the join
     def execute
-      processed_header = has_header ? false : true
+      processed_header = headerless ? true : false
 
       File.open(outfile, 'w') do |out|
         File.open(infile).each_with_index do |line, index|
