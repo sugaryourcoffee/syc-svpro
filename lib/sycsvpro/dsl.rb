@@ -2,6 +2,12 @@ require_relative 'row_filter'
 
 # Methods to be used in customer specific script files
 module Dsl
+  
+  # Splits comma separated strings that contain commas within the value. Such
+  # values have to be enclosed between BEGIN and END
+  # Example:
+  #     Year,c1+c2,c1=~/[A-Z]{1,2}/,Month
+  COMMA_SPLITTER_REGEX = /(?<=,|^)(BEGIN.*?END|\/.*?\/|.*?)(?=,|$)/i
 
   # read arguments provided at invocation
   # :call-seq:
@@ -83,6 +89,12 @@ module Dsl
   # Remove non-UTF chars from string
   def str2utf8(str)
     str.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+  end
+
+  # Retrieves the values scanned by a COMMA_SPLITTER_REGEX
+  def split_by_comma_regex(values)
+    values.scan(COMMA_SPLITTER_REGEX).flatten.each.
+      collect { |h| h.gsub(/BEGIN|END/, "") }
   end
 
   private

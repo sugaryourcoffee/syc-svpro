@@ -161,7 +161,31 @@ module Sycsvpro
       rows.should eq result.size
     end
 
-    it "should ignore commas within header expressions"
+    it "should ignore commas within header expressions" do
+      Sycsvpro::Table.new(
+                       infile:  @in_file_revenues,
+                       outfile: @out_file,
+                       header:  "Year,BEGINc1=~/^([A-Z]{1,2})/END,Total",
+                       key:     "c0=~/\\.(\\d{4})/",
+                       cols:    "c1=~/^([A-Z]{1,2})/:+n2,Total:+n2",
+                       nf:      "DE",
+                       sum:     "top:BEGINc1=~/^([A-Z]{1,2})/END,Total").execute
+
+      result = [ "Year;ZE;ZR;Total",
+                 ";345.2;3925.73;4270.93",
+                 "2012;300.7;3580.1;3880.8",
+                 "2013;44.5;345.63;390.13" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+
+    end
 
     it "should ignore commas within key expressions"
 

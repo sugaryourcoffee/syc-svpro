@@ -3,8 +3,22 @@ require_relative 'header'
 require_relative 'dsl'
 require 'date'
 
+# Operating csv files
 module Sycsvpro
 
+  # Extracts values from a csv file and enables to associate values to key
+  # values. Columns can be created dynamically based on the content of columns.
+  # Example:
+  # File 1 (infile)
+  #     Date       | Order-Type | Revenue
+  #     01.01.2013 | AZ         | 22.50
+  #     13.04.2014 | BZ         | 33.40
+  #     16.12.2014 | CZ         | 12.80
+  #
+  # File 2 (outfile)
+  #     Year | AZ    | BZ    | CZ    | Total
+  #     2013 | 22.50 |       |       | 22.50
+  #     2014 |       | 33.40 | 12.80 | 46.20
   class Table
 
     include Dsl
@@ -196,14 +210,17 @@ module Sycsvpro
         end   
       end
 
+      # Initializes sum_row_pos, sum_row and sum_row_patterns based on the
+      # provided sum option
       def prepare_sum_row(pattern)
         return if pattern.nil? || pattern.empty?
         @sum_row_pos, sum_row_pattern = pattern.split(':')
         @sum_row_pos.upcase!
         @sum_row = Hash.new
-        @sum_row_patterns = sum_row_pattern.split(',')
+        @sum_row_patterns = split_by_comma_regex(sum_row_pattern) #sum_row_pattern.split(',')
       end
 
+      # Adds a value in the specified column to the sum_row
       def add_to_sum_row(value, column)
         return unless @sum_row_patterns
         @sum_row_patterns.each do |pattern|
@@ -220,6 +237,7 @@ module Sycsvpro
         end
       end
 
+      # Creates the sum_row when the file has been completely processed
       def create_sum_row
         line = []
         header.clear_header_cols.each_with_index do |col, index|

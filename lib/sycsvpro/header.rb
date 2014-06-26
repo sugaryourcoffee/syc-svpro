@@ -18,7 +18,7 @@ module Sycsvpro
 
     # Create a new header
     def initialize(header, options = {})
-      @header_cols = (header || "").split(',')
+      @header_cols = split_by_comma_regex(header || "")
       @insert_cols = (options[:insert] || "").split(',')
       @positions   = options[:pos] || []
     end
@@ -62,7 +62,6 @@ module Sycsvpro
     # Returns @header_cols without pattern
     def clear_header_cols
       @header_cols.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
-      #@header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
     end
 
     # Returns the index of the column
@@ -87,6 +86,7 @@ module Sycsvpro
         positions.sort.each { |p| header_cols.insert(p, "") }
         positions.each_with_index { |p,i| header_cols[p] = insert_cols[i] }
       end
+
   end
 
 end

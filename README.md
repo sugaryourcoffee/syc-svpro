@@ -345,6 +345,28 @@ Version 0.1.6
   from DE locale like 1.000,00 to 1000.00
 * Table uses a precision for numbers. Default is 2. Can be assigned with `pr: 2`
 
+Version 0.1.7
+-------------
+* Calc can now be used not to only do arithmetic operations on columns but also
+  string operations. Ultimately any valid Ruby command can be used to process a
+  column value
+      `sycsvpro -f customer.csv -o customer-number.csv calc 
+                            -h "Customer_ID,Customer,Country" 
+                            -r "1-eof" 
+                            -c "2:s0.scan(/^([A-Z]+)\\//).flatten[0],
+                                0:s0.scan(/(?<=\\/)(.*)$/).flatten[0],1:s1"
+* Join is a new class that joins to tables based on a joint column value
+      `sycsvpro -f infile.csv -o outfile.csv join source.csv -c "2,4"
+                                                             -j "1=3"
+                                                             -p "1,3"
+                                                             -h "*"
+                                                             -i "A,B"`
+  This will join infile.csv with source.csv based on the join columns (j "1=3").
+  From source.csv columns 2 and 4 (-c "2,4") will be inserted at column
+  positions 1 and 3 (-p "1,3"). The header will be used from the infile.csv
+  (-h "*") supplemented by the columns A and B (-i "A,B") that will also be
+  positioned at column 1 and 3 (-p "1,3").
+
 Installation
 ============
 [![Gem Version](https://badge.fury.io/rb/sycsvpro.png)](http://badge.fury.io/rb/sycsvpro)
