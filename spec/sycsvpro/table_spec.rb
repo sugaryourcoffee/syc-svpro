@@ -62,8 +62,6 @@ module Sycsvpro
       end
     end
 
-    it "should assign a value to a column without operator"
-
     it "should add a sum row" do
       Sycsvpro::Table.new(infile: @in_file,
                           outfile: @out_file,
