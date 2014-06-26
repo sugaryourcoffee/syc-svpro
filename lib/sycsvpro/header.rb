@@ -11,14 +11,16 @@ module Sycsvpro
 
     # Header columns
     attr_reader :header_cols
+    # Columns that will be inserted into the header at the defined positions
+    attr_reader :insert_cols
+    # Positions where to insert the insert_cols
+    attr_reader :positions
 
     # Create a new header
-    def initialize(header)
-      unless header.nil? or header.empty?
-        @header_cols = header.split(',')
-      else
-        @header_cols = []
-      end
+    def initialize(header, options = {})
+      @header_cols = (header || "").split(',')
+      @insert_cols = (options[:insert] || "").split(',')
+      @positions   = options[:pos] || []
     end
 
     def method_missing(id, *args, &block)
@@ -28,7 +30,7 @@ module Sycsvpro
 
     # Returns the header
     def process(line, values = true)
-      return "" if @header_cols.empty?
+      return "" if @header_cols.empty? && @insert_cols.empty?
       header_patterns = {}
       @row_cols = unstring(line).split(';')
       if @header_cols[0] == '*'
@@ -52,13 +54,15 @@ module Sycsvpro
           end
         end
       end
+      insert_header_cols
       header_patterns.each { |i,h| @header_cols.insert(i,h) }
       to_s
     end
 
     # Returns @header_cols without pattern
     def clear_header_cols
-      @header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
+      @header_cols.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
+      #@header_cols.flatten.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
     end
 
     # Returns the index of the column
@@ -76,6 +80,13 @@ module Sycsvpro
       clear_header_cols.join(';')
     end
 
+    private
+
+      def insert_header_cols
+        @header_cols.flatten!
+        positions.sort.each { |p| header_cols.insert(p, "") }
+        positions.each_with_index { |p,i| header_cols[p] = insert_cols[i] }
+      end
   end
 
 end

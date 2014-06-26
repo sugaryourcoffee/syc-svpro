@@ -62,6 +62,8 @@ module Sycsvpro
       end
     end
 
+    it "should assign a value to a column without operator"
+
     it "should add a sum row" do
       Sycsvpro::Table.new(infile: @in_file,
                           outfile: @out_file,
@@ -81,7 +83,7 @@ module Sycsvpro
       end
     end
 
-    it "should add a sum row at after the heading" do
+    it "should add a sum row after the heading" do
       Sycsvpro::Table.new(infile: @in_file,
                           outfile: @out_file,
                           header:  "c4,c5,c0=~/\\.(\\d{4})/",
@@ -158,6 +160,10 @@ module Sycsvpro
 
       rows.should eq result.size
     end
+
+    it "should ignore commas within header expressions"
+
+    it "should ignore commas within key expressions"
 
   end
 

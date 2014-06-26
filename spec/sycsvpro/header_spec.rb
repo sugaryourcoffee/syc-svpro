@@ -52,6 +52,12 @@ module Sycsvpro
       header.process("5.5.2012;d1;d2;d3;d4;d5").should eq "a4;A;2012;2013;a1;B"
     end
 
+    it "should create a header with positioned columns" do
+      header = Header.new("*", insert: "C,D", pos: [3,7])
+
+      header.process("A;B;E;F;G").should eq "A;B;E;C;F;G;;D"
+    end
+
     it "should return the header" do
       header = Header.new("c4,A,c0=~/\\.(\\d{4})/,c1,B")
 
@@ -72,7 +78,7 @@ module Sycsvpro
       header.column_of("a1").should eq 3
       header.process("3.4.2013;c1;c2;c3;c4;c5").should eq "a4;A;2012;2013;a1;B"
       header.column_of("B").should eq 5
-     end
+    end
 
   end
 
