@@ -72,7 +72,7 @@ module Sycsvpro
       @date_format = options[:df] || "%Y-%m-%d"
       @row_filter  = RowFilter.new(options[:rows], df: options[:df])
       @header      = Header.new(options[:header])
-      @keys        = options[:key].split(',')
+      @keys        = split_by_comma_regex(options[:key]) #options[:key].split(',')
       @cols        = options[:cols].split(COL_SPLITTER)
       @number_format = options[:nf] || 'EN'
       @precision     = options[:pr] || 2
@@ -217,7 +217,7 @@ module Sycsvpro
         @sum_row_pos, sum_row_pattern = pattern.split(':')
         @sum_row_pos.upcase!
         @sum_row = Hash.new
-        @sum_row_patterns = split_by_comma_regex(sum_row_pattern) #sum_row_pattern.split(',')
+        @sum_row_patterns = split_by_comma_regex(sum_row_pattern)
       end
 
       # Adds a value in the specified column to the sum_row

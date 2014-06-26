@@ -187,7 +187,31 @@ module Sycsvpro
 
     end
 
-    it "should ignore commas within key expressions"
+    it "should ignore commas within key expressions" do
+      Sycsvpro::Table.new(
+                       infile:  @in_file_revenues,
+                       outfile: @out_file,
+                       header:  "Year,BEGINc1=~/^([A-Z]{1,2})/END,Total",
+                       key:     "BEGINc0=~/\\d+\\.\\d+\\.(\\d{2,3})/END",
+                       cols:    "c1=~/^([A-Z]{1,2})/:+n2,Total:+n2",
+                       nf:      "DE",
+                       sum:     "top:BEGINc1=~/^([A-Z]{1,2})/END,Total").execute
+
+      result = [ "Year;ZE;ZR;Total",
+                 ";345.2;3925.73;4270.93",
+                 "201;345.2;3925.73;4270.93" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+
+    end
+
 
   end
 
