@@ -39,7 +39,9 @@ module Sycsvpro
     end
 
     it "should extract rows base on regex including commas" do
-      extractor = Extractor.new(infile: @in_file2, outfile: @out_file, rows: "/[56789]\\d+|\\d{3,}/")
+      extractor = Extractor.new(infile: @in_file2, 
+                                outfile: @out_file, 
+                                rows: "/[56789]\\d+|\\d{3,}/")
 
       extractor.execute
 
