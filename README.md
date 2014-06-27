@@ -16,22 +16,32 @@ Processing of csv files. *sycsvpro* offers following functions
 * create or edit a Ruby script
 * list scripts available optionally with methods (since version 0.0.7)
 * execute a Ruby script file that operates a csv file
-* create a table from a source file with dynamically create columns (since version 0.1.4)
+* create a table from a source file with dynamically create columns (since 
+  version 0.1.4)
 * join two file based on a joint column value (since version 0.1.7)
 
 To get help type
 
     $ sycsvpro -h
     
-In the following examples we assume the following file
+In the following examples we assume the following files 'machines.csv' and
+'region.csv'
 
 ```
-customer;machine;control;drive;motor;date;contract
-hello;h1;con123;dri120;mot100;1.01.3013;1
-hello;h2;con123;dri130;mot110;1.02.3012;1
-indix;i1;con456;dri130;mot090;5.11.3013;1
-chiro;c1;con333;dri110;mot100;1.10.3011;1
-chiro;c2;con331;dri100;mot130;3.05.3010;1
+customer;machine;control;drive;motor;date;contract;price;c-id
+hello;h1;con123;dri120;mot100;1.01.3013;1;2.5;123
+hello;h2;con123;dri130;mot110;1.02.3012;1;12.1;123
+indix;i1;con456;dri130;mot090;5.11.3013;1;23.24;345
+chiro;c1;con333;dri110;mot100;1.10.3011;1;122.15;456
+chiro;c2;con331;dri100;mot130;3.05.3010;1;25.3;456
+```
+
+```
+region;country;c-id
+R1;DE,123
+R2;AT;234
+R3;US;345
+R4;CA;456
 ```
 
 Analyze
@@ -115,7 +125,8 @@ Count all customers (key column) in rows 2 to 20 that have machines that start
 with *h* and have a contract valid beginning after 1.1.2000. Add a sum row with
 title Total at column 1
 
-    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0:customer -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
+    $ sycsvpro -f in.csv -o out.csv count -r 2-20 -k 0:customer 
+               -c 1:/^h/,5:">1.1.2000" --df "%d.%m.%Y" -s "Total:1"
 
 The result in file out.csv is
 
@@ -144,12 +155,30 @@ The aggregation result in out.csv is
     indix;1
     chiro;2
 
+Table
+-----
+Analyze the contract revenue per customer and per year
+
+    $ sycsvpro -f in.csv -o out.csv table 
+               -h "Customer,c5=~/\\.(\\d{4})/"
+               -k c1
+               -c "c5=~/\\.\\d{4})/:+n1" 
+
+The table result will be in out.csv
+
+    $ cat out.csv
+      Customer;3013;3012;3011;3010
+      hello;2.5;12.1;0;0
+      indix;23.24;0;0;0
+      chiro;0;0;122.15;25.3
+
 Calc
 ----
 Process arithmetic operations on the contract count and create a target column 
 and a sum which is added at the end of the result file
 
-    $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target -c 6:*2,7:target=c6*10
+    $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target 
+               -c 6:*2,7:target=c6*10
 
     $ cat out.csv
     customer;machine;control;drive;motor;date;contract;target
@@ -162,6 +191,26 @@ and a sum which is added at the end of the result file
 
 In the sum row non-numbers in the colums are converted to 0. Therefore column 0
 is summed up to 0 as all strings are converted to 0.
+
+Join
+----
+Join the machine and contract file with columns from the customer address file
+
+    $ sycsvpro -f in.csv -o out.csv join address.csv -c 0,1 
+                                                     -p 2,1
+                                                     -i "COUNTRY,REGION"
+                                                     -j "3=8"
+
+This will create the result
+
+```
+customer;COUNTRY;REGION;machine;control;drive;motor;date;contract;price;c-id
+hello;DE;R1;h1;con123;dri120;mot100;1.01.3013;1;2.5;123
+hello;DE;R1;h2;con123;dri130;mot110;1.02.3012;1;12.1;123
+indix;US;R3i1;con456;dri130;mot090;5.11.3013;1;23.24;345
+chiro;CA;R4;c1;con333;dri110;mot100;1.10.3011;1;122.15;456
+chiro;CA;R4;c2;con331;dri100;mot130;3.05.3010;1;25.3;456
+```
 
 Sort
 ----
@@ -199,7 +248,7 @@ the name script.rb and a method call_me
 List
 ----
 List the scripts, insert-file or all scripts available in the scripts directory
-which is also displayed
+which is also displayed. Comments before methods are also displayed
 
     script directory: ~/.syc/sycsvpro/scripts
     $ sycsvpro list -m
@@ -258,7 +307,8 @@ end with _column_ or _columns_ dependent if a value or an array should be
 returned. You can find the *rows* and *write_to* methods at 
 _lib/sycsvpro/dsl.rb_.
 
-Examples for scripts using sycsvpro can be found at [sugaryourcoffee/sycsvpro-scripts](https://github.com/sugaryourcoffee/sycsvpro-scripts)
+Examples for scripts using sycsvpro can be found at 
+[sugaryourcoffee/sycsvpro-scripts](https://github.com/sugaryourcoffee/sycsvpro-scripts)
 
 Working with sycsvpro
 =====================
