@@ -142,6 +142,7 @@ module Sycsvpro
                                    "RP:+n2 if #{rp_order_type}.index(c1),"+
                                    "Total:+n2",
                           nf:      "DE",
+                          pr:      "2",
                           sum:     "top:SP,RP,Total").execute
 
       result = [ "Year;SP;RP;Total", 
@@ -167,6 +168,7 @@ module Sycsvpro
                        key:     "c0=~/\\.(\\d{4})/",
                        cols:    "c1=~/^([A-Z]{1,2})/:+n2,Total:+n2",
                        nf:      "DE",
+                       pr:      2,
                        sum:     "top:BEGINc1=~/^([A-Z]{1,2})/END,Total").execute
 
       result = [ "Year;ZE;ZR;Total",
@@ -210,6 +212,29 @@ module Sycsvpro
 
     end
 
+    it "should add a count column for the occurance of column values" do
+      Sycsvpro::Table.new(infile: @in_file,
+                          outfile: @out_file,
+                          header:  "Year,c6,c1,c2+c3,c2+c3+'-Count'",
+                          key:     "c0=~/\\.(\\d{4})/,c6",
+                          cols:    "Value:+n1,c2+c3:+n1,c2+c3+'-Count':+1",
+                          sum:     "top:Value,c2+c3").execute
+
+      result = [ "Year;Country;Value;A1;B2;B4;B4-Count;B2-Count;A1-Count", 
+                 ";;95.2;41.0;21.0;33.2;;;",
+                 "2013;AT;53.7;20.5;0;33.2;1;0;1", 
+                 "2014;DE;21.0;0;21.0;0;0;1;0",
+                 "2014;AT;20.5;20.5;0;0;0;0;1" ] 
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
 
   end
 

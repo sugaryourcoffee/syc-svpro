@@ -24,7 +24,7 @@ module Sycsvpro
     include Dsl
 
     # Regex to split parameters
-    COL_SPLITTER = /,(?=[\w +]*:)/
+    COL_SPLITTER = /,(?=['\w +-]*:)/
     # infile contains the data that is operated on
     attr_reader :infile
     # outfile is the file where the result is written to
@@ -59,9 +59,9 @@ module Sycsvpro
     # df:: date format
     # nf:: number format of number values. "DE" e.g. is 1.000,00 where as 
     #      US is 1,000.00
-    # pr:: precision of number values. Default 2
-    # rows: rows to consider for operation. Rows that don't match the pattern
-    #       will be skipped for operation
+    # pr:: precision of number values. 
+    # rows:: rows to consider for operation. Rows that don't match the pattern
+    #        will be skipped for operation
     # header:: Header of the csv file
     # key:: Values located at value 0 and subsequent columns
     # cols:: Values added to columns base on a operation or assignment
@@ -75,7 +75,7 @@ module Sycsvpro
       @keys        = split_by_comma_regex(options[:key]) #options[:key].split(',')
       @cols        = options[:cols].split(COL_SPLITTER)
       @number_format = options[:nf] || 'EN'
-      @precision     = options[:pr] || 2
+      @precision     = options[:pr].to_i if options[:pr]
       prepare_sum_row options[:sum]
       @rows        = {}
     end
@@ -162,7 +162,7 @@ module Sycsvpro
         column = evaluate(column) if column =~ /^c\d+[=~+]/
         previous_value = row[:cols][column]
         if value = eval("#{row[:cols][column]}#{formula}")
-          row[:cols][column] = value.round(@precision)
+          row[:cols][column] = @precision ? value.round(@precision) : value
           add_to_sum_row(row[:cols][column] - previous_value, column)
         end
       end
