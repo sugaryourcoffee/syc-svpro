@@ -227,9 +227,10 @@ command :execute do |c|
   end
 end
 
-desc 'Counts the occurences of column values. Uses column values as headings with count as ' +
-     'values. Columns with a condition will be added as new columns and the condition will ' +
-     'be set as column name. Optionally adds a sum row'
+desc 'Counts the occurences of column values. Uses column values as headings '+
+     'with count as values. Columns with a condition will be added as new '+
+     'columns and the condition will be set as column name. Optionally adds a '+
+     'sum row'
 
 command :count do |c|
 
@@ -284,8 +285,9 @@ command :aggregate do |c|
   c.arg_name '1,2-4'
   c.flag [:c, :col], :must_match => /^\d+(?:,\d+|-\d+)*/
 
-  c.desc 'Adds a sum row and a sum column with TITLE for the counted columns. The sum row is ' +
-         'specified by the row position. The sum column is the last column in the row'
+  c.desc 'Adds a sum row and a sum column with TITLE for the counted columns. '+
+         'The sum row is specified by the row position. The sum column is the '+
+         'last column in the row'
   c.arg_name 'SUM_ROW_TITLE:ROW,SUM_COL_TITLE'
   c.flag [:s, :sum], :must_match => /^\w+:\d+(?:,\w+)?|^\w+/
 
@@ -307,7 +309,10 @@ command :aggregate do |c|
 
 end
 
-desc 'Creates a table from a source file'
+desc 'Associates columns to a key value. A key value can be a combination of '+
+     'multiple column values. Values associated can be generated from an '+
+     'arithmetic or string operation. Header columns can be generated '+
+     'dynamically based on column values'
 
 command :table do |c|
 
@@ -416,7 +421,8 @@ command :join do |c|
   end
 end
 
-desc 'Sort rows based on column values'
+desc 'Sort rows based on column values. It is possible to sort on multiple '+
+     'columns'
 command :sort do |c|
   c.desc 'Rows to consider'
   c.arg_name '1,2,10-30,45-EOF,REGEXP'
@@ -457,7 +463,9 @@ command :sort do |c|
   end
 end
 
-desc 'Inserts rows from a file to a csv-file'
+desc 'Inserts rows from a file to a csv-file. You can for instance add sum '+
+     'operations in Excel or LibreOffice style if you want to process the '+
+     'resulting file in Excel or LibreOffice'
 arg_name 'INSERT_FILE'
 command :insert do |c|
 
@@ -486,7 +494,7 @@ arg_name 'MAPPINGS-FILE'
 command :map do |c|
   c.desc 'Rows to consider'
   c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
-  c.flag [:r, :row], :must_match => row_regex #/\d+(?:,\d+|-\d+|-eof|,\/.*\/)*|\/.*\/(?:,\/.*\/|\d+)*/i
+  c.flag [:r, :row], :must_match => row_regex 
 
   c.desc 'Columns to consider for mapping'
   c.arg_name 'COL1,COL2,COL10-COL30'
@@ -648,7 +656,8 @@ on_error do |exception|
   true
 end
 
-# the -r flag can take a EOF value which is replaced by the actual row value of the input file
+# the -r flag can take a EOF value which is replaced by the actual row value 
+# of the input file
 def set_max_row(options, max_row)
   options.each do |option, value|
     case option
