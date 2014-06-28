@@ -376,18 +376,18 @@ command :join do |c|
   
   c.desc 'Columns to merge into the infile'
   c.arg_name '1,5,7'
-  c.flag [:c, :cols], :must_match => /^\d+(?:,\d+)*/
+  c.flag [:c, :cols], :must_match => /^\d+(?:[,;]\d+)*/
 
   c.desc 'The position at which column position to insert the columns within '+
          'the infile. The sequence of the position is assigned to the columns '+
          'to be inserted'
   c.arg_name '5,1'
-  c.flag [:p, :pos], :must_match => /^\d+(?:,\d+)*/
+  c.flag [:p, :pos], :must_match => /^\d+(?:[,;]\d+)*/
 
   c.desc 'The join columns in the source file, which contains the columns to '+
          'be inserted into the infile'
   c.arg_name '2=1'
-  c.flag [:j, :join], :must_match => /^\d+=\d+$/
+  c.flag [:j, :join], :must_match => /^\d+(?:[=;]\d+)*/
 
   c.desc 'Indicates whether the infile headerless'
   c.default_value false
