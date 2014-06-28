@@ -6,6 +6,7 @@ module Sycsvpro
 
     before do
       @in_file = File.join(File.dirname(__FILE__), "files/persons.csv")
+      @in_file_2 = File.join(File.dirname(__FILE__), "files/multiple-persons.csv")
       @source_file = File.join(File.dirname(__FILE__), "files/countries.csv")
       @out_file = File.join(File.dirname(__FILE__), "files/persons-countries.csv")
     end
@@ -43,6 +44,36 @@ module Sycsvpro
 
       rows.should eq result.size
 
+    end
+
+    it "should join files inserting values on multiple positions" do
+      cols           = "1,2;1,2"
+      insert_col_pos = "3,2;6,5"
+      insert_header  = "A-COUNTRY,A-STATE;B-COUNTRY,B-STATE"
+      joins          = "0=1;0=2"
+
+      Sycsvpro::Join.new(infile:         @in_file_2,
+                         outfile:        @out_file,
+                         source:         @source_file,
+                         cols:           cols,
+                         joins:          joins,
+                         insert_header:  insert_header,
+                         pos:            insert_col_pos).execute
+
+      result = [ "Name;A_ID;A-STATE;A-COUNTRY;B_ID;B-STATE;B-COUNTRY",
+                 "Hank;123;A4;AT;234;C3;CA",
+                 "Frank;234;C3;CA;345;D1;DE",
+                 "Mia;345;D1;DE;456;U2;US",
+                 "Arwen;456;U2;US;123;A4;AT" ]
+
+      rows = 0
+
+      File.new(@out_file, 'r').each_with_index do |line, index|
+        expect(line.chomp).to eq result[index]
+        rows += 1
+      end 
+
+      rows.should eq result.size
     end
 
     it "should join files without explicit insert header" do

@@ -19,7 +19,7 @@ module Sycsvpro
     # Create a new header
     def initialize(header, options = {})
       @header_cols = split_by_comma_regex(header || "")
-      @insert_cols = (options[:insert] || "").split(',')
+      @insert_cols = (options[:insert] || "").split(/,|;/)
       @positions   = options[:pos] || []
     end
 

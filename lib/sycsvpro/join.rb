@@ -1,23 +1,28 @@
 # Operating csv files
 module Sycsvpro
 
+  Joiner = Struct.new(:join, :pos, :cols, :lookup)
+
   # Join joins two files based on a join key value.
   # Example
   # File 1 (infile)
   #     |Name |ID |
+  #     |-----|---|
   #     |Hank |123|
   #     |Frank|234|
   #     |Mia  |345|
   #     |Moira|234|
   #
   # File 2 (source)
-  #     |Company|Phone|ID|
+  #     |Company|Phone|ID |
+  #     |-------|-----|---|
   #     |Siem   |4848 |123|
   #     |Helo   |993  |345|
   #     |Wara   |3333 |234|
   #
   # File 3 (outfile)
   #     |Name |ID |Company|Phone|
+  #     |-----|---|-------|-----|
   #     |Hank |123|Siem   |4848 |
   #     |Frank|234|Wara   |3333 |
   #     |Mia  |345|Helo   |993  |
@@ -34,16 +39,12 @@ module Sycsvpro
     attr_reader :source
     # filter that is used for rows
     attr_reader :row_filter
-    # columns to insert
-    attr_reader :columns
     # posititon where to insert the columns into the infile
     attr_reader :positions
     # header of the outfile
     attr_reader :header
     # indicates whether the infile is headerless
     attr_reader :headerless
-    # lookup table where the assigned values are stored at
-    attr_reader :lookup_table
 
     # Creates a Join which can be invoked as follows
     # :call-seq:
@@ -61,8 +62,8 @@ module Sycsvpro
     # infile:: csv file to operate on
     # outfile:: csv file with the result
     # source:: csv file that contains the values to join to infile
-    # rows: rows to consider for operation. Rows that don't match the pattern
-    #       will be skipped for operation
+    # rows:: rows to consider for operation. Rows that don't match the pattern
+    #        will be skipped for operation
     # cols:: columns to insert from the source to the infile
     # pos:: column positions where to insert the values and the insert_header
     #       columns
@@ -76,9 +77,9 @@ module Sycsvpro
       @outfile    = options[:outfile]
       @source     = options[:source]
       @row_filter = RowFilter.new(options[:rows], df: options[:df])
-      @columns    = options[:cols].split(',').collect { |c| c.to_i }
-      @positions  = col_positions(options[:pos], @columns)
-      @joins      = options[:joins].split('=').collect { |j| j.to_i }
+      @positions  = create_joiners(options[:joins], 
+                                   options[:cols], 
+                                   options[:pos])
       @headerless = options[:headerless].nil? ? false : options[:headerless]
       @header     = Header.new(options[:header] || '*', 
                                pos:    @positions, 
@@ -108,14 +109,17 @@ module Sycsvpro
           next if row_filter.process(line, row: index).nil?
 
           values = line.split(';')
+          target = values.dup
 
-          key = values[@joins[1]]
-          row = lookup_table[:rows][key] || []
+          @positions.sort.each { |p| target.insert(p, "") }
+          
+          @joiners.each do |joiner|
+            key = values[joiner.join[1]]
+            row = joiner.lookup[:rows][key] || []
+            joiner.pos.each_with_index { |p,i| target[p] = row[i] }
+          end
 
-          lookup_table[:pos].sort.each { |p| values.insert(p, "") }
-          lookup_table[:pos].each_with_index { |p,i| values[p] = row[i] } 
-
-          out.puts values.join(';')
+          out.puts target.join(';')
         end
       end
     end
@@ -125,8 +129,6 @@ module Sycsvpro
       # Creates a lookup table from the source file values. The join column of
       # the source file is the key
       def create_lookup_table
-        @lookup_table = { pos: positions, rows: {} }
-
         File.open(source).each_with_index do |line|
           next if line.chomp.empty?
 
@@ -134,12 +136,15 @@ module Sycsvpro
 
           next if values.empty?
 
-          key = values[@joins[0]]
-          lookup_table[:rows][key] = []
+          @joiners.each do |joiner|
+            key = values[joiner.join[0]]
+            joiner.lookup[:rows][key] = []
 
-          columns.each do |i|
-            lookup_table[:rows][key] << values[i]
+            joiner.cols.each do |i|
+              joiner.lookup[:rows][key] << values[i]
+            end
           end
+
         end
       end
 
@@ -148,10 +153,37 @@ module Sycsvpro
       # are put at the beginning of the row
       def col_positions(pos, cols)
         if pos.nil? || pos.empty?
-          Array.new(cols.size) { |c| c }
+          pos = []
+          cols.each { |c| pos << Array.new(c.size) { |c| c } }
+          pos
         else
-          pos.split(',').collect { |p| p.to_i }
+          pos.split(';').collect { |p| p.split(',').collect { |p| p.to_i } }
         end
+      end
+
+      # Initializes joiners based on joins, positions and columns
+      #
+      # Possible input forms are:
+      # joins:: "4=0;4=1" or "4=1"
+      # positions:: "1,2;4,5" or "1,2"
+      # columns:: "1,2;3,4" 
+      #
+      # This has the semantic of 'insert columns 1 and 2 at positions 1 and 2
+      # for key 0 and columns 3 and 4 at positions 4 and 5 for key 1. Key 4 is
+      # the corresponding value in the source file
+      #
+      # Return value:: positions where to insert values from source file
+      def create_joiners(j, c, p)
+        js = j.split(';').collect { |j| j.split('=').collect { |j| j.to_i } }
+        cs = c.split(';').collect { |c| c.split(',').collect { |c| c.to_i } }
+        ps = col_positions(p, cs)
+
+        @joiners = []
+        (0...js.size).each do |i| 
+          @joiners << Joiner.new(js[i], ps[i], cs[i], { rows: { } }) 
+        end 
+
+        ps.flatten
       end
 
   end
