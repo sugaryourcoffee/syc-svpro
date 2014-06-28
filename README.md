@@ -212,6 +212,15 @@ chiro;CA;R4;c1;con333;dri110;mot100;1.10.3011;1;122.15;456
 chiro;CA;R4;c2;con331;dri100;mot130;3.05.3010;1;25.3;456
 ```
 
+If you have multiple IDs in a row than you can also conduct multiple joins in
+on streak.
+
+    $ sycsvpro -f in.csv -o out.csv join address.csv -c 0,1;0,3 
+                                                     -p 2,1;4,5
+                                                     -i "COUNTRY,REGION"
+                                                     -j "3=8;3=10"
+
+    
 Sort
 ----
 Sort rows on specified columns as an example sort rows based on customer 
@@ -420,6 +429,10 @@ Version 0.1.7
   positions 1 and 3 (-p "1,3"). The header will be used from the infile.csv
   (-h "*") supplemented by the columns A and B (-i "A,B") that will also be
   positioned at column 1 and 3 (-p "1,3").
+
+Version 0.1.8
+-------------
+* Join now can join multiple key values in 1 streak
 
 Installation
 ============
