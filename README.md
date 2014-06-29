@@ -433,6 +433,9 @@ Version 0.1.7
 Version 0.1.8
 -------------
 * Join now can join multiple key values in 1 streak
+
+Version 0.1.9
+-------------
 * When creating columns dynamically they are in arbitrary sequence. You can now
   provide a switch `sort: "2"` which will sort the header from column 2 on.
 

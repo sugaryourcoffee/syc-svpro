@@ -341,6 +341,11 @@ command :table do |c|
   c.arg_name "TOP|EOF:c0=~/\\.(\\d{4})/,Value"
   c.flag [:s, :sum]
 
+  c.desc 'Indicate whether to sort the headline columns. If so you can specify'+
+         'an index from where on the columns will be sorted.'
+  c.arg_name 'COL_INDEX'
+  c.flag [:sort]
+
   c.desc 'Format of date values'
   c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
   c.flag [:df]
@@ -360,7 +365,8 @@ command :table do |c|
                                 header:  options[:h],
                                 key:     options[:k],
                                 cols:    options[:c],
-                                sum:     options[:s]) 
+                                sum:     options[:s],
+                                sort:    options[:sort]) 
     table.execute
     puts "done"
   end
