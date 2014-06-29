@@ -7,6 +7,8 @@ module Sycsvpro
       @in_file          = File.join(File.dirname(__FILE__), "files/table.csv")
       @in_file_revenues = File.join(File.dirname(__FILE__), 
                                     "files/table_revenues.csv")
+      @in_file_orders   = File.join(File.dirname(__FILE__), 
+                                    "files/customer_orders.csv")
       @out_file         = File.join(File.dirname(__FILE__), "files/out.csv")
     end
 
@@ -138,8 +140,8 @@ module Sycsvpro
                           outfile: @out_file,
                           header:  "Year,SP,RP,Total",
                           key:     "c0=~/\\.(\\d{4})/",
-                          cols:    "SP:+n2 if #{sp_order_type}.index(c1),"+
-                                   "RP:+n2 if #{rp_order_type}.index(c1),"+
+                          cols:    "BEGINSP:+n2 if #{sp_order_type}.index(c1)END,"+
+                                   "BEGINRP:+n2 if #{rp_order_type}.index(c1)END,"+
                                    "Total:+n2",
                           nf:      "DE",
                           pr:      "2",
@@ -166,7 +168,7 @@ module Sycsvpro
                        outfile: @out_file,
                        header:  "Year,BEGINc1=~/^([A-Z]{1,2})/END,Total",
                        key:     "c0=~/\\.(\\d{4})/",
-                       cols:    "c1=~/^([A-Z]{1,2})/:+n2,Total:+n2",
+                       cols:    "BEGINc1=~/^([A-Z]{1,2})/:+n2END,Total:+n2",
                        nf:      "DE",
                        pr:      2,
                        sum:     "top:BEGINc1=~/^([A-Z]{1,2})/END,Total").execute
@@ -193,7 +195,7 @@ module Sycsvpro
                        outfile: @out_file,
                        header:  "Year,BEGINc1=~/^([A-Z]{1,2})/END,Total",
                        key:     "BEGINc0=~/\\d+\\.\\d+\\.(\\d{2,3})/END",
-                       cols:    "c1=~/^([A-Z]{1,2})/:+n2,Total:+n2",
+                       cols:    "BEGINc1=~/^([A-Z]{1,2})/:+n2END,Total:+n2",
                        nf:      "DE",
                        sum:     "top:BEGINc1=~/^([A-Z]{1,2})/END,Total").execute
 
@@ -225,6 +227,94 @@ module Sycsvpro
                  "2013;AT;53.7;20.5;0;33.2;1;0;1", 
                  "2014;DE;21.0;0;21.0;0;0;1;0",
                  "2014;AT;20.5;20.5;0;0;0;0;1" ] 
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
+    it "should create columns from regex scan and string interpolation" do
+      rp_order_type = %w{ ZRN ZRK }
+      sp_order_type = %w{ ZE ZEI ZO ZOI ZG ZGNT ZRE ZGUP }
+      order_type = sp_order_type + rp_order_type
+
+      header = "c3,c4,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-R'END,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-R'END,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-R'END,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-O'END,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-O'END,"+
+               "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-O'END"
+
+      cols = "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-R':+n2 if #{sp_order_type}.index(c1)END,"+
+             "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-R':+n2 if #{rp_order_type}.index(c1)END,"+
+             "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-R':+n2 if #{order_type}.index(c1)END,"+
+             "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-O':+1 if #{sp_order_type}.index(c1)END,"+
+             "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-O':+1 if #{rp_order_type}.index(c1)END,"+
+             "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-O':+1 if #{order_type}.index(c1)END"
+
+      sum = "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-R'END,"+
+            "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-R'END,"+
+            "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-R'END,"+
+            "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-SP-O'END,"+
+            "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-RP-O'END,"+
+            "BEGIN(c0.scan(/\\d+\\.\\d+\\.(\\d{4})/).flatten[0]||'')+"+
+                  "'-O'END"
+
+      Sycsvpro::Table.new(infile:  @in_file_orders,
+                          outfile: @out_file,
+                          header:  header,
+                          key:     "c3,c4",
+                          cols:    cols,
+                          nf:      "DE",
+                          sum:     "top:#{sum}",
+                          sort:    "2").execute
+
+      result = [ "Customer;Customer-ID;2010-O;2010-R;"+
+                                      "2010-RP-O;2010-RP-R;"+
+                                      "2010-SP-O;2010-SP-R;"+
+                                      "2011-O;2011-R;"+
+                                      "2011-RP-O;2011-RP-R;"+
+                                      "2011-SP-O;2011-SP-R;"+
+                                      "2012-O;2012-R;"+
+                                      "2012-RP-O;2012-RP-R;"+
+                                      "2012-SP-O;2012-SP-R;"+
+                                      "2013-O;2013-R;"+
+                                      "2013-RP-O;2013-RP-R;"+
+                                      "2013-SP-O;2013-SP-R;"+
+                                      "2014-O;2014-R;"+
+                                      "2014-RP-O;2014-RP-R;"+
+                                      "2014-SP-O;2014-SP-R",
+                 ";;1;50.0;;;1;50.0;2;300.5;;;2;300.5;1;300.0;1;300.0;;;1;"+
+                   "400.0;1;400.0;;;1;150.0;;;1;150.0",
+                 "Hank;123;0;0;0;0;0;0;1;100.0;0;0;1;100.0;1;300.0;1;300.0;"+
+                          "0;0;0;0;0;0;0;0;0;0;0;0;0;0",
+                 "Mia;234;0;0;0;0;0;0;1;200.5;0;0;1;200.5;0;0;0;0;0;0;1;400.0;"+
+                          "1;400.0;0;0;1;150.0;0;0;1;150.0",
+                 "Ria;333;1;50.0;0;0;1;50.0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;0;"+
+                          "0;0;0;0;0;0;0;0" ]
 
       rows = 0
 

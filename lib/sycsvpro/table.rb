@@ -23,8 +23,6 @@ module Sycsvpro
 
     include Dsl
 
-    # Regex to split parameters
-    COL_SPLITTER = /,(?=['\w +-]*:)/
     # infile contains the data that is operated on
     attr_reader :infile
     # outfile is the file where the result is written to
@@ -52,7 +50,8 @@ module Sycsvpro
     #                       cols:    "Value:+n1,c2+c3:+n1",
     #                       nf:      "DE",
     #                       pr:      "2",
-    #                       sum:     "TOP:Value,c2+c3").execute
+    #                       sum:     "TOP:Value,c2+c3",
+    #                       sort:    "2").execute
     #
     # infile:: csv file to operate on
     # outfile:: csv file with the result
@@ -66,17 +65,19 @@ module Sycsvpro
     # key:: Values located at value 0 and subsequent columns
     # cols:: Values added to columns base on a operation or assignment
     # sum:: sum row at specified position top or eof
+    # sort:: indicates that the columns have to sorted from index on
     def initialize(options = {})
       @infile      = options[:infile]
       @outfile     = options[:outfile]
       @date_format = options[:df] || "%Y-%m-%d"
       @row_filter  = RowFilter.new(options[:rows], df: options[:df])
-      @header      = Header.new(options[:header])
-      @keys        = split_by_comma_regex(options[:key]) #options[:key].split(',')
-      @cols        = options[:cols].split(COL_SPLITTER)
+      @header      = Header.new(options[:header], sort: options[:sort])
+      @keys        = split_by_comma_regex(options[:key])
+      @cols        = split_by_comma_regex(options[:cols])
       @number_format = options[:nf] || 'EN'
       @precision     = options[:pr].to_i if options[:pr]
       prepare_sum_row options[:sum]
+      @sort          = options[:sort]
       @rows        = {}
     end
 
@@ -159,7 +160,7 @@ module Sycsvpro
       row = rows[key] || rows[key] = { key: key, cols: Hash.new(0) }  
       @cols.each do |col|
         column, formula = col.split(':')
-        column = evaluate(column) if column =~ /^c\d+[=~+]/
+        column = evaluate(column) if column =~ /^\(?c\d+[=~+.]/
         previous_value = row[:cols][column]
         if value = eval("#{row[:cols][column]}#{formula}")
           row[:cols][column] = @precision ? value.round(@precision) : value
@@ -204,7 +205,7 @@ module Sycsvpro
       def evaluate(formula, fail_result = 0)
         if value = eval(formula)
           last_match = $1
-          (formula =~ /^c\d+=~/) ? last_match : value
+          (formula =~ /^c\(?\d+=~/) ? last_match : value
         else
           fail_result
         end   
@@ -214,7 +215,7 @@ module Sycsvpro
       # provided sum option
       def prepare_sum_row(pattern)
         return if pattern.nil? || pattern.empty?
-        @sum_row_pos, sum_row_pattern = pattern.split(':')
+        @sum_row_pos, sum_row_pattern = pattern.split(/(?<=^top|^eof):/i)
         @sum_row_pos.upcase!
         @sum_row = Hash.new
         @sum_row_patterns = split_by_comma_regex(sum_row_pattern)
@@ -224,7 +225,7 @@ module Sycsvpro
       def add_to_sum_row(value, column)
         return unless @sum_row_patterns
         @sum_row_patterns.each do |pattern|
-          if pattern =~ /^c\d+[=~+]/
+          if pattern =~ /^\(?c\d+[=~+.]/
             header_column = evaluate(pattern, "")
           else
             header_column = pattern
@@ -240,7 +241,7 @@ module Sycsvpro
       # Creates the sum_row when the file has been completely processed
       def create_sum_row
         line = []
-        header.clear_header_cols.each_with_index do |col, index|
+        header.clear_header_cols.each do |col|
           line << @sum_row[col] || ""
         end
         line.flatten.join(';')

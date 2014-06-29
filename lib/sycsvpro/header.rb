@@ -15,12 +15,15 @@ module Sycsvpro
     attr_reader :insert_cols
     # Positions where to insert the insert_cols
     attr_reader :positions
+    # Columns position from that on the header will be sorted
+    attr_reader :sort
 
     # Create a new header
     def initialize(header, options = {})
       @header_cols = split_by_comma_regex(header || "")
       @insert_cols = (options[:insert] || "").split(/,|;/)
       @positions   = options[:pos] || []
+      @sort        = options[:sort]
     end
 
     def method_missing(id, *args, &block)
@@ -37,15 +40,15 @@ module Sycsvpro
         @header_cols[0] = @row_cols
       else
         @header_cols.each_with_index do |h,i|
-          if h =~ /^c\d+(?:[=~]{,2}).*$/ 
+          if h =~ /^\(?c\d+(?:[=~]{,2}).*$/ 
             if col = eval(h)
               last_eval = $1
               unless @header_cols.index(last_eval) || @header_cols.index(col)
                 if values
-                  @header_cols[i] = (h =~ /^c\d+=~/) ? last_eval : col
-                  header_patterns[i+1] = h if h =~ /^c\d+[=~+-]{1,2}/
+                  @header_cols[i] = (h =~ /^\(?c\d+=~/) ? last_eval : col
+                  header_patterns[i+1] = h if h =~ /^\(?c\d+[=~+-.]{1,2}/
                 else
-                  @header_cols[i] = col if h =~ /^c\d+$/
+                  @header_cols[i] = col if h =~ /^\(?c\d+$/
                 end
               end
             end
@@ -59,9 +62,14 @@ module Sycsvpro
       to_s
     end
 
-    # Returns @header_cols without pattern
+    # Returns @header_cols without pattern. Will be sorted if sorted is not nil
     def clear_header_cols
-      @header_cols.select { |col| col !~ /^c\d+[=~+]{1,2}/ }
+      clear_header = @header_cols.select { |col| col !~ /^\(?c\d+[=~+]{,2}/ }
+      if @sort
+        clear_header.slice!(0, @sort.to_i) + clear_header.sort
+      else
+        clear_header
+      end
     end
 
     # Returns the index of the column

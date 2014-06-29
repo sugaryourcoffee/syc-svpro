@@ -1,6 +1,11 @@
 # Operating csv files
 module Sycsvpro
 
+  # Joiner holds all join data as join columns, positions where to insert the
+  # columns from the source file, cols wich are the cols inserted from the
+  # source file and the lookup table with keys and associated column values.
+  # :call-seq:
+  #   Sycsvpro::Joiner.new([1,2], [3,4], [4,5,6], { rows: {} }
   Joiner = Struct.new(:join, :pos, :cols, :lookup)
 
   # Join joins two files based on a join key value.
