@@ -152,7 +152,7 @@ module Sycsvpro
 
         end
       end
-
+     
       # Initializes the column positions where the source file columns have to
       # be inserted. If no column positions are provided the inserted columns
       # are put at the beginning of the row
