@@ -23,7 +23,8 @@ module Sycsvpro
                  "MP;40;50;60;80",
                  "NP;50;60;70;90",
                  "M;m1;m2;m3",
-                 "N;n1;n2;n3" ]
+                 "N;n1;n2;n3",
+                 "O;o1;;o3", ]
 
       rows = 0
 
