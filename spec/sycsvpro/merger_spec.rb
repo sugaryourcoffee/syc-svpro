@@ -11,11 +11,15 @@ module Sycsvpro
     end
 
     it "should merge two files" do
-      header = ",2010,2011,2012,2014"
+      header = "2010,2011,2012,2014"
+      key = "0,0"
+      source_header = "/\d{4}/,/\d{4}/"
 
-      Sycsvpro::Merger.new(outfile: @outfile,
-                           files:   "#{@file1},#{@file2}",
-                           header:  header).execute
+      Sycsvpro::Merger.new(outfile:       @outfile,
+                           files:         "#{@file1},#{@file2}",
+                           header:        header,
+                           key:           key,
+                           source_header: source_header).execute
 
       result = [ ";2010;2011;2012;2014",
                  "SP;20;30;40;60",
