@@ -427,6 +427,37 @@ command :join do |c|
   end
 end
 
+desc 'Merge multiple files based on a common column value with a key value at '+
+     'the first column of a row'
+arg_name 'FILE1 FILE2 ...'
+command :merge do |c|
+  c.desc 'The key columns in the source files, which contains the columns to '+
+         'be inserted into the outfile as first row column'
+  c.arg_name '0,3'
+  c.flag [:k, :key], :must_match => /^\d+(?:,\d+)*/
+
+  c.desc 'Header columns to be used as identifires for the columns of the '+
+         'merging files'
+  c.arg_name 'COL1,COL2,COL3'
+  c.flag [:h, :header]
+
+  c.desc 'Header column patterns to be used as the identifier of the columns '+
+         'of the files to be merged into the outfile'
+  c.arg_name 'PATTERN1,PATTERN2'
+  c.flag [:s, :source_header]
+
+  c.action do |global_options,options,args|
+    merge = Sycsvpro::Merger.new(outfile:       global_options[:o],
+                                 files:         args[0],
+                                 header:        options[:h],
+                                 source_header: options[:s],
+                                 key:           options[:k])
+    print 'Merging...'
+    merge.execute
+    print 'done'
+  end
+end
+
 desc 'Sort rows based on column values. It is possible to sort on multiple '+
      'columns'
 command :sort do |c|
@@ -584,11 +615,16 @@ pre do |global,command,options,args|
   when :aggregate, :allocate, :calc, :collect, :count, :extract, :map, :sort
     help_now! "You need to provide an input file '-f FILE'"     if global[:f].nil?
     help_now! "You need to provide a result file '-o OUT_FILE'" if global[:o].nil?
+  when :merge
+    help_now! "You need to provide a result file '-o OUT_FILE'" if global[:o].nil?
   end
 
   count = 0
 
-  unless command.name == :edit or command.name == :execute or command.name == :list
+  unless command.name == :edit or 
+         command.name == :execute or 
+         command.name == :list or 
+         command.name == :merge
     analyzer = Sycsvpro::Analyzer.new(global[:f])
     result = analyzer.result
     count = result.row_count
