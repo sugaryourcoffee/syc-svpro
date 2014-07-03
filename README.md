@@ -19,13 +19,14 @@ Processing of csv files. *sycsvpro* offers following functions
 * create a table from a source file with dynamically create columns (since 
   version 0.1.4)
 * join two file based on a joint column value (since version 0.1.7)
+* merge files based on common headline columns (since version 0.1.10)
 
 To get help type
 
     $ sycsvpro -h
     
-In the following examples we assume the following files 'machines.csv' and
-'region.csv'
+In the following examples we assume the following files 'machines.csv', 
+'region.csv' and revenue.csv
 
 ```
 customer;machine;control;drive;motor;date;contract;price;c-id
@@ -42,6 +43,13 @@ R1;DE,123
 R2;AT;234
 R3;US;345
 R4;CA;456
+```
+
+```
+2010;2011;2012;2013;2014;customer
+50;100;150;100;200;hello
+100;50;10;1000;20;indix
+2000;250;300;3000;chiro
 ```
 
 Analyze
@@ -220,7 +228,27 @@ on streak.
                                                      -i "COUNTRY,REGION"
                                                      -j "3=8;3=10"
 
-    
+Merge
+-----
+Merge files machine_count.csv and revenue.csv based on the year columns.
+
+    $ sycsvpro -o out.csv merge machines.csv,revenue.csv 
+                                -h "2010,2013,2014"
+                                -k "0,5"
+                                -s "(\\d{4}),(\\d{4})"
+
+This will create the out.csv
+
+```
+;2010;2013;2014
+hello;1;0;0
+indix;1;0;0
+chiro;0;1;0
+hello;50;100;200
+indix;100;1000;20
+chiro;2000;300;3000
+```
+
 Sort
 ----
 Sort rows on specified columns as an example sort rows based on customer 
@@ -438,6 +466,10 @@ Version 0.1.9
 -------------
 * When creating columns dynamically they are in arbitrary sequence. You can now
   provide a switch `sort: "2"` which will sort the header from column 2 on.
+
+Version 0.1.10
+--------------
+* It is now possible to merge multiple files based on common headline columns
 
 Installation
 ============
