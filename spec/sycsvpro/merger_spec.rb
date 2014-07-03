@@ -13,7 +13,7 @@ module Sycsvpro
     it "should merge two files" do
       header = "2010,2011,2012,2014"
       key = "0,0"
-      source_header = "/\d{4}/,/\d{4}/"
+      source_header = "(\\d{4}),(\\d{4})"
 
       Sycsvpro::Merger.new(outfile:       @outfile,
                            files:         "#{@file1},#{@file2}",

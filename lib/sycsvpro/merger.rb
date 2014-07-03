@@ -44,25 +44,34 @@ module Sycsvpro
     # Merge files based on common header columns
     #
     # :call-seq:
-    #   Sycsvpro::Merger.new(outfile: "out.csv",
-    #                        files:   "file1.csv,file2.csv,filen.csv",
-    #                        header:  "2010,2011,2012,2013,2014").execute
+    #   Sycsvpro::Merger.new(outfile:       "out.csv",
+    #                        files:         "file1.csv,file2.csv,filen.csv",
+    #                        header:        "2010,2011,2012,2013,2014",
+    #                        source_header: "/\\d{4}/,/\\d{4}/",
+    #                        key:           "0,0").execute
     # outfile:: result is written to the outfile
     # files:: list of files that get merged. In the result file the files are
     # inserted in the sequence they are provided
     # header:: header of the result file and key for assigning column values
     # from source files to result file
+    # source_header:: pattern for each header of the source file to determine
+    # the column
+    # key:: first column value from the source file that is used as first
+    # column in the target file
     def initialize(options = {})
-      @outfile      = options[:outfile]
-      @header       = options[:header].gsub(',', ';')
-      @header_cols  = options[:header].split(',')
-      @files        = options[:files].split(',')
+      @outfile       = options[:outfile]
+      @header_cols   = options[:header].split(',')
+      @source_header = options[:source_header].split(',')
+      @key           = options[:key].split(',')
+      @files         = options[:files].split(',')
     end
 
     def execute
       File.open(outfile, 'w') do |out|
-        out.puts header
+        out.puts ";#{header_cols.join(';')}"
         files.each do |file|
+          @current_key = @key.shift
+          @current_source_header = @source_header.shift
           processed_header = false
           File.open(file).each_with_index do |line, index|
             next if line.chomp.empty?
@@ -83,13 +92,14 @@ module Sycsvpro
 
       # create a filter for the columns that match the header filter
       def create_file_header(columns)
-        @file_header = []
-        header_cols.each_with_index do |h,i|
-          if h.empty? and i == 0
-            @file_header << 0
-          else
-            @file_header << columns.index(h) 
-          end
+        columns.each_with_index do |c,i|
+          next if i == @current_key
+          columns[i] = c.scan(Regexp.new(@current_source_header)).flatten[0]
+        end
+
+        @file_header = [@current_key.to_i]
+        header_cols.each do |h|
+          @file_header << columns.index(h) 
         end 
         @file_header.compact!
       end
