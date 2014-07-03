@@ -32,10 +32,14 @@ module Sycsvpro
 
     include Dsl
 
-    # header based on that the files get merged
-    attr_reader :header
+    # file to that the result is written
+    attr_reader :outfile
+    # header patterns to be used to identify merge columns
+    attr_reader :source_header
     # header columns
     attr_reader :header_cols
+    # value that is used as first of column of a row
+    attr_reader :key
     # files to be merged based on header columns
     attr_reader :files
     # file to that the result is written to
@@ -47,8 +51,16 @@ module Sycsvpro
     #   Sycsvpro::Merger.new(outfile:       "out.csv",
     #                        files:         "file1.csv,file2.csv,filen.csv",
     #                        header:        "2010,2011,2012,2013,2014",
-    #                        source_header: "/\\d{4}/,/\\d{4}/",
+    #                        source_header: "(\\d{4}/),(/\\d{4}/)",
     #                        key:           "0,0").execute
+    #
+    # Semantics
+    # =========
+    # Merges the files file1.csv, file2.csv ... based on the header columns
+    # 2010, 2011, 2012, 2013 and 2014 where columns are identified by the 
+    # regex /(\d{4})/. The first column in a row is column 0 of the file1.csv
+    # and so on.
+    #
     # outfile:: result is written to the outfile
     # files:: list of files that get merged. In the result file the files are
     # inserted in the sequence they are provided
@@ -66,6 +78,7 @@ module Sycsvpro
       @files         = options[:files].split(',')
     end
 
+    # Merges the files based on the provided parameters
     def execute
       File.open(outfile, 'w') do |out|
         out.puts ";#{header_cols.join(';')}"
