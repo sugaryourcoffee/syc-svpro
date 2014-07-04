@@ -7,6 +7,19 @@ module Sycsvpro
 
   # An Aggregator counts specified row values and adds a sum to the end of 
   # the row
+  #
+  # in.csv
+  #
+  # | Customer | 2013 | 2014 |
+  # | A        | A1   |      |
+  # | B        | B1   | B16  |
+  # | A        | A3   | A7   |
+  #
+  # out.csv
+  #
+  # | Customer | 2013 | 2014 | Sum |
+  # | A        | 2    | 1    | 3   | 
+  # | B        | 1    | 1    | 2   |
   class Aggregator
 
     include Dsl
