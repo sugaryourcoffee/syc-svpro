@@ -21,7 +21,7 @@ row_regex = %r{
 sycsvpro_directory = File.expand_path("~/.syc/sycsvpro")
 
 unless File.exists? sycsvpro_directory
-  Dir.mkdir sycsvpro_directory
+  FileUtils.mkdir_p sycsvpro_directory
 end
 
 # Script directory
