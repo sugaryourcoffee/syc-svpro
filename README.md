@@ -470,6 +470,8 @@ Version 0.1.9
 Version 0.1.10
 --------------
 * It is now possible to merge multiple files based on common headline columns
+* Fix ~/.syc/sycsvpro system directory creation when no .syc directory is 
+ available
 
 Installation
 ============
