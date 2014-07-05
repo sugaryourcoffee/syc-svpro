@@ -67,7 +67,7 @@ module Sycsvpro
     # header:: header of the result file and key for assigning column values
     # from source files to result file
     # source_header:: pattern for each header of the source file to determine
-    # the column
+    # the column. The pattern is a regex without the enclosing slashes '/'
     # key:: first column value from the source file that is used as first
     # column in the target file
     def initialize(options = {})

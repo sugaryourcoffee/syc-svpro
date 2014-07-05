@@ -2,6 +2,18 @@
 module Sycsvpro
 
   # Allocates columns to a key column
+  #
+  # infile.csv
+  #
+  # | Name | Product |
+  # | A    | X1      |
+  # | B    | Y2      |
+  # | A    | W10     |
+  #
+  # outfile.csv
+  #
+  # | A    | X1 | W10 |
+  # | B    | Y2 |     |
   class Allocator
 
     # File from that values are read

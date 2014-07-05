@@ -5,6 +5,20 @@ module Sycsvpro
   Result = Struct.new(:cols, :col_count, :row_count, :sample_row)
 
   # Analyzes the file structure
+  #
+  # | Name | C1 | C2 |
+  # | A    | a  | b  |
+  #
+  # 3 columns: ["Name", "C1", "C2"]
+  # 2 rows
+  #
+  # Row sample data:
+  # A;b;c
+  #
+  # Column index: Column name | Column sample value
+  # 0: Name | A
+  # 1: C1 | a
+  # 2: C2 | b
   class Analyzer
 
     # File that is analyzed
