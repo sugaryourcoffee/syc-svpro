@@ -1,7 +1,24 @@
 require 'set'
 
+# Operating csv files
 module Sycsvpro
 
+  # Removes copies of rows identified by key values
+  #
+  # | Name | Street | Town | Country |
+  # | ---- | ------ | ---- | ------- |
+  # | Jane | Canal  | Win  | CA      |
+  # | Jack | Long   | Van  | CA      |
+  # | Jean | Sing   | Ma   | DE      |
+  # | Jane | Canal  | Win  | CA      |
+  #
+  # Remove copies based on column 0 (Name)
+  #
+  # | Name | Street | Town | Country |
+  # | ---- | ------ | ---- | ------- |
+  # | Jane | Canal  | Win  | CA      |
+  # | Jack | Long   | Van  | CA      |
+  # | Jean | Sing   | Ma   | DE      |
   class Unique
 
     include Dsl
@@ -15,19 +32,24 @@ module Sycsvpro
     # filter that is used for columns
     attr_reader :col_filter
 
+    # Creates a new Unique
+    # :call-seq:
+    #   Sycsvpro::Unique.new(infile: "infile.csv",
+    #                        outfile: "outfile.csv",
+    #                        rows:    "1,3-4",
+    #                        cols:    "0,2,4-6",
+    #                        key:     "0,1").execute
     def initialize(options = {})
       @infile  = options[:infile]
       @outfile = options[:outfile]
       @row_filter = RowFilter.new(options[:rows], df: options[:df])
       @col_filter = ColumnFilter.new(options[:cols], df: options[:df])
       @key_filter = ColumnFilter.new(options[:key], df: options[:df])
-      @headerless = options[:headerless]
       @keys = Set.new
     end
 
+    # Removes the duplicates from infile and writes the result to outfile
     def execute
-      processed_header = !@headerless
-
       File.open(@outfile, 'w') do |out|
         File.open(@infile, 'r').each_with_index do |line, index|
           line = line.chomp
@@ -35,11 +57,6 @@ module Sycsvpro
           next if line.empty?
           
           line = unstring(line).chomp
-
-          unless processed_header
-            out.puts col_filter.process(line)
-            process_header = true
-          end
 
           extraction = col_filter.process(row_filter.process(line, row: index))
 

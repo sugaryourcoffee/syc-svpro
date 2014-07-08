@@ -5,6 +5,8 @@ Processing of csv files. *sycsvpro* offers following functions
 
 * analyze a csv file
 * extract rows and columns from a file
+* remove duplicate lines from a file where duplicates are identified by key
+  columns (since version 0.1.11)
 * collect values of rows and assign them to categories
 * map column values to new values
 * allocate column values to a key column (since version 0.0.4)
@@ -75,6 +77,14 @@ Extract
 Extract row 1,2 and 10-20 as well as columns 4 and 6-7
 
     $ sycsvpro -f in.csv -o out.csv extract -r 1,2,10-20 -c 4,6-7
+
+
+Unique
+------
+Remove duplicate lines from a file. Duplicates are identified by key columns.
+If no key columns are provided the whole line is checked for uniqueness
+
+    $ sycsvpro -f in.csv -o out.csv unique -r 1,2,8-12 -c 4,10-15 -k 0,1
 
 Collect
 -------
@@ -472,6 +482,11 @@ Version 0.1.10
 * It is now possible to merge multiple files based on common headline columns
 * Fix ~/.syc/sycsvpro system directory creation when no .syc directory is 
  available
+
+Version 0.1.11
+--------------
+* Unique removes duplicate lines from the infile. Duplicate lines are identified
+  by key columns
 
 Installation
 ============

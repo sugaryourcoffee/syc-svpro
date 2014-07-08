@@ -19,7 +19,7 @@ module Sycsvpro
                            outfile: @outfile,
                            rows:    rows,
                            cols:    cols,
-                           keys:    key).execute
+                           key:     key).execute
 
       result = [ "Name;Street;Town;Country",
                  "Jane;Canal;Vancouver;CA",
