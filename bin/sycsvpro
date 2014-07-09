@@ -89,6 +89,38 @@ command :extract do |c|
   end
 end
 
+desc 'Remove duplicate rows from a file. Duplicates are identified by key '+
+     'columns'
+command :unique do |c|
+  c.desc 'Rows to consider'
+  c.arg_name '1,2,10-30,45-EOF,REGEXP,BEGINlogical_expressionEND'
+  c.flag [:r, :row], :must_match => row_regex 
+
+  c.desc 'Columns to extract'
+  c.arg_name '1,2,10-30'
+  c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
+
+  c.desc 'Key columns to check for duplication'
+  c.arg_name '0,1-4'
+  c.flag [:k, :key]
+
+  c.desc 'Format of date values'
+  c.arg_name '%d.%m.%Y|%m/%d/%Y|...'
+  c.flag [:df]
+
+  c.action do |global_options,options,args|
+    print "Removing duplicates ..."
+    unique = Sycsvpro::Unique.new(infile:  global_options[:f], 
+                                  outfile: global_options[:o],
+                                  rows:    options[:r], 
+                                  cols:    options[:c],
+                                  key:     options[:k],
+                                  df:      options[:df])
+    unique.execute
+    puts "done"    
+  end
+end
+
 desc 'Collect values of specified rows and columns from the file and group '+
      'them in categories'
 command :collect do |c|
@@ -411,6 +443,7 @@ command :join do |c|
   c.flag [:i, :insert]
 
   c.action do |global_options,options,args|
+    print 'Joining...'
     join = Sycsvpro::Join.new(infile:        global_options[:f], 
                               outfile:       global_options[:o],
                               source:        args[0],
@@ -421,7 +454,6 @@ command :join do |c|
                               headerless:    options[:headerless], 
                               header:        options[:h],
                               insert_header: options[:i])
-    print 'Joining...'
     join.execute
     print 'done'
   end

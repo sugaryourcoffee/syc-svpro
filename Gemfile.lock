@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sycsvpro (0.1.10)
+    sycsvpro (0.1.12)
       gli (= 2.9.0)
       timeleap (~> 0.0.1)
 
