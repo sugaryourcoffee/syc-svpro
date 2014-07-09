@@ -76,8 +76,9 @@ module Dsl
     end
   end
 
-  # Remove leading and trailing " and spaces as well as reducing more than 2 spaces between words
-  # from csv values. Replac ; with , from values as ; is used as value separator
+  # Remove leading and trailing " and spaces as well as reducing more than 2 
+  # spaces between words from csv values. Replace ; with , from values as ; 
+  # is used as value separator
   def unstring(line)
     line = str2utf8(line)
     line.scan(/(?<=^"|;")[^"]+(?=;)+[^"]*|;+[^"](?=";|"$)/).each do |value|

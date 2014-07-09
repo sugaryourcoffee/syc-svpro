@@ -4,6 +4,8 @@ module Sycsvpro
   # Map values to new values described in a mapping file
   class Mapper
 
+    include Dsl
+
     # infile contains the data that is operated on
     attr_reader :infile
     # outfile is the file where the result is written to
@@ -32,7 +34,7 @@ module Sycsvpro
           result = col_filter.process(row_filter.process(line, row: index))
           next if result.chomp.empty? or result.nil?
           mapper.each do |from, to|
-            result = result.chomp.gsub(/(?<=^|;)#{from}(?=;|$)/, to)
+            result = result.chomp.gsub(/(?<=^|;)#{Regexp.quote(from)}(?=;|$)/, to)
           end
           out.puts result
         end
@@ -44,7 +46,7 @@ module Sycsvpro
       # Initializes the mappings
       def init_mapper(file)
         File.new(file, 'r').each_line do |line|
-          from, to = line.chomp.split(':')
+          from, to = unstring(line).split(':')
           mapper[from] = to
         end
       end
