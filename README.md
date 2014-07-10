@@ -497,6 +497,8 @@ Version 0.1.13
 --------------
 * Optimize Merger by only considering columns provided for mapping which should
   increase performance
+* match_boolean_filter? in Filter now also processes strings with single quotes
+  inside
 
 Installation
 ============
