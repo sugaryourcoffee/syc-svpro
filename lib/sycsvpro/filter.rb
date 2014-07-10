@@ -71,7 +71,7 @@ module Sycsvpro
         when 'n'
           values[c[2].to_i].empty? ? '0' : values[c[2].to_i]
         when 's'
-          "'#{values[c[2].to_i]}'"
+          "\"#{values[c[2].to_i]}\""
         when 'd'
           begin
             Date.strptime(values[c[2].to_i], date_format)
