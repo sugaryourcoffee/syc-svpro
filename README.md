@@ -7,6 +7,7 @@ Processing of csv files. *sycsvpro* offers following functions
 * extract rows and columns from a file
 * remove duplicate lines from a file where duplicates are identified by key
   columns (since version 0.1.11)
+  add unique to command line interface (since version 0.1.12)
 * collect values of rows and assign them to categories
 * map column values to new values
 * allocate column values to a key column (since version 0.0.4)
@@ -108,7 +109,7 @@ Collect all product rows (2, 3 and 4) to the category product
 
 Map
 ---
-Map the product names to new names
+Map the product names to new names. Consider columns 2-4 only for mapping
 
 The mapping file (mapping) uses the result from the collect command above
 
@@ -487,6 +488,15 @@ Version 0.1.11
 --------------
 * Unique removes duplicate lines from the infile. Duplicate lines are identified
   by key columns
+
+Version 0.1.12
+--------------
+* Add unique to sycsvpro command line interface
+
+Version 0.1.13
+--------------
+* Optimize Merger by only considering columns provided for mapping which should
+  increase performance
 
 Installation
 ============
