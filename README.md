@@ -23,6 +23,7 @@ Processing of csv files. *sycsvpro* offers following functions
   version 0.1.4)
 * join two file based on a joint column value (since version 0.1.7)
 * merge files based on common headline columns (since version 0.1.10)
+* transpose (swapping) rows and columns (since version 0.1.13)
 
 To get help type
 
@@ -127,6 +128,35 @@ The mapping file (mapping) uses the result from the collect command above
     mot130:motor130
 
     $ sycsvpro -f in.csv -o out.csv map mapping -c 2-4
+
+Transpose
+---------
+Swap rows and columns of revenue.csv to out.csv
+
+    $ sycsvpro -f revenue.csv -o out.csv transpose
+    
+    2010;50;100;2000
+    2011;100;50;250
+    2012;150;10;300
+    2013;100;1000;3000
+    2014;200;20;20
+    customer;hello;indix;chiro
+
+To use only columns 2013 and 2014 you can specify a the columns to transpose
+
+    $ sycsvpro -f revenue.csv -o out.csv transpose -c 3-5
+
+    2013;100;1000;3000
+    2014;200;20;20
+    customer;hello;indix;chiro
+
+To filter for hello only
+
+    $ sycsvpor -f revenue.csv -o out.csv transpose -c 3-5 -r 0,1
+
+    2013;100
+    2014;200
+    customer;hello
 
 Allocate
 --------
@@ -499,6 +529,7 @@ Version 0.1.13
   increase performance
 * match_boolean_filter? in Filter now also processes strings with single quotes
   inside
+* Tranposer tranposes rows and columns that is make columns rows and vice versa
 
 Installation
 ============

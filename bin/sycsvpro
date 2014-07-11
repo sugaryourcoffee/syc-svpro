@@ -589,6 +589,27 @@ command :map do |c|
   end
 end
 
+desc 'Transposes rows and columns'
+command :transpose do |c|
+  c.desc 'Rows to consider'
+  c.arg_name 'ROW1,ROW2,ROW10-ROW30,45-EOF,REGEXP'
+  c.flag [:r, :row], :must_match => row_regex 
+
+  c.desc 'Columns to consider for mapping'
+  c.arg_name 'COL1,COL2,COL10-COL30'
+  c.flag [:c, :col], :must_match => /\d+(?:,\d+|-\d+)*/
+ 
+  c.action do |global_options,options,args|
+    print "Transpose..."
+    transpose = Sycsvpro::Transposer.new(infile:  global_options[:f], 
+                                         outfile: global_options[:o],
+                                         rows:    options[:r], 
+                                         cols:    options[:c])
+    transpose.execute
+    puts "done"
+  end
+end
+
 desc 'Process operations on columns. Optionally add a sum row for columns with'+
      'number values'
 command :calc do |c|
