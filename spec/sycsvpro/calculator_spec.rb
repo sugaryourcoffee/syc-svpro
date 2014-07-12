@@ -12,6 +12,33 @@ module Sycsvpro
       @out_file = File.join(File.dirname(__FILE__), "files/machines_out.csv")
     end
 
+    it "should ignore colons within calculation expression" do
+      cols   = "3:+[c1,c2].inject(:+),4:c2*3"
+      header = "*,times"
+      
+      calculator = Calculator.new(infile: @in_number_file,
+                                  outfile: @out_file,
+                                  header:  header,
+                                  cols:    cols)
+
+      calculator.execute
+
+      result = [ "customer;before;between;after;times",
+                 "Fink;2;3;6;9",
+                 "Haas;3;1;10;3",
+                 "Gent;4;4;12;12",
+                 "Rank;5;4;10;12" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
     it "should operate on existing row" do
       rows = "2-8"
       cols = "3:*3,4:*4+1"
