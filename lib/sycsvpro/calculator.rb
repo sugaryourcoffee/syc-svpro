@@ -166,9 +166,8 @@ module Sycsvpro
       # 4:c1+1 means create a new column and assign to it the result of the sum of the value of 
       # column 1 + 1 c[4] = c[1] + 1
       def create_calculator(code)
-        col_term_splitter = /(?<=^\d|^\d\d|^\d\d\d|^\d\d\d\d|^\d\d\d\d\d):/
         code.split(/,(?=\d+:)/).each do |operation|
-          col, term = operation.split(col_term_splitter)
+          col, term = operation.split(':', 2)
           term = "c#{col}#{term}" if term =~ /^[+\-*\/%]/
           formulae[col] = term
         end
