@@ -227,7 +227,7 @@ Process arithmetic operations on the contract count and create a target column
 and a sum which is added at the end of the result file
 
     $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h *,target 
-               -c 6:*2,7:target=c6*10
+               -c 6:*2,7:c6*10
 
     $ cat out.csv
     customer;machine;control;drive;motor;date;contract;target
@@ -240,6 +240,20 @@ and a sum which is added at the end of the result file
 
 In the sum row non-numbers in the colums are converted to 0. Therefore column 0
 is summed up to 0 as all strings are converted to 0.
+
+Write only columns 0, 6 and 7 by specifying write columns
+
+    $ sycsvpro -f in.csv -o out.csv calc -r 2-20 -h "customer,contract,target"
+                                         -c 6:*2,7:c6*10
+                                         -w 0,6-7
+    $ cat out.csv
+    customer;contract;target
+    hello;2;20
+    hello;2;20
+    indix;2;20
+    chiro;2;20
+    chiro;2;20
+    0;10;100
 
 Join
 ----
@@ -281,6 +295,7 @@ Merge files machine_count.csv and revenue.csv based on the year columns.
 This will create the out.csv
 
 ```
+$ cat out.csv
 ;2010;2013;2014
 hello;1;0;0
 indix;1;0;0
@@ -297,6 +312,7 @@ Sort rows on specified columns as an example sort rows based on customer
 
     $ sycsvpro -f in.csv -o out.csv sort -r 2-20 -c s:0,d:5
     
+    $cat out.csv
     customer;machine;control;drive;motor;date;contract;target
     hello;h2;con123;dri130;mot110;1.02.3012;1
     hello;h1;con123;dri120;mot100;1.01.3013;1
@@ -437,8 +453,8 @@ row are added on top of the sorted file
 * `sycsvpro -f infile analyze` now lists the columns with sample data
 * Add `params` method to *Dsl* that retrieves the params provided in the execute
 command: `sycsvpro execute script.rb method infile param1 param2`
-* Add `clean_up` to *Dsl* that takes files to be deleted after the script has
-run: `clean_up(%w{file1 file2})`
+* Add `clean\_up` to *Dsl* that takes files to be deleted after the script has
+run: `clean\_up(%w{file1 file2})`
 
 Version 0.1.4
 -------------
@@ -496,7 +512,7 @@ Version 0.1.7
   This will join infile.csv with source.csv based on the join columns (j "1=3").
   From source.csv columns 2 and 4 (-c "2,4") will be inserted at column
   positions 1 and 3 (-p "1,3"). The header will be used from the infile.csv
-  (-h "*") supplemented by the columns A and B (-i "A,B") that will also be
+  (-h "\*") supplemented by the columns A and B (-i "A,B") that will also be
   positioned at column 1 and 3 (-p "1,3").
 
 Version 0.1.8
@@ -530,6 +546,13 @@ Version 0.1.13
 * match_boolean_filter? in Filter now also processes strings with single quotes
   inside
 * Tranposer tranposes rows and columns that is make columns rows and vice versa
+* Calculator can now have colons inside the operation
+     sycsvpro -f in.csv -o out.csv -c "122:+[1,3,5].inject(:+)"
+  Previously the operation would have been cut after inject(
+* A write flag in Calculator specifies which colons to add to the result.
+* Calculator introduced a switch 'final\_header' which indicates the header
+  provided should not be filtered in regard to a provided 'write' flag but 
+  written to the result file as is
 
 Installation
 ============

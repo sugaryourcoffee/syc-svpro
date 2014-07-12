@@ -621,6 +621,11 @@ command :calc do |c|
     default_value '*'
     c.flag [:h, :header], :must_match => /^[*|\w ]+(?:,[\w ]+)*/
 
+    c.desc 'Indicates whether the provided header is final. That is if columns'+
+           ' to be written to the outfile are selected by the write flag then '+
+           'the header should left untouched and written as is'
+    c.switch [:f, :final], :default_value => false
+
     c.desc 'Rows to consider for calculations'
     c.arg_name 'ROW1,ROW2-ROW10,45-EOF,REGEXP'
     c.flag [:r, :row], :must_match => row_regex
@@ -630,6 +635,10 @@ command :calc do |c|
            '4:s0.scan(/(\\d+)\//).flatten[0]'
     c.arg_name "COL1:*2,COL2:-C3,COL3:*2+(4+C5)"
     c.flag [:c, :col], :must_match => /^\d+:.+/
+
+    c.desc 'Columns to be written to the result file'
+    c.arg_name "COL1,COL2-COL5"
+    c.flag [:w, :write], :must_match => /\d+(?:,\d+|-\d+)*/
 
     c.desc 'Date format of date columns'
     c.arg_name '%d.%m.%Y|%Y-%m-%d|...'
@@ -643,13 +652,15 @@ command :calc do |c|
     help_now! "You need to provide the column flag" if options[:c].nil?
 
     print "Calculating..."
-    calculator = Sycsvpro::Calculator.new(infile:  global_options[:f], 
-                                          outfile: global_options[:o],
-                                          header:  options[:h], 
-                                          rows:    options[:r], 
-                                          cols:    options[:c],
-                                          sum:     options[:s], 
-                                          df:      options[:df])
+    calculator = Sycsvpro::Calculator.new(infile:       global_options[:f], 
+                                          outfile:      global_options[:o],
+                                          header:       options[:h], 
+                                          final_header: options[:f],
+                                          rows:         options[:r], 
+                                          cols:         options[:c],
+                                          write:        options[:w],
+                                          sum:          options[:s], 
+                                          df:           options[:df])
     calculator.execute 
     puts "done"
   end

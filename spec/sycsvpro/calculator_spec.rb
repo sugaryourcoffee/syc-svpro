@@ -39,6 +39,69 @@ module Sycsvpro
       rows.should eq result.size
     end
 
+    it "should save only specified columns" do
+      cols   = "3:+[c1,c2].inject(:+),4:c3*3"
+      write  = "0,3-4"
+      header = "customer;sum;times"
+      
+      calculator = Calculator.new(infile:       @in_number_file,
+                                  outfile:      @out_file,
+                                  header:       header,
+                                  final_header: true,
+                                  write:        write,
+                                  cols:         cols,
+                                  sum:          true)
+
+      calculator.execute
+
+      result = [ "customer;sum;times",
+                 "Fink;6;18",
+                 "Haas;10;30",
+                 "Gent;12;36",
+                 "Rank;10;30",
+                 "0;38;114" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
+    it "should save only specified columns" do
+      cols   = "3:+[c1,c2].inject(:+),4:c3*3"
+      write  = "0,3-4"
+      header = "*,times"
+      
+      calculator = Calculator.new(infile: @in_number_file,
+                                  outfile: @out_file,
+                                  header:  header,
+                                  write:   write,
+                                  cols:    cols,
+                                  sum:     true)
+
+      calculator.execute
+
+      result = [ "customer;after;times",
+                 "Fink;6;18",
+                 "Haas;10;30",
+                 "Gent;12;36",
+                 "Rank;10;30",
+                 "0;38;114" ]
+
+      rows = 0
+
+      File.open(@out_file).each_with_index do |line, index|
+        line.chomp.should eq result[index]
+        rows += 1
+      end
+
+      rows.should eq result.size
+    end
+
     it "should operate on existing row" do
       rows = "2-8"
       cols = "3:*3,4:*4+1"

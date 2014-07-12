@@ -58,8 +58,13 @@ module Sycsvpro
     attr_reader :formulae
     # header of the outfile
     attr_reader :header
+    # indicates whether this header is final and should not be filtered in
+    # respect to the columns defined by write
+    attr_reader :final_header
     # filter that is used for columns
     attr_reader :columns
+    # selected columns to be written to outfile
+    attr_reader :write
     # if true add a sum row at the bottom of the out file
     attr_reader :add_sum_row
 
@@ -67,29 +72,36 @@ module Sycsvpro
     # can be supplemented with additional column names that are generated due 
     # to an arithmetic operation that creates new columns
     # :call-seq:
-    #   Sycsvpro::Calculator.new(infile:  "in.csv",
-    #                            outfile: "out.csv",
-    #                            df:      "%d.%m.%Y",
-    #                            rows:    "1,2,BEGINn3>20END",
-    #                            header:  "*,Count",
-    #                            cols:    "4:c1+c2*2",
-    #                            sum:     true).execute
+    #   Sycsvpro::Calculator.new(infile:       "in.csv",
+    #                            outfile:      "out.csv",
+    #                            df:           "%d.%m.%Y",
+    #                            rows:         "1,2,BEGINn3>20END",
+    #                            header:       "*,Count",
+    #                            final_header: false,
+    #                            cols:         "4:c1+c2*2",
+    #                            write:        "1,3-5",
+    #                            sum:          true).execute
     # infile:: File that contains the rows to be operated on
     # outfile:: Result of the operations
     # df:: Date format
     # rows:: Row filter that indicates which rows to consider
     # header:: Header of the columns
+    # final_header:: Indicates that if write filters columns the header should
+    # not be filtered when written
     # cols:: Operations on the column values
+    # write:: Columns that are written to the outfile
     # sum:: Indicate whether to add a sum row
     def initialize(options={})
-      @infile      = options[:infile]
-      @outfile     = options[:outfile]
-      @date_format = options[:df] || "%Y-%m-%d"
-      @row_filter  = RowFilter.new(options[:rows], df: options[:df])
-      @header      = Header.new(options[:header])
-      @sum_row     = []
-      @add_sum_row = options[:sum] || false
-      @formulae    = {}
+      @infile       = options[:infile]
+      @outfile      = options[:outfile]
+      @date_format  = options[:df] || "%Y-%m-%d"
+      @row_filter   = RowFilter.new(options[:rows], df: options[:df])
+      @write_filter = ColumnFilter.new(options[:write], df: options[:df])
+      @header       = Header.new(options[:header])
+      @final_header = options[:final_header]
+      @sum_row      = []
+      @add_sum_row  = options[:sum]
+      @formulae     = {}
       create_calculator(options[:cols])
     end
 
@@ -112,7 +124,8 @@ module Sycsvpro
 
           unless processed_header
             header_row = header.process(line.chomp)
-            out.puts header_row unless header_row.empty?
+            header_row = @write_filter.process(header_row) unless @final_header
+            out.puts header_row unless header_row.nil? or header_row.empty?
             processed_header = true
             next
           end
@@ -123,7 +136,7 @@ module Sycsvpro
           formulae.each do |col, formula|
             @columns[col.to_i] = eval(formula)
           end
-          out.puts @columns.join(';')
+          out.puts @write_filter.process(@columns.join(';'))
 
           @columns.each_with_index do |column, index|
             column = 0 unless column.to_s =~ /^[\d\.,]*$/
@@ -137,7 +150,7 @@ module Sycsvpro
 
         end
 
-        out.puts @sum_row.join(';') if add_sum_row
+        out.puts @write_filter.process(@sum_row.join(';')) if add_sum_row
 
       end
     end
