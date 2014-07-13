@@ -69,21 +69,25 @@ module Sycsvpro
     # source_header:: pattern for each header of the source file to determine
     # the column. The pattern is a regex without the enclosing slashes '/'
     # key:: first column value from the source file that is used as first
-    # column in the target file
+    # column in the target file. The key is optional.
     def initialize(options = {})
       @outfile       = options[:outfile]
       @header_cols   = options[:header].split(',')
       @source_header = options[:source_header].split(',')
-      @key           = options[:key].split(',')
+      @key           = options[:key] ? options[:key].split(',') : []
+      @has_key       = !@key.empty?
       @files         = options[:files].split(',')
+      if @source_header.count != @files.count
+        raise "file count has to be equal to source_header count"
+      end
     end
 
     # Merges the files based on the provided parameters
     def execute
       File.open(outfile, 'w') do |out|
-        out.puts ";#{header_cols.join(';')}"
+        out.puts "#{';' unless @key.empty?}#{header_cols.join(';')}"
         files.each do |file|
-          @current_key = @key.shift
+          @current_key = create_current_key
           @current_source_header = @source_header.shift
           processed_header = false
           File.open(file).each_with_index do |line, index|
@@ -110,16 +114,25 @@ module Sycsvpro
           columns[i] = c.scan(Regexp.new(@current_source_header)).flatten[0]
         end
 
-        @file_header = [@current_key.to_i]
+        @file_header = @current_key ? [@current_key.to_i] : []
+
         header_cols.each do |h|
           @file_header << columns.index(h) 
         end 
+
         @file_header.compact!
+      end
+
+      # create the current key dependent on the value returns a number or nil
+      def create_current_key
+        key = @key.shift
+        key.nil? || key.strip.empty? ? nil : key
       end
 
       # create a line filtered by the file_header
       def create_line(columns)
-        columns.values_at(*@file_header).join(';')
+        empty_col = ';' if @has_key && @current_key.nil?
+        "#{empty_col}#{columns.values_at(*@file_header).join(';')}"
       end
 
   end
