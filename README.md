@@ -541,10 +541,10 @@ Version 0.1.12
 
 Version 0.1.13
 --------------
-* Optimize Merger by only considering columns provided for mapping which should
+* Optimize Mapper by only considering columns provided for mapping which should
   increase performance
-* match_boolean_filter? in Filter now also processes strings with single quotes
-  inside
+* match\_boolean\_filter? in Filter now also processes strings with single
+  quotes inside
 * Tranposer tranposes rows and columns that is make columns rows and vice versa
 * Calculator can now have colons inside the operation
      sycsvpro -f in.csv -o out.csv -c "122:+[1,3,5].inject(:+)"
@@ -553,6 +553,8 @@ Version 0.1.13
 * Calculator introduced a switch 'final\_header' which indicates the header
   provided should not be filtered in regard to a provided 'write' flag but 
   written to the result file as is
+* Merger no doesn't require a key column that is files can be merged without
+  key columns.
 
 Installation
 ============
