@@ -521,8 +521,9 @@ Version 0.1.8
 
 Version 0.1.9
 -------------
-* When creating columns dynamically they are in arbitrary sequence. You can now
-  provide a switch `sort: "2"` which will sort the header from column 2 on.
+* When creating columns dynamically in count they are in arbitrary sequence. 
+  You can now provide a switch `sort: "2"` which will sort the header from 
+  column 2 on.
 
 Version 0.1.10
 --------------
@@ -553,7 +554,7 @@ Version 0.1.13
 * Calculator introduced a switch 'final\_header' which indicates the header
   provided should not be filtered in regard to a provided 'write' flag but 
   written to the result file as is
-* Merger no doesn't require a key column that is files can be merged without
+* Merger now doesn't require a key column that is files can be merged without
   key columns.
 
 Installation
