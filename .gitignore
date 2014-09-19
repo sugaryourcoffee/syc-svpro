@@ -19,3 +19,4 @@ doc/
 
 # Test files
 *.csv
+test-files/
