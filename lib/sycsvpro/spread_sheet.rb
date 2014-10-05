@@ -165,17 +165,21 @@ module Sycsvpro
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
-      col_label_size = ncols.to_s.size
-      row_label_size = nrows.to_s.size
+      #col_label_size = ncols.to_s.size
+      col_label_size = col_labels.collect { |c| c.to_s.size }.max
+      #row_label_size = nrows.to_s.size
+      row_label_size = row_labels.collect { |c| c.to_s.size }.max
       col_size = [rows.flatten.collect { |c| c.to_s.size }.max, 
                   col_label_size + 2                            ].max + 1 
 
       print(sprintf("%#{row_label_size + 2}s", " "))
-      0.upto(ncols - 1) { |i| print(sprintf("%#{col_size}s", "[#{i}]")) }
+      #0.upto(ncols - 1) { |i| print(sprintf("%#{col_size}s", "[#{i}]")) }
+      col_labels.each { |l| print(sprintf("%#{col_size}s", "[#{l}]")) }
       puts
 
       rows.each_with_index do |row, i|
-        print(sprintf("[%#{row_label_size}s]", i))
+        #print(sprintf("[%#{row_label_size}s]", i))
+        print(sprintf("[%#{row_label_size}s]", row_labels[i]))
         row.each { |c| print(sprintf("%#{col_size}s", c)) }
         puts
       end
@@ -218,6 +222,36 @@ module Sycsvpro
         if opts[:r]
           row_labels = extract_row_labels(rows)
         end
+
+        if opts[:row_labels]
+          row_labels = opts[:row_labels]
+          opts[:r] = true
+        end
+        if opts[:col_labels]
+          col_labels = opts[:col_labels]
+          opts[:c] = true
+        end
+
+        if opts[:c]
+          if col_labels.size > rows[0].size
+            col_labels = col_labels[col_labels.size - rows[0].size, 
+                                    rows[0].size]
+          else
+            col_labels = col_labels + (0..rows[0].size-1).to_a[col_labels.size, 
+                                                               rows[0].size] 
+          end
+        end
+
+        if opts[:r]
+          if row_labels.size > rows.size
+            row_labels = row_labels[row_labels.size - rows.size, 
+                                    rows.size]
+          else
+            row_labels = row_labels + (0..rows.size-1).to_a[row_labels.size, 
+                                                               rows.size] 
+          end
+        end
+
         row_labels = (0..rows.size-1).to_a    unless row_labels
         col_labels = (0..rows[0].size-1).to_a unless col_labels
         [row_labels, col_labels]
@@ -225,8 +259,6 @@ module Sycsvpro
 
       def extract_col_labels(rows)
         col_labels = rows.shift
-        col_labels.shift if col_labels.size == rows[0].size
-        col_labels
       end
 
       def extract_row_labels(rows)
@@ -238,6 +270,8 @@ module Sycsvpro
       # Conducts the calculation based on the operator
       def process(operator, s)
         result = []
+        rlabel = []
+        clabel = []
         s1_row_count, s1_col_count = dim
         s2_row_count, s2_col_count = s.dim
         row_count = [s1_row_count, s2_row_count].max
@@ -245,15 +279,19 @@ module Sycsvpro
         0.upto(row_count - 1) do |r|
           r1 = r % s1_row_count
           r2 = r % s2_row_count
+          rlabel << "#{row_labels[r1]}#{operator}#{s.row_labels[r2]}"
           element = []
           0.upto(col_count - 1) do |c|
             c1 = c % s1_col_count
             c2 = c % s2_col_count
+            clabel << "#{col_labels[c1]}#{operator}#{s.col_labels[c2]}"
             element << rows[r1][c1].send(operator, s.rows[r2][c2])
           end
           result << element
         end
-        SpreadSheet.new(*result)
+        STDERR.puts rlabel.inspect
+        STDERR.puts clabel.inspect
+        SpreadSheet.new(*result, row_labels: rlabel, col_labels: clabel)
       end
 
   end

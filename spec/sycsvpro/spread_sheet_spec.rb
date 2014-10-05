@@ -128,6 +128,56 @@ module Sycsvpro
 
     # Spread sheets with column and row labels
   
+    it "should create spread sheet with row labels" do
+      v1 = SpreadSheet.new([1,2],[3,4], row_labels: ['A','B'])
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_false
+      v1.row_labels.should eq ['A','B']
+      v1.col_labels.should eq [0,1]
+    end
+
+    it "should create spread sheet with column labels" do
+      v1 = SpreadSheet.new([1,2],[3,4], col_labels: ['X','Y'])
+      v1.opts[:r].should be_false
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq [0,1]
+      v1.col_labels.should eq ['X','Y']
+    end
+
+    it "should create spread sheet with row and column labels" do
+      v1 = SpreadSheet.new([1,2],[3,4], row_labels: ['A','B'], 
+                                        col_labels: ['X','Y'])
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq ['A','B']
+      v1.col_labels.should eq ['X','Y']
+    end
+
+    it "should create spread sheet with uncomplete row and column labels" do
+      v1 = SpreadSheet.new([1,2,3],[3,4,5],[6,7,8], row_labels: ['A','B'], 
+                                                    col_labels: ['X','Y'])
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq ['A','B',2]
+      v1.col_labels.should eq ['X','Y',2]
+    end
+
+    it "should return provided row labels" do
+      v1 = SpreadSheet.new(['A',1,2],['B',3,4], r: true)
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_false
+      v1.row_labels.should eq ['A','B']
+      v1.col_labels.should eq [0,1]
+    end
+
+    it "should return provided column labels" do
+      v1 = SpreadSheet.new(['X','Y'],[1,2],[3,4], c: true)
+      v1.opts[:r].should be_false
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq [0,1]
+      v1.col_labels.should eq ['X','Y']
+    end
+
     it "should return provided row and column labels" do
       v1 = SpreadSheet.new(['X','Y'], ['A',1,2],['B',3,4], r: true, c: true)
       v1.opts[:r].should be_true
@@ -136,11 +186,30 @@ module Sycsvpro
       v1.col_labels.should eq ['X','Y']
     end
 
+    it "should fill missing labels with default labels" do
+      v1 = SpreadSheet.new(['X','Y'], ['A',1,2,3],['B',3,4,5], r: true, c: true)
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq ['A','B']
+      v1.col_labels.should eq ['X','Y',2]
+    end
+
+    it "should return provided row and column labels with row column label" do
+      v1 = SpreadSheet.new(['Letter','X','Y'], ['A',1,2],['B',3,4], r: true, c: true)
+      v1.opts[:r].should be_true
+      v1.opts[:c].should be_true
+      v1.row_labels.should eq ['A','B']
+      v1.col_labels.should eq ['X','Y']
+    end
+
     it "should multiply spread sheets with row labels" do
-    #  v1 = SpreadSheet.new(['A', 1,2],['B', 3,4], rlable: true)
-    #  v2 = SpreadSheet.new([5,6],[7,8])
-    #  v3 = SpreadSheet.new(['A', 5, 12], ['B', 21, 32])
-    #  (v1 * v2).should eq v3
+      v1 = SpreadSheet.new(['A', 1,2],['B', 3,4], r: true)
+      v2 = SpreadSheet.new([5,6],[7,8])
+      v3 = SpreadSheet.new([5, 12], [21, 32])
+      v4 = v1 * v2
+      v4.should eq v3
+      v4.row_labels.should eq ['A*0', 'B*1']
+      v4.col_labels.should eq ['0*0','1*1']
     end
 
     it "should multiply spread sheets with column labels"
