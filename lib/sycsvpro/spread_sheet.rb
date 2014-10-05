@@ -10,9 +10,9 @@ module Sycsvpro
   #   A = [0]   1   2  B = [0]   5   6 
   #       [1]   3   4      [1]   7   8
   #
-  #               [0]  [1]
-  #   A * B = [0]   5   12  
-  #           [1]  21   32
+  #                 [0*0]  [1*1]
+  #   A * B = [0*0]     5     12  
+  #           [1*1]    21     32
   #
   # If spread sheets are not the same size then the operation is looping through
   # the smaller spread sheets values
@@ -22,13 +22,13 @@ module Sycsvpro
   #   A = [0]   1   2  B = [0]   5  C = [0]   8
   #       [1]   3   4      [1]   7
   #
-  #               [0]  [1]
-  #   A * B = [0]   5   35
-  #           [1]  21   28
+  #                 [0*0]  [1*1]
+  #   A * B = [0*0]     5     35
+  #           [1*1]    21     28
   #
-  #               [0]  [1]
-  #   A * C = [0]   8   16
-  #           [1]  24   32
+  #                 [0*0]  [1*0]
+  #   A * C = [0*0]     8     16
+  #           [1*0]    24     32
   class SpreadSheet
 
     # rows of the spread sheet
@@ -61,6 +61,11 @@ module Sycsvpro
     #       [One] [Two]
     #   [A]     1     2
     #   [B]     3     4
+    #
+    # It is also possible to specify row and column labels explicit
+    #
+    #   SpreadSheet.new([1,2],[3,4], row_labels: ['A','B'], 
+    #                                col_labels: ['One','Two'])
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
@@ -91,7 +96,7 @@ module Sycsvpro
     end
 
     # Returns a subset of the spread sheet and returns a new spread sheet with
-    # the result
+    # the result and the corresponding row and column labels
     def [](*range)
       r, c = range
       r ||= 0..(nrows-1)
@@ -109,7 +114,9 @@ module Sycsvpro
         col_selection << row_selection[*c]
       end
 
-      SpreadSheet.new(*col_selection)
+      SpreadSheet.new(*col_selection, 
+                      row_labels: row_labels.values_at(*r),
+                      col_labels: col_labels.values_at(*c))
     end
 
     # Multiplies two spreadsheets column by column and returns a new spread
@@ -152,6 +159,7 @@ module Sycsvpro
     # if the spread sheets A and B are equal if Aij = Bij, that is elements at
     # the same position are equal
     def ==(other)
+      return false unless other.instance_of?(SpreadSheet)
       return false unless dim == other.dim
       row_count, col_count = dim
       0.upto(row_count - 1) do |r|
@@ -162,6 +170,11 @@ module Sycsvpro
       true
     end
     
+    # Yields each column
+    def each_column
+      0.upto(ncols-1) { |i| yield self[nil,i] }
+    end
+
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
@@ -267,8 +280,18 @@ module Sycsvpro
         row_labels
       end
 
-      # Conducts the calculation based on the operator
+      # Coerces a number or an array to a spread sheet
+      def coerce(value)
+        return SpreadSheet.new([value]) if value.is_a?(Numeric)
+        return SpreadSheet.new(value)   if value.is_a?(Array)
+      end
+
+      # Conducts the calculation of this spread sheet with the provided value 
+      # based on the operator. It s is a number or an array it is coerced into
+      # a spread sheet
       def process(operator, s)
+        s = coerce(s) || s
+        raise "operand needs to be a SpreadSheet, Numeric or Array" unless s.is_a?(SpreadSheet)
         result = []
         rlabel = []
         clabel = []
@@ -289,8 +312,6 @@ module Sycsvpro
           end
           result << element
         end
-        STDERR.puts rlabel.inspect
-        STDERR.puts clabel.inspect
         SpreadSheet.new(*result, row_labels: rlabel, col_labels: clabel)
       end
 

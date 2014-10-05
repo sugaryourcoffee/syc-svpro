@@ -82,6 +82,10 @@ module Sycsvpro
       s1[nil,[0,2]].should eq s2
     end
 
+    it "should bind two spread sheets column wise"
+
+    it "should bind two spread sheets row wise"
+
     # Calculating with spread sheets
 
     it "should multiply two spread sheets of same size" do
@@ -124,6 +128,30 @@ module Sycsvpro
       v2 = SpreadSheet.new([5,6],[7,8])
       v3 = SpreadSheet.new([1/5,2/6],[3/7,4/8])
       (v1 / v2).should eq v3
+    end
+
+    it "should work with numericals" do
+      v1 = SpreadSheet.new([1,2],[3,4])
+      v2 = SpreadSheet.new([2,4],[6,8])
+      (v1 * 2).should eq v2 
+    end
+
+    it "should work with arrays" do
+      v1 = SpreadSheet.new([1,2],[3,4])
+      v2 = SpreadSheet.new([3,6],[9,8])
+#      (v1 * [3,2]).should eq v2 
+    end
+
+    it "should multiply each column with all columns of a spread sheet" do
+      v1 = SpreadSheet.new([1,2],[3,4])
+      v2 = SpreadSheet.new([5,6],[7,8])
+      v3 = v1.each_column { |c| c*v2 } 
+
+      #  1 2     5 6    5  6 10 12
+      #  3 4     7 8   21 24 28 32
+
+      v4 = SpreadSheet.new([5,6,10,12],[21,24,28,32])
+      v3.should eq v4 
     end
 
     # Spread sheets with column and row labels
@@ -202,6 +230,13 @@ module Sycsvpro
       v1.col_labels.should eq ['X','Y']
     end
 
+    it "should create subset with row and column labels" do
+      v1 = SpreadSheet.new(['Letter','X','Y'], ['A',1,2],['B',3,4], r: true, c: true)
+      v2 = v1[nil, 1]
+      v2.row_labels.should eq ['A', 'B']
+      v2.col_labels.should eq ['Y'] 
+    end
+
     it "should multiply spread sheets with row labels" do
       v1 = SpreadSheet.new(['A', 1,2],['B', 3,4], r: true)
       v2 = SpreadSheet.new([5,6],[7,8])
@@ -212,9 +247,26 @@ module Sycsvpro
       v4.col_labels.should eq ['0*0','1*1']
     end
 
-    it "should multiply spread sheets with column labels"
+    it "should multiply spread sheets with column labels" do
+      v1 = SpreadSheet.new(['X','Y'],[1,2],[3,4], c: true)
+      v2 = SpreadSheet.new([5,6],[7,8])
+      v3 = SpreadSheet.new([5, 12], [21, 32])
+      v4 = v1 * v2
+      v4.should eq v3
+      v4.row_labels.should eq ['0*0','1*1']
+      v4.col_labels.should eq ['X*0','Y*1']
+    end
 
-    it "should multiply spread sheets with row and column labels"
+    it "should multiply spread sheets with row and column labels" do
+      v1 = SpreadSheet.new(['X','Y'],['A', 1,2],['B', 3,4], r: true, c: true)
+      v2 = SpreadSheet.new([5,6],[7,8])
+      v3 = SpreadSheet.new([5, 12], [21, 32])
+      v4 = v1 * v2
+      v4.should eq v3
+      v4.row_labels.should eq ['A*0', 'B*1']
+      v4.col_labels.should eq ['X*0', 'Y*1']
+    end
+
   end
 
 end
