@@ -69,6 +69,7 @@ module Sycsvpro
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
+      rows = rows_from_params(opts) if rows.empty?
       check_validity_of(rows)
       @row_labels, @col_labels = create_labels(rows)
       @rows = rows
@@ -175,6 +176,13 @@ module Sycsvpro
       0.upto(ncols-1) { |i| yield self[nil,i] }
     end
 
+    # Collects the operation on each column and returns the result in an array
+    def column_collect(&block)
+      result = []
+      0.upto(ncols-1) { |i| result << block.call(self[nil,i]) }
+      result
+    end
+
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
@@ -199,6 +207,17 @@ module Sycsvpro
     end
     
     private
+
+      # Creates rows from provided array
+      def rows_from_params(opts)
+        c = opts[:cols] 
+        r = opts[:rows]
+        if opts[:values] 
+                
+        elsif opts[:file]
+
+        end
+      end
 
       # Checks whether the rows are valid, that is
       #   * same size

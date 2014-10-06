@@ -20,6 +20,14 @@ module Sycsvpro
                                                   "needs at least one row")
     end
 
+    it "should be created from file"
+
+    it "should be created from flat array" do
+      s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 3)
+      s2 = SpreadSheet.new([1,2],[3,4],[5,6])
+      s1.should eq s2
+    end
+
     # Information about spread sheets
     
     it "should return the dimension of a spreadsheet" do
@@ -145,13 +153,28 @@ module Sycsvpro
     it "should multiply each column with all columns of a spread sheet" do
       v1 = SpreadSheet.new([1,2],[3,4])
       v2 = SpreadSheet.new([5,6],[7,8])
-      v3 = v1.each_column { |c| c*v2 } 
+
+      result = []
+      v1.each_column { |c| result << c*v2 } 
 
       #  1 2     5 6    5  6 10 12
       #  3 4     7 8   21 24 28 32
 
-      v4 = SpreadSheet.new([5,6,10,12],[21,24,28,32])
-      v3.should eq v4 
+      v3 = SpreadSheet.new([5,6],[21,24])
+      v4 = SpreadSheet.new([10,12],[28,32])
+      result.should eq [v3,v4]
+    end
+
+    it "should collect the result of all multiplications" do
+      v1 = SpreadSheet.new([1,2],[3,4])
+      v2 = SpreadSheet.new([5,6],[7,8])
+
+      result = v1.column_collect { |c| c * v2 }
+
+      v3 = SpreadSheet.new([5,6],[21,24])
+      v4 = SpreadSheet.new([10,12],[28,32])
+
+      result.should eq [v3,v4]
     end
 
     # Spread sheets with column and row labels
