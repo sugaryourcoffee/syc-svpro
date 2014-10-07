@@ -40,6 +40,20 @@ module Sycsvpro
       s1.should eq s2
      end
 
+    # Manipulating spread sheets
+
+    it "should transpose rows and columns" do
+      s1 = SpreadSheet.new(["C1","C2","C3"],['A',1,3,5],['B',7,11,13], r: true, c: true)
+      s2 = SpreadSheet.new(['A','B'],['C1',1,7],['C2',3,11],['C3',5,13], r: true, c: true)
+      expect { s1.tranpose == s2 }
+    end
+
+    it "should assign new values to rows and columns"
+
+    it "should delete columns"
+
+    it "should delete rows"
+    
     # Information about spread sheets
     
     it "should return the dimension of a spreadsheet" do
@@ -159,7 +173,7 @@ module Sycsvpro
     it "should work with arrays" do
       v1 = SpreadSheet.new([1,2],[3,4])
       v2 = SpreadSheet.new([3,6],[9,8])
-#      (v1 * [3,2]).should eq v2 
+      expect { v1 * [3,2] == v2 }
     end
 
     it "should multiply each column with all columns of a spread sheet" do
@@ -264,6 +278,8 @@ module Sycsvpro
       v1.row_labels.should eq ['A','B']
       v1.col_labels.should eq ['X','Y']
     end
+
+    it "should rename row and column labels"
 
     it "should create subset with row and column labels" do
       v1 = SpreadSheet.new(['Letter','X','Y'], ['A',1,2],['B',3,4], r: true, c: true)

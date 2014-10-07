@@ -98,6 +98,12 @@ module Sycsvpro
       rows[0].size
     end
 
+    # Swaps rows and columns and returns new spread sheet with result
+    def transpose
+      SpreadSheet.new(*rows.transpose, row_labels: col_labels, 
+                                       col_labels: row_labels)
+    end
+
     # Returns a subset of the spread sheet and returns a new spread sheet with
     # the result and the corresponding row and column labels
     def [](*range)
