@@ -23,10 +23,22 @@ module Sycsvpro
     it "should be created from file"
 
     it "should be created from flat array" do
-      s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 3)
+      s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 2)
       s2 = SpreadSheet.new([1,2],[3,4],[5,6])
       s1.should eq s2
-    end
+      s1 = SpreadSheet.new(values: [1,2,3,4,5,6], rows: 2)
+      s2 = SpreadSheet.new([1,2,3],[4,5,6])
+      s1.should eq s2
+      s1 = SpreadSheet.new(values: [1,2,3,4,5,6], rows: 3, cols: 2)
+      s2 = SpreadSheet.new([1,2],[3,4],[5,6])
+      s1.should eq s2
+      s1 = SpreadSheet.new(values: [1,2,3,4,5], rows: 2)
+      s2 = SpreadSheet.new([1,2,3],[4,5,NotAvailable])
+      s1.should eq s2
+      s1 = SpreadSheet.new(values: [1,2,3,4,5], cols: 3)
+      s2 = SpreadSheet.new([1,2,3],[4,5,NotAvailable])
+      s1.should eq s2
+     end
 
     # Information about spread sheets
     

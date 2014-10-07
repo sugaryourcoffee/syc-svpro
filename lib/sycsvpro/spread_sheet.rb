@@ -1,3 +1,5 @@
+require_relative 'not_available'
+
 module Sycsvpro
 
   # A spread sheet is used to do column and row wise calculations between
@@ -69,7 +71,7 @@ module Sycsvpro
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
-      rows = rows_from_params(opts) if rows.empty?
+      rows = rows_from_params(@opts) if rows.empty?
       check_validity_of(rows)
       @row_labels, @col_labels = create_labels(rows)
       @rows = rows
@@ -208,15 +210,34 @@ module Sycsvpro
     
     private
 
-      # Creates rows from provided array
+      # Creates rows from provided array. If array doesn't provide equal column
+      # sizes the array is extended with NotAvailable values
       def rows_from_params(opts)
-        c = opts[:cols] 
-        r = opts[:rows]
-        if opts[:values] 
-                
+        col_count = opts[:cols] 
+        row_count = opts[:rows]
+        
+        size = row_count * col_count if row_count && col_count
+
+        rows = []
+
+        if values = opts[:values] 
+          if size
+            values += [NotAvailable] * (size - values.size)
+          elsif col_count
+            values += [NotAvailable] * ((col_count - values.size) % col_count)
+          elsif row_count
+            values += [NotAvailable] * ((row_count - values.size) % row_count)
+            col_count = values.size / row_count
+          else
+            col_count = Math.sqrt(values.size).ceil
+            values += [NotAvailable] * ((col_count - values.size) % col_count)
+          end
+          values.each_slice(col_count) { |row| rows << row }
         elsif opts[:file]
 
         end
+
+        rows
       end
 
       # Checks whether the rows are valid, that is
