@@ -20,7 +20,28 @@ module Sycsvpro
                                                   "needs at least one row")
     end
 
-    it "should be created from file"
+    it "should be created from file" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet.csv")
+
+      s1 = SpreadSheet.new(file: file, r: true, c: true)
+      s2 = SpreadSheet.new(['Alpha', 'Beta', 'Gamma'],
+                           ['A',1,2,3],['B',4,5,6],['C',7,8,9],
+                           r: true, c: true)
+      expect { s1 == s2 }
+    end
+
+    it "should be created from file with missing values" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet_na.csv")
+
+      s1 = SpreadSheet.new(file: file, r: true, c: true)
+      s2 = SpreadSheet.new(['Alpha', 'Beta', 'Gamma'],
+                           ['A',NotAvailable,2,3],
+                           ['B',4,5,NotAvailable],
+                           ['C',7,NotAvailable,9],
+                           r: true, c: true)
+      expect { s1 == s2 }
+      STDERR.puts s1
+    end
 
     it "should be created from flat array" do
       s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 2)
@@ -39,6 +60,10 @@ module Sycsvpro
       s2 = SpreadSheet.new([1,2,3],[4,5,NotAvailable])
       s1.should eq s2
      end
+
+    # Writing of spread sheets
+
+    it "should write to file"
 
     # Manipulating spread sheets
 

@@ -216,8 +216,8 @@ module Sycsvpro
     
     private
 
-      # Creates rows from provided array. If array doesn't provide equal column
-      # sizes the array is extended with NotAvailable values
+      # Creates rows from provided array or file. If array doesn't provide 
+      # equal column sizes the array is extended with NotAvailable values
       def rows_from_params(opts)
         col_count = opts[:cols] 
         row_count = opts[:rows]
@@ -240,7 +240,10 @@ module Sycsvpro
           end
           values.each_slice(col_count) { |row| rows << row }
         elsif opts[:file]
-
+          File.readlines(opts[:file]).each do |line| 
+            row = line.split(';')
+            rows << row.collect { |v| v.strip.empty? ? NotAvailable : v.chomp }
+          end
         end
 
         rows
