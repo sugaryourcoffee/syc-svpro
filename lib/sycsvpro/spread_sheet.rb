@@ -184,7 +184,54 @@ module Sycsvpro
       SpreadSheet.new(*binds, col_labels: c_labels, row_labels: r_labels)
     end
 
-    # Multiplies two spreadsheets column by column and returns a new spread
+    # Binds spread sheets row wise
+    #
+    #       1 2 3      10 20 30
+    #   A = 4 5 6  B = 40 50 60
+    #       7 8 9      
+    #
+    #   C = SpeadSheet.bind_rows([A,B])
+    #
+    #        1  2  3 
+    #        4  5  6
+    #   C =  7  8  9
+    #       10 20 30
+    #       40 50 60
+    #
+    # If the spread sheets have different column sizes the columns of the spread
+    # sheet with fewer columns are filled with NotAvailable
+    #
+    #       1 2 3      10 20
+    #   A = 4 5 6  B = 40 50
+    #       7 8 9      
+    #
+    #   C = SpeadSheet.bind_rows([A,B])
+    #
+    #        1  2  3
+    #        4  5  6
+    #   C =  7  8  9
+    #       10 20 NA
+    #       40 50 NA
+    #
+    # The row lables are also combined from the spread sheets and the column
+    # labels of the spread sheet with the higher column count are used
+    def self.bind_rows(sheets)
+      col_count = sheets.collect { |s| s.ncols }.max
+      binds = []
+      sheets.each do |sheet|
+        binds << sheet.rows.collect { |r| 
+                   r + [NotAvailable] * ((col_count - r.size) % col_count) 
+                 }
+      end
+      r_labels = sheets.collect { |s| s.col_labels }.inject(:+)
+      c_labels = sheets.collect { |s| s.col_labels if s.ncols == col_count }.first
+      SpreadSheet.new(*binds.flatten(1), 
+                      row_labels: r_labels, 
+                      col_labels: c_labels)
+    end
+
+    # Returns the result in a new spread sheet
+     # Multiplies two spreadsheets column by column and returns a new spread
     # sheet with the result
     #   1 2 3   3 2 1    3  4  3
     #   4 5 6 * 6 5 4 = 24 25 24

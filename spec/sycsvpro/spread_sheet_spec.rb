@@ -166,10 +166,32 @@ module Sycsvpro
                                [16,17,18,
                                 NotAvailable,NotAvailable,NotAvailable])
 
-      expect { s3 == result }
+      expect { s3 == result }.to be_true
+      s3.should eq result
     end
 
-    it "should bind two spread sheets row wise"
+    it "should bind two spread sheets row wise" do
+      s1 = SpreadSheet.new([10,11,12], [13,14,15])
+      s2 = SpreadSheet.new([16,17,18], [19,20,21])
+
+      s3 = SpreadSheet.bind_rows([s1,s2])
+      result = SpreadSheet.new([10,11,12],[13,14,15],[16,17,18],[19,20,21])
+
+      expect { s3 == result }.to be_true
+      s3.should eq result
+    end
+
+    it "should bind two spread sheets row wise with different column size" do
+      s1 = SpreadSheet.new([10,11,12], [13,14,15])
+      s2 = SpreadSheet.new([16,17], [19,20])
+
+      s3 = SpreadSheet.bind_rows([s1,s2])
+      result = SpreadSheet.new([10,11,12],[13,14,15],
+                               [16,17,NotAvailable],[19,20,NotAvailable])
+
+      expect { s3 == result }.to be_true
+      s3.should eq result
+    end
 
     # Calculating with spread sheets
 
