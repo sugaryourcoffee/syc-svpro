@@ -307,22 +307,29 @@ module Sycsvpro
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
-      col_label_size = col_labels.collect { |c| c.to_s.size }.max
-      row_label_size = row_labels.collect { |c| c.to_s.size }.max
-      col_size = [rows.flatten.collect { |c| c.to_s.size }.max, 
-                  col_label_size + 2                            ].max + 1 
+      col_label_sizes = col_labels.collect { |c| c.to_s.size + 2 }
+      row_label_size = row_labels.collect { |r| r.to_s.size + 2 }.max
 
-      print(sprintf("%#{row_label_size + 2}s", " "))
-      col_labels.each { |l| print(sprintf("%#{col_size}s", "[#{l}]")) }
+      row_col_sizes = rows.transpose.collect { |r| r.collect { |c| c.to_s.size } } 
+
+      i = -1
+      col_sizes = col_label_sizes.collect do |s| 
+        i += 1
+        [row_col_sizes[i],s].flatten.max + 1
+      end
+
+      print(sprintf("%#{row_label_size}s", " "))
+      col_labels.each_with_index { |l,i| print(sprintf("%#{col_sizes[i]}s", 
+                                                       "[#{l}]"))           } 
       puts
 
       rows.each_with_index do |row, i|
-        print(sprintf("[%#{row_label_size}s]", row_labels[i]))
-        row.each { |c| print(sprintf("%#{col_size}s", c)) }
+        print(sprintf("%#{row_label_size}s", "[#{row_labels[i]}]"))
+        row.each_with_index { |c,j| print(sprintf("%#{col_sizes[j]}s", c)) }
         puts
       end
     end
-    
+
     private
 
       # Creates rows from provided array or file. If array doesn't provide 
