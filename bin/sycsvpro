@@ -405,6 +405,43 @@ command :table do |c|
 
 end
 
+desc 'Do arithmetic operation with table like data. The table has to have '+
+     'rows with same size. Arithmetic operations are *, /, + and - where the '+
+     'results can be concatenated. Complete functions can be looked up at '+
+     'https://rubygems.org/gem/sycsvpro'
+command :spreadsheet do |c|
+  c.desc 'Files that contain the table data'
+  c.arg_name 'FILE_1,FILE_2,...,FILE_N'
+  c.flag [:f, :file]
+
+  c.desc 'Indicates for each file whether it has row labels'
+  c.arg_name 'true,false,...,true'
+  c.flag [:r, :rlabel]
+
+  c.desc 'Indicates for each file whether it has column labels'
+  c.arg_name 'true,false,...,false'
+  c.flag [:c, :clabel]
+
+  c.desc 'The alias for each file that is used in the arithmetic operation'
+  c.arg_name 'ALIAS_1,ALIAS_2,...,ALIAS_N'
+  c.flag [:a, :alias]
+
+  c.desc 'The arithmetic operation with the table data'
+  c.arg_name 'ARITHMETIC_OPERATION'
+  c.flag [:o, :operation]
+
+  c.action do |global_options,options,args|
+    print 'Operating...'
+    Sycsvpro::SpreadSheetBulder.new(outfile:   global_options[:o],
+                                    infiles:   options[:f],
+                                    rlabels:   options[:r],
+                                    clabels:   options[:c],
+                                    aliases:   options[:a],
+                                    operation: options[:o]).execute
+    print 'done'
+  end
+end
+
 desc 'Join two files based on a joint column value'
 arg_name 'SOURCE_FILE'
 command :join do |c|
