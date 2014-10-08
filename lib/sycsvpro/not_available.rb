@@ -14,6 +14,7 @@ module Sycsvpro
       # Catches all expressions where na is the first argument
       def method_missing(name, *args, &block)
         super if name == :to_ary
+        super if name == :to_str
         self
       end
 
