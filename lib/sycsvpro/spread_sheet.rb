@@ -294,6 +294,22 @@ module Sycsvpro
       result
     end
 
+    # Renames the row and column labels
+    def rename(opts = {})
+      if opts[:rows]
+        opts[:rows] = opts[:rows][0,nrows]
+        opts[:rows] += row_labels[opts[:rows].size, nrows]
+      end
+
+      if opts[:cols]
+        opts[:cols] = opts[:cols][0,ncols]
+        opts[:cols] += col_labels[opts[:cols].size, ncols]
+      end
+
+      @row_labels = opts[:rows] if opts[:rows]
+      @col_labels = opts[:cols] if opts[:cols]
+    end
+
     # Writes spread sheet to a file separated with ';'
     def write(file)
       File.open(file, 'w') do |out|

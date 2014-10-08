@@ -352,7 +352,25 @@ module Sycsvpro
       v1.col_labels.should eq ['X','Y']
     end
 
-    it "should rename row and column labels"
+    it "should rename row and column labels with same label count" do
+      s1 = SpreadSheet.new([1,2,3,4],[5,6,7,8])
+      s1.row_labels.should eq [0,1]
+      s1.col_labels.should eq [0,1,2,3]
+
+      s1.rename(rows: ['A','B'], cols: ['X','Ypsilon','Z','X1'])
+      s1.row_labels.should eq ['A','B']
+      s1.col_labels.should eq ['X','Ypsilon','Z','X1']
+    end
+
+    it "should rename row and column labels with different label count" do
+      s1 = SpreadSheet.new([1,2,3,4],[5,6,7,8])
+      s1.row_labels.should eq [0,1]
+      s1.col_labels.should eq [0,1,2,3]
+
+      s1.rename(rows: ['A'], cols: ['X','Ypsilon','Z'])
+      s1.row_labels.should eq ['A',1]
+      s1.col_labels.should eq ['X','Ypsilon','Z',3]
+    end
 
     it "should create subset with row and column labels" do
       v1 = SpreadSheet.new(['Letter','X','Y'], ['A',1,2],['B',3,4], r: true, c: true)
