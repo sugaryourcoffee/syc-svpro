@@ -147,7 +147,27 @@ module Sycsvpro
       s1[nil,[0,2]].should eq s2
     end
 
-    it "should bind two spread sheets column wise"
+    it "should bind two spread sheets column wise" do
+      s1 = SpreadSheet.new([10,11,12], [13,14,15])
+      s2 = SpreadSheet.new([16,17,18], [19,20,21])
+
+      s3 = SpreadSheet.bind_columns([s1,s2])
+      result = SpreadSheet.new([10,11,12,16,17,18],[13,14,15,19,20,21])
+
+      expect { s3 == result }
+    end
+
+    it "should bind two spread sheets with different row size column wise" do
+      s1 = SpreadSheet.new([10,11,12], [13,14,15], [16,17,18])
+      s2 = SpreadSheet.new([16,17,18], [19,20,21])
+
+      s3 = SpreadSheet.bind_columns([s1,s2])
+      result = SpreadSheet.new([10,11,12,16,17,18],[13,14,15,19,20,21],
+                               [16,17,18,
+                                NotAvailable,NotAvailable,NotAvailable])
+
+      expect { s3 == result }
+    end
 
     it "should bind two spread sheets row wise"
 

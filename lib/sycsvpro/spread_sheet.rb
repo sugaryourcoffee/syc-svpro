@@ -139,6 +139,51 @@ module Sycsvpro
                       col_labels: col_labels.values_at(*c))
     end
 
+    # Binds spread sheets column wise
+    #
+    #       1 2 3      10 20 30
+    #   A = 4 5 6  B = 40 50 60
+    #       7 8 9      70 80 90
+    #
+    #   C = SpeadSheet.bind_columns([A,B])
+    #
+    #       1 2 3 10 20 30
+    #   C = 4 5 6 40 50 60
+    #       7 8 9 70 80 90
+    #
+    # If the spread sheets have different row sizes the columns of the spread
+    # sheet with fewer rows are filled with NotAvailable
+    #
+    #       1 2 3      10 20 30
+    #   A = 4 5 6  B = 40 50 60
+    #       7 8 9      
+    #
+    #   C = SpeadSheet.bind_columns([A,B])
+    #
+    #       1 2 3 10 20 30
+    #   C = 4 5 6 40 50 60
+    #       7 8 9 NA NA NA
+    #
+    # The column lables are also combined from the spread sheets and the row
+    # labels of the spread sheet with the higher row count are used
+    #
+    # Returns the result in a new spread sheet
+    def self.bind_columns(sheets)
+      row_count = sheets.collect { |s| s.nrows }.max
+      binds = Array.new(row_count, [])
+      0.upto(row_count - 1) do |r|
+        sheets.each do |sheet|
+          sheet_row = sheet.rows[r]
+          binds[r] += sheet_row.nil? ? [NotAvailable] * sheet.ncols : sheet_row
+        end
+      end
+      c_labels = sheets.collect { |s| s.col_labels }.inject(:+)
+      r_labels = sheets.collect { |s| 
+                   s.row_labels if s.row_labels.size == row_count 
+                 }.first
+      SpreadSheet.new(*binds, col_labels: c_labels, row_labels: r_labels)
+    end
+
     # Multiplies two spreadsheets column by column and returns a new spread
     # sheet with the result
     #   1 2 3   3 2 1    3  4  3
