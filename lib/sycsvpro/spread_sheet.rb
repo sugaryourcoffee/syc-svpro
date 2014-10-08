@@ -145,7 +145,7 @@ module Sycsvpro
     #   A = 4 5 6  B = 40 50 60
     #       7 8 9      70 80 90
     #
-    #   C = SpeadSheet.bind_columns([A,B])
+    #   C = SpeadSheet.bind_columns(A,B)
     #
     #       1 2 3 10 20 30
     #   C = 4 5 6 40 50 60
@@ -158,7 +158,7 @@ module Sycsvpro
     #   A = 4 5 6  B = 40 50 60
     #       7 8 9      
     #
-    #   C = SpeadSheet.bind_columns([A,B])
+    #   C = SpeadSheet.bind_columns(A,B)
     #
     #       1 2 3 10 20 30
     #   C = 4 5 6 40 50 60
@@ -168,7 +168,7 @@ module Sycsvpro
     # labels of the spread sheet with the higher row count are used
     #
     # Returns the result in a new spread sheet
-    def self.bind_columns(sheets)
+    def self.bind_columns(*sheets)
       row_count = sheets.collect { |s| s.nrows }.max
       binds = Array.new(row_count, [])
       0.upto(row_count - 1) do |r|
@@ -190,7 +190,7 @@ module Sycsvpro
     #   A = 4 5 6  B = 40 50 60
     #       7 8 9      
     #
-    #   C = SpeadSheet.bind_rows([A,B])
+    #   C = SpeadSheet.bind_rows(A,B)
     #
     #        1  2  3 
     #        4  5  6
@@ -205,7 +205,7 @@ module Sycsvpro
     #   A = 4 5 6  B = 40 50
     #       7 8 9      
     #
-    #   C = SpeadSheet.bind_rows([A,B])
+    #   C = SpeadSheet.bind_rows(A,B)
     #
     #        1  2  3
     #        4  5  6
@@ -215,7 +215,7 @@ module Sycsvpro
     #
     # The row lables are also combined from the spread sheets and the column
     # labels of the spread sheet with the higher column count are used
-    def self.bind_rows(sheets)
+    def self.bind_rows(*sheets)
       col_count = sheets.collect { |s| s.ncols }.max
       binds = []
       sheets.each do |sheet|
@@ -307,20 +307,16 @@ module Sycsvpro
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
-      #col_label_size = ncols.to_s.size
       col_label_size = col_labels.collect { |c| c.to_s.size }.max
-      #row_label_size = nrows.to_s.size
       row_label_size = row_labels.collect { |c| c.to_s.size }.max
       col_size = [rows.flatten.collect { |c| c.to_s.size }.max, 
                   col_label_size + 2                            ].max + 1 
 
       print(sprintf("%#{row_label_size + 2}s", " "))
-      #0.upto(ncols - 1) { |i| print(sprintf("%#{col_size}s", "[#{i}]")) }
       col_labels.each { |l| print(sprintf("%#{col_size}s", "[#{l}]")) }
       puts
 
       rows.each_with_index do |row, i|
-        #print(sprintf("[%#{row_label_size}s]", i))
         print(sprintf("[%#{row_label_size}s]", row_labels[i]))
         row.each { |c| print(sprintf("%#{col_size}s", c)) }
         puts

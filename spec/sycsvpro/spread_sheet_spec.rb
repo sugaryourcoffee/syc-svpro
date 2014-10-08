@@ -151,7 +151,7 @@ module Sycsvpro
       s1 = SpreadSheet.new([10,11,12], [13,14,15])
       s2 = SpreadSheet.new([16,17,18], [19,20,21])
 
-      s3 = SpreadSheet.bind_columns([s1,s2])
+      s3 = SpreadSheet.bind_columns(s1,s2)
       result = SpreadSheet.new([10,11,12,16,17,18],[13,14,15,19,20,21])
 
       expect { s3 == result }
@@ -161,7 +161,7 @@ module Sycsvpro
       s1 = SpreadSheet.new([10,11,12], [13,14,15], [16,17,18])
       s2 = SpreadSheet.new([16,17,18], [19,20,21])
 
-      s3 = SpreadSheet.bind_columns([s1,s2])
+      s3 = SpreadSheet.bind_columns(s1,s2)
       result = SpreadSheet.new([10,11,12,16,17,18],[13,14,15,19,20,21],
                                [16,17,18,
                                 NotAvailable,NotAvailable,NotAvailable])
@@ -174,7 +174,7 @@ module Sycsvpro
       s1 = SpreadSheet.new([10,11,12], [13,14,15])
       s2 = SpreadSheet.new([16,17,18], [19,20,21])
 
-      s3 = SpreadSheet.bind_rows([s1,s2])
+      s3 = SpreadSheet.bind_rows(s1,s2)
       result = SpreadSheet.new([10,11,12],[13,14,15],[16,17,18],[19,20,21])
 
       expect { s3 == result }.to be_true
@@ -185,7 +185,7 @@ module Sycsvpro
       s1 = SpreadSheet.new([10,11,12], [13,14,15])
       s2 = SpreadSheet.new([16,17], [19,20])
 
-      s3 = SpreadSheet.bind_rows([s1,s2])
+      s3 = SpreadSheet.bind_rows(s1,s2)
       result = SpreadSheet.new([10,11,12],[13,14,15],
                                [16,17,NotAvailable],[19,20,NotAvailable])
 
@@ -246,7 +246,7 @@ module Sycsvpro
     it "should work with arrays" do
       v1 = SpreadSheet.new([1,2],[3,4])
       v2 = SpreadSheet.new([3,6],[9,8])
-      expect { v1 * [3,2] == v2 }
+      expect { v1 * [3,2] == v2 }.to be_true
     end
 
     it "should multiply each column with all columns of a spread sheet" do
