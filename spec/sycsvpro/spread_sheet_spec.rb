@@ -40,7 +40,6 @@ module Sycsvpro
                            ['C',7,NotAvailable,9],
                            r: true, c: true)
       expect { s1 == s2 }
-      STDERR.puts s1
     end
 
     it "should be created from flat array" do
@@ -63,7 +62,14 @@ module Sycsvpro
 
     # Writing of spread sheets
 
-    it "should write to file"
+    it "should write to file" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet_out.csv")
+
+      s1 = SpreadSheet.new(['A', 'B', 'C'],['I',1,2,3],['II',4,5,6], 
+                           r: true, c: true)
+      s1.write(file)
+      Dir.glob(file).size.should eq 1
+    end
 
     # Manipulating spread sheets
 

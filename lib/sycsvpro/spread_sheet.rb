@@ -44,7 +44,7 @@ module Sycsvpro
 
     # Creates a new spread sheet with rows and optional options.
     # 
-    #   SpreadSheet.new([A,1,2], [B,3,4], rlabel: true, clabel: false)
+    #   SpreadSheet.new([A,1,2], [B,3,4], r: true, c: false)
     #
     # rlabel: first column of the row contains labels if true
     # clabel: first row are labels if true
@@ -55,8 +55,8 @@ module Sycsvpro
     #   [B]   3   4
     #
     #   SpreadSheet.new(['One','Two'],['A',1,2],['B',3,4], 
-    #                   rlabel = true, 
-    #                   clabel = true)
+    #                   r = true, 
+    #                   c = true)
     #
     # Creates a spread sheet with row and column labels
     #
@@ -68,6 +68,17 @@ module Sycsvpro
     #
     #   SpreadSheet.new([1,2],[3,4], row_labels: ['A','B'], 
     #                                col_labels: ['One','Two'])
+    #
+    # Params
+    # ======
+    # r:          has row labels if true
+    # c:          has column labels if true
+    # row_labels: explicitly provides row labels
+    # col_labels: explicitly provides column labels
+    # values:     flat array with values
+    # rows:       indicates the row count in combination with values param
+    # cols:       indicates the col count in combination with values param
+    # file:       file that contains values to create spread sheet with
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
@@ -189,6 +200,16 @@ module Sycsvpro
       result = []
       0.upto(ncols-1) { |i| result << block.call(self[nil,i]) }
       result
+    end
+
+    # Writes spread sheet to a file separated with ';'
+    def write(file)
+      File.open(file, 'w') do |out|
+        out.puts ";#{col_labels.join(';')}"
+        rows.each_with_index do |row, i| 
+          out.puts "#{row_labels[i]};#{row.join(';')}"
+        end
+      end 
     end
 
     # Prints the spread sheet in a matrix with column labels and row labels. If
