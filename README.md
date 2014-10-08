@@ -24,6 +24,8 @@ Processing of csv files. *sycsvpro* offers following functions
 * join two file based on a joint column value (since version 0.1.7)
 * merge files based on common headline columns (since version 0.1.10)
 * transpose (swapping) rows and columns (since version 0.1.13)
+* arithmetic operations between multiple files that have spread sheet like
+  structure (since version 0.2.0)
 
 To get help type
 
@@ -254,6 +256,78 @@ Write only columns 0, 6 and 7 by specifying write columns
     chiro;2;20
     chiro;2;20
     0;10;100
+
+Spread Sheet
+------------
+A spread sheet is a table with rows and columns. Between spread sheets
+arithmetic operations can be conducted. A spread sheet's rows must have same
+column sizes and may have row and column labels.
+
+Asume we want to calculate the market for computer services. We have the count 
+of computers in each country, we are offering different services with service
+specific prices. We know the market for each service in percent. With this data 
+we can calculate the market value.
+
+Count of computers in target countries
+
+        [Tablet] [Laptop] [Desktop]
+[CA]        1000     2000       500
+[DE]        2000     3000       400
+[MX]         500     4000       800
+[RU]        1500     1500      1000
+[TR]        1000     2500      3000
+[US]        3000     3500      1200
+
+Prices for different services offered computer specific
+
+          [Clean] [Maintain] [Repair]
+[Tablet]       10         50      100
+[Laptop]       20         60      150
+[Desktop]      50        100      200
+
+Market for the different services
+
+          [Clean] [Maintain] [Repair]
+[Tablet]     0.10       0.05     0.03
+[Laptop]     0.05       0.10     0.02
+[Desktop]    0.20       0.30     0.04
+
+To calculate the market value we have to multiply each row of the country file
+with the columns of the service prices and service market file (for readabiltiy
+it has been split up to multiple rows)
+
+    $ sycsvpro -o market_value.csv spreadsheet 
+                             -f country.csv,prices.csv,market.csv
+                             -a c,p,m
+                             -o "SpreadSheet.bind_columns(
+                                   c.transpose.column_collect { |v| v * p * m }
+                                 ).transpose"
+
+The result of the operation is written to market\_value.csv (labels have been
+optimized for better readability)
+                                                        
+     [Tablet] [Laptop] [Desktop]
+[CA]   1000.0   2000.0    5000.0
+[CA]   2500.0  12000.0   15000.0
+[CA]   3000.0   6000.0    4000.0
+[DE]   2000.0   3000.0    4000.0
+[DE]   5000.0  18000.0   12000.0
+[DE]   6000.0   9000.0    3200.0
+[MX]    500.0   4000.0    8000.0
+[MX]   1250.0  24000.0   24000.0
+[MX]   1500.0  12000.0    6400.0
+[RU]   1500.0   1500.0   10000.0
+[RU]   3750.0   9000.0   30000.0
+[RU]   4500.0   4500.0    8000.0
+[TR]   1000.0   2500.0   30000.0
+[TR]   2500.0  15000.0   90000.0
+[TR]   3000.0   7500.0   24000.0
+[US]   3000.0   3500.0   12000.0
+[US]   7500.0  21000.0   36000.0
+[US]   9000.0  10500.0    9600.0
+
+SpreadSheet is obviously better used in scripts than from the command line. How
+to create scripts see _Edit_ and _Execute_.
 
 Join
 ----
@@ -556,6 +630,12 @@ Version 0.1.13
   written to the result file as is
 * Merger now doesn't require a key column that is files can be merged without
   key columns.
+
+Version 0.2.0
+-------------
+* SpreadSheet is used to conduct operations like multiplication, division,
+  addition and subtraction between multiple files that have spread sheet like
+  structure
 
 Installation
 ============
