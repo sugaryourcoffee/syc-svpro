@@ -358,7 +358,9 @@ module Sycsvpro
         elsif opts[:file]
           File.readlines(opts[:file]).each do |line| 
             row = line.split(';')
-            rows << row.collect { |v| v.strip.empty? ? NotAvailable : v.chomp }
+            rows << row.collect { |v| 
+              v.strip.empty? ? NotAvailable : Float(v.chomp) rescue v.chomp 
+            }
           end
         end
 
