@@ -430,14 +430,18 @@ command :spreadsheet do |c|
   c.arg_name 'ARITHMETIC_OPERATION'
   c.flag [:o, :operation]
 
+  c.desc 'Print the result of the operation'
+  c.switch [:p, :print], :default_value => false
+  
   c.action do |global_options,options,args|
     print 'Operating...'
-    Sycsvpro::SpreadSheetBulder.new(outfile:   global_options[:o],
-                                    infiles:   options[:f],
-                                    rlabels:   options[:r],
-                                    clabels:   options[:c],
-                                    aliases:   options[:a],
-                                    operation: options[:o]).execute
+    Sycsvpro::SpreadSheetBuilder.new(outfile:   global_options[:o],
+                                     files:     options[:f],
+                                     rlabels:   options[:r],
+                                     clabels:   options[:c],
+                                     aliases:   options[:a],
+                                     operation: options[:o],
+                                     print:     options[:p]).execute
     print 'done'
   end
 end
@@ -725,7 +729,8 @@ pre do |global,command,options,args|
   unless command.name == :edit or 
          command.name == :execute or 
          command.name == :list or 
-         command.name == :merge
+         command.name == :merge or
+         command.name == :spreadsheet
     analyzer = Sycsvpro::Analyzer.new(global[:f])
     result = analyzer.result
     count = result.row_count

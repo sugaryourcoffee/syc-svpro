@@ -11,6 +11,8 @@ module Sycsvpro
     attr_reader :operands
     # The spread sheet operation where the operands are used
     attr_reader :operation
+    # Indicates whether the result should be printed
+    attr_reader :print
 
     # A spread sheet builder is doing arithmetic operations and can be called
     # like this:
@@ -20,20 +22,28 @@ module Sycsvpro
     #                            rlabels:   "true,false",
     #                            clabels:   "false,true",
     #                            aliases:   "a,b",
-    #                            operation: "(a*b).transpose").execute
+    #                            operation: "(a*b).transpose",
+    #                            print:     "true").execute
     #
     # outfile:   file where the result of the operation is written to
     # files:     files that hold the spread sheet data
     # rlabels:   indication whether the corresponding file has row labels
     # clabels:   indication whether the corresponding file has column labels
     # aliases:   symbols that correspond to the spread sheet created from the
-    #            files. The symbols are used in the operation
+    #            files. The symbols are used in the operation. The symbols have
+    #            to be choosen carefully not to conflict with existing methods
+    #            and variables
     # operation: arithmetic operation on spread sheets using the aliases as
-    #            place holders for the spread sheets
+    #            place holders for the spread sheets. The last evaluated
+    #            operation is returned as result and saved to outfile in case
+    #            the result is a spread sheet. In all other cases the result can
+    #            be printed with the print flag.
+    # print:     print the result
     def initialize(opts = {})
-      @operands = create_operands(opts)
-      @outfile = opts[:outfile]
-      @operation  = opts[:operation]
+      @print     = opts[:print]
+      @operands  = create_operands(opts)
+      @outfile   = opts[:outfile]
+      @operation = opts[:operation]
     end
 
     # Returns the spread sheet operands when called in the arithmetic operation
@@ -45,7 +55,31 @@ module Sycsvpro
     # Executes the operation and writes the result to the outfile
     def execute
       result = eval(operation)      
-      result.write(outfile)
+      if outfile
+        if result.is_a?(SpreadSheet)
+          result.write(outfile)
+        else
+          puts
+          puts "Warning: Result is no spread sheet and not written to file!"
+          puts "         To view the result use -p flag" unless print
+        end
+      end
+
+      if print
+        puts
+        puts "Operation"
+        puts "---------"
+        operation.split(';').each { |o| puts o }
+        puts
+        puts "Result"
+        puts "------"
+        if result.nil? || result.empty?
+          puts result.inspect
+        else
+          puts result
+        end
+        puts
+      end
     end
 
     private
@@ -61,6 +95,7 @@ module Sycsvpro
           operands[a] = SpreadSheet.new(file: files[i], 
                                         r: rlabels[i], c: clabels[i])
         end
+
         operands
       end
   end

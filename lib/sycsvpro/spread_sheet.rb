@@ -295,6 +295,13 @@ module Sycsvpro
     end
 
     # Renames the row and column labels
+    #
+    #   sheet.rename(rows: ['Row 1', 'Row 2'], cols: ['Col 1', 'Col 2'])
+    #
+    # If the provided rows and columns are larger than the spread sheet's rows
+    # and columns then only the respective row and column values are used. If
+    # the row and column labels are fewer than the respective row and column
+    # sizes the old labels are left untouched for the missing new labels
     def rename(opts = {})
       if opts[:rows]
         opts[:rows] = opts[:rows][0,nrows]
@@ -320,6 +327,16 @@ module Sycsvpro
       end 
     end
 
+    # Prints a summary of the spread sheet
+    def summary
+      puts "\nSummary"
+      puts   "-------\n"
+      puts "rows: #{nrows}, columns: #{ncols}, dimension: #{dim}, size: #{size}"
+      puts
+      puts "row labels:\n #{row_labels}"
+      puts "column labels:\n #{col_labels}\n"
+    end
+
     # Prints the spread sheet in a matrix with column labels and row labels. If
     # no labels are available the column number and row number is printed
     def to_s
@@ -334,16 +351,18 @@ module Sycsvpro
         [row_col_sizes[i],s].flatten.max + 1
       end
 
-      print(sprintf("%#{row_label_size}s", " "))
-      col_labels.each_with_index { |l,i| print(sprintf("%#{col_sizes[i]}s", 
+      s = (sprintf("%#{row_label_size}s", " "))
+      col_labels.each_with_index { |l,i| s << (sprintf("%#{col_sizes[i]}s", 
                                                        "[#{l}]"))           } 
-      puts
+      s << "\n"
 
       rows.each_with_index do |row, i|
-        print(sprintf("%#{row_label_size}s", "[#{row_labels[i]}]"))
-        row.each_with_index { |c,j| print(sprintf("%#{col_sizes[j]}s", c)) }
-        puts
+        s << (sprintf("%#{row_label_size}s", "[#{row_labels[i]}]"))
+        row.each_with_index { |c,j| s << (sprintf("%#{col_sizes[j]}s", c)) }
+        s << "\n"
       end
+
+      s
     end
 
     private

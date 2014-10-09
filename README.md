@@ -259,10 +259,17 @@ Write only columns 0, 6 and 7 by specifying write columns
 
 Spread Sheet
 ------------
-A spread sheet is a table with rows and columns. Between spread sheets
-arithmetic operations can be conducted. A spread sheet's rows must have same
-column sizes and may have row and column labels.
+A spread sheet is a table with rows and columns. On or between spread sheets
+operations can be conducted. A spread sheet's rows must have same column
+sizes and may have row and column labels.
 
+Use cases are
+
+* arithmetic operations on spread sheets
+* information about table like data
+
+Example for Arithmetic Operation
+--------------------------------
 Asume we want to calculate the market for computer services. We have the count 
 of computers in each country, we are offering different services with service
 specific prices. We know the market for each service in percent. With this data 
@@ -296,38 +303,112 @@ To calculate the market value we have to multiply each row of the country file
 with the columns of the service prices and service market file (for readabiltiy
 it has been split up to multiple rows)
 
-    $ sycsvpro -o market_value.csv spreadsheet 
-                             -f country.csv,prices.csv,market.csv
-                             -a c,p,m
-                             -o "SpreadSheet.bind_columns(
-                                   c.transpose.column_collect { |v| v * p * m }
-                                 ).transpose"
+    $ sycsvpro -o market_value.csv spreadsheet \
+      -f country.csv,prices.csv,market.csv \
+      -a country,price,market \
+      -o "SpreadSheet.bind_columns( \
+          country.transpose.column_collect { |value| value * price * market } \
+        ).transpose"
+
+    Note: If you get obscure errors then check whether your aliases (-a flag)
+          conflict with a method of your classes. Therefore it is adviced to
+          always use specific names like in the example country, price, market
 
 The result of the operation is written to market\_value.csv (labels have been
 optimized for better readability)
-                                                        
-         [Tablet] [Laptop] [Desktop]
-    [CA]   1000.0   2000.0    5000.0
-    [CA]   2500.0  12000.0   15000.0
-    [CA]   3000.0   6000.0    4000.0
-    [DE]   2000.0   3000.0    4000.0
-    [DE]   5000.0  18000.0   12000.0
-    [DE]   6000.0   9000.0    3200.0
-    [MX]    500.0   4000.0    8000.0
-    [MX]   1250.0  24000.0   24000.0
-    [MX]   1500.0  12000.0    6400.0
-    [RU]   1500.0   1500.0   10000.0
-    [RU]   3750.0   9000.0   30000.0
-    [RU]   4500.0   4500.0    8000.0
-    [TR]   1000.0   2500.0   30000.0
-    [TR]   2500.0  15000.0   90000.0
-    [TR]   3000.0   7500.0   24000.0
-    [US]   3000.0   3500.0   12000.0
-    [US]   7500.0  21000.0   36000.0
-    [US]   9000.0  10500.0    9600.0
+                                                      
+                  [Tablet] [Laptop] [Desktop]
+    [CA-Clean]      1000.0   2000.0    5000.0
+    [CA-Maintain]   2500.0  12000.0   15000.0
+    [CA-Repair]     3000.0   6000.0    4000.0
+    [DE-Clean]      2000.0   3000.0    4000.0
+    [DE-Maintain]   5000.0  18000.0   12000.0
+    [DE-Repair]     6000.0   9000.0    3200.0
+    [MX-Clean]       500.0   4000.0    8000.0
+    [MX-Maintain]   1250.0  24000.0   24000.0
+    [MX-Repair]     1500.0  12000.0    6400.0
+    [RU-Clean]      1500.0   1500.0   10000.0
+    [RU-Maintain]   3750.0   9000.0   30000.0
+    [RU-Repair]     4500.0   4500.0    8000.0
+    [TR-Clean]      1000.0   2500.0   30000.0
+    [TR-Maintain]   2500.0  15000.0   90000.0
+    [TR-Repair]     3000.0   7500.0   24000.0
+    [US-Clean]      3000.0   3500.0   12000.0
+    [US-Maintain]   7500.0  21000.0   36000.0
+    [US-Repair]     9000.0  10500.0    9600.0
 
-SpreadSheet is obviously better used in scripts than from the command line. How
-to create scripts see _Edit_ and _Execute_.
+Example for Information on Spread Sheets
+----------------------------------------
+With the analyze command we get information about the general structure and some
+sample data. If we want to look at the csv file more detailed we can use the
+spreadsheet command. In this case we don't want to write the result to the file
+as it is no spread sheet, so we can ommit the global -o option.
+
+    sycsvpro spreadsheet -f country.csv -r true -c true -a a \
+                         -o "puts;puts a;puts a.ncol;puts a.nrow;puts a.size"
+
+This will give us the information about the data, the number of columns and rows
+and the number of values in the csv file. But for this case there is a standard
+method that provides this information
+
+    sycsvpro spreadsheet -f country.csv -r true, -c true -a a -o "a.summary"
+
+    Summary
+    -------
+    rows: 6, columns: 3, dimension: [6, 3], size: 18
+
+    row labels:
+     ["CA","DE","MX","RU","TR","US"]
+    column labels:
+     ["Clean","Maintain","Repair"]
+
+If the result is no spread sheet it won't be written to the outfile (-o) but we
+can print the result to the console with the -p flag
+
+    sycsvpro spreadsheet -f country.csv,prices.csv,market.csv \
+                         -r true,true,true -c true,true,true \
+                         -a country,price,market \
+                         -o "result = []; \
+                             a.each_column { \
+                               |column| result << column * price * market \
+                             }; \
+                             result"
+
+The last evaluation, in this case result, will be returned as the result. The
+-p flag will print the result to the console
+
+    Operation
+    ---------
+    result = []
+    country.transpose.each_column { |column| result << column * price * market }
+    result
+
+    Result
+    ------
+                              [CA*Clean*Clean] [CA*Maintain*Maintain] [CA*Repair*Repair]
+       [Tablet*Tablet*Tablet]           1000.0                 2500.0             3000.0
+       [Laptop*Laptop*Laptop]           2000.0                12000.0             6000.0
+    [Desktop*Desktop*Desktop]           5000.0                15000.0             4000.0
+                              [DE*Clean*Clean] [DE*Maintain*Maintain] [DE*Repair*Repair]
+       [Tablet*Tablet*Tablet]           2000.0                 5000.0             6000.0
+       [Laptop*Laptop*Laptop]           3000.0                18000.0             9000.0
+    [Desktop*Desktop*Desktop]           4000.0                12000.0             3200.0
+                              [MX*Clean*Clean] [MX*Maintain*Maintain] [MX*Repair*Repair]
+       [Tablet*Tablet*Tablet]            500.0                 1250.0             1500.0
+       [Laptop*Laptop*Laptop]           4000.0                24000.0            12000.0
+    [Desktop*Desktop*Desktop]           8000.0                24000.0             6400.0
+                              [RU*Clean*Clean] [RU*Maintain*Maintain] [RU*Repair*Repair]
+       [Tablet*Tablet*Tablet]           1500.0                 3750.0             4500.0
+       [Laptop*Laptop*Laptop]           1500.0                 9000.0             4500.0
+    [Desktop*Desktop*Desktop]          10000.0                30000.0             8000.0
+                              [TR*Clean*Clean] [TR*Maintain*Maintain] [TR*Repair*Repair]
+       [Tablet*Tablet*Tablet]           1000.0                 2500.0             3000.0
+       [Laptop*Laptop*Laptop]           2500.0                15000.0             7500.0
+    [Desktop*Desktop*Desktop]          30000.0                90000.0            24000.0
+                              [US*Clean*Clean] [US*Maintain*Maintain] [US*Repair*Repair]
+       [Tablet*Tablet*Tablet]           3000.0                 7500.0             9000.0
+       [Laptop*Laptop*Laptop]           3500.0                21000.0            10500.0
+    [Desktop*Desktop*Desktop]          12000.0                36000.0             9600.0
 
 Join
 ----
