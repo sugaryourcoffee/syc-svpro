@@ -1,3 +1,4 @@
+# Operating csv files
 module Sycsvpro
 
   # The NotAvailable class is an Eigenclass and used to represent a missing 

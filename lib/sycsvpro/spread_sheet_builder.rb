@@ -1,3 +1,4 @@
+# Operating csv files
 module Sycsvpro
 
   # SpreadSheetBuilder is used in the command line interface of sycsvpro to 

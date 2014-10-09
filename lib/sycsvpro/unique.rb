@@ -5,20 +5,20 @@ module Sycsvpro
 
   # Removes copies of rows identified by key values
   #
-  # | Name | Street | Town | Country |
-  # | ---- | ------ | ---- | ------- |
-  # | Jane | Canal  | Win  | CA      |
-  # | Jack | Long   | Van  | CA      |
-  # | Jean | Sing   | Ma   | DE      |
-  # | Jane | Canal  | Win  | CA      |
+  #     | Name | Street | Town | Country |
+  #     | ---- | ------ | ---- | ------- |
+  #     | Jane | Canal  | Win  | CA      |
+  #     | Jack | Long   | Van  | CA      |
+  #     | Jean | Sing   | Ma   | DE      |
+  #     | Jane | Canal  | Win  | CA      |
   #
   # Remove copies based on column 0 (Name)
   #
-  # | Name | Street | Town | Country |
-  # | ---- | ------ | ---- | ------- |
-  # | Jane | Canal  | Win  | CA      |
-  # | Jack | Long   | Van  | CA      |
-  # | Jean | Sing   | Ma   | DE      |
+  #     | Name | Street | Town | Country |
+  #     | ---- | ------ | ---- | ------- |
+  #     | Jane | Canal  | Win  | CA      |
+  #     | Jack | Long   | Van  | CA      |
+  #     | Jean | Sing   | Ma   | DE      |
   class Unique
 
     include Dsl
@@ -33,7 +33,6 @@ module Sycsvpro
     attr_reader :col_filter
 
     # Creates a new Unique
-    # :call-seq:
     #   Sycsvpro::Unique.new(infile: "infile.csv",
     #                        outfile: "outfile.csv",
     #                        rows:    "1,3-4",

@@ -6,19 +6,19 @@ module Sycsvpro
 
   # Analyzes the file structure
   #
-  # | Name | C1 | C2 |
-  # | A    | a  | b  |
+  #   | Name | C1 | C2 |
+  #   | A    | a  | b  |
   #
-  # 3 columns: ["Name", "C1", "C2"]
-  # 2 rows
+  #   3 columns: ["Name", "C1", "C2"]
+  #   2 rows
   #
-  # Row sample data:
-  # A;b;c
+  #   Row sample data:
+  #   A;b;c
   #
-  # Column index: Column name | Column sample value
-  # 0: Name | A
-  # 1: C1 | a
-  # 2: C2 | b
+  #   Column index: Column name | Column sample value
+  #   0: Name | A
+  #   1: C1 | a
+  #   2: C2 | b
   class Analyzer
 
     # File that is analyzed

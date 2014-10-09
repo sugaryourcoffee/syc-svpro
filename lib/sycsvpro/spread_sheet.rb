@@ -1,5 +1,6 @@
 require_relative 'not_available'
 
+# Operating csv files
 module Sycsvpro
 
   # A spread sheet is used to do column and row wise calculations between

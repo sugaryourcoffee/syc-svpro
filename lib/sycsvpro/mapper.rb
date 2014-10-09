@@ -5,26 +5,26 @@ module Sycsvpro
   #
   # in.csv
   #
-  # | ID  | Name |
-  # | --- | ---- |
-  # | 1   | Hank |
-  # | 2   | Jane |
+  #     | ID  | Name |
+  #     | --- | ---- |
+  #     | 1   | Hank |
+  #     | 2   | Jane |
   #
   # mapping
   #
-  # 1:01
-  # 2:02
+  #     1:01
+  #     2:02
   #
-  # Sycsvpro::Mapping.new(infile:  "in.csv",
-  #                       outfile: "out.csv",
-  #                       mapping: "mapping",
-  #                       cols:    "0").execute
+  #     Sycsvpro::Mapping.new(infile:  "in.csv",
+  #                           outfile: "out.csv",
+  #                           mapping: "mapping",
+  #                           cols:    "0").execute
   # out.csv
   #
-  # | ID  | Name |
-  # | --- | ---- |
-  # | 01  | Hank |
-  # | 02  | Jane |
+  #     | ID  | Name |
+  #     | --- | ---- |
+  #     | 01  | Hank |
+  #     | 02  | Jane |
   class Mapper
 
     include Dsl

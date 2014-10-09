@@ -10,16 +10,16 @@ module Sycsvpro
   #
   # in.csv
   #
-  # | Customer | 2013 | 2014 |
-  # | A        | A1   |      |
-  # | B        | B1   | B16  |
-  # | A        | A3   | A7   |
+  #   | Customer | 2013 | 2014 |
+  #   | A        | A1   |      |
+  #   | B        | B1   | B16  |
+  #   | A        | A3   | A7   |
   #
   # out.csv
   #
-  # | Customer | 2013 | 2014 | Sum |
-  # | A        | 2    | 1    | 3   | 
-  # | B        | 1    | 1    | 2   |
+  #   | Customer | 2013 | 2014 | Sum |
+  #   | A        | 2    | 1    | 3   | 
+  #   | B        | 1    | 1    | 2   |
   class Aggregator
 
     include Dsl
