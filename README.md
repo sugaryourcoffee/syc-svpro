@@ -268,8 +268,7 @@ Use cases are
 * arithmetic operations on spread sheets
 * information about table like data
 
-Example for Arithmetic Operation
---------------------------------
+###Example for Arithmetic Operation
 Asume we want to calculate the market for computer services. We have the count 
 of computers in each country, we are offering different services with service
 specific prices. We know the market for each service in percent. With this data 
@@ -337,12 +336,11 @@ optimized for better readability)
     [US-Maintain]   7500.0  21000.0   36000.0
     [US-Repair]     9000.0  10500.0    9600.0
 
-Example for Information on Spread Sheets
-----------------------------------------
+###Example for Information on Spread Sheets
 With the analyze command we get information about the general structure and some
-sample data. If we want to look at the csv file more detailed we can use the
-spreadsheet command. In this case we don't want to write the result to the file
-as it is no spread sheet, so we can ommit the global -o option.
+sample data of a csv file. If we want to look at the csv file more detailed we 
+can use the spreadsheet command. In this case we don't want to write the result
+to the file as it is no spread sheet, so we can ommit the global -o option.
 
     sycsvpro spreadsheet -f country.csv -r true -c true -a a \
                          -o "puts;puts a;puts a.ncol;puts a.nrow;puts a.size"
@@ -372,7 +370,8 @@ can print the result to the console with the -p flag
                              a.each_column { \
                                |column| result << column * price * market \
                              }; \
-                             result"
+                             result" \
+                         -p
 
 The last evaluation, in this case result, will be returned as the result. The
 -p flag will print the result to the console
@@ -567,7 +566,7 @@ want to dig deeper I would recommend [R](http://www.r-project.org/).
 
 A work flow could be as follows
 
-* Analyze the file `analyze`
+* Analyze the file `analyze` or `spreadsheet`
 * Clean the data `map`
 * Extract rows and columns of interest `extract`
 * Count values `count`
@@ -717,7 +716,8 @@ Version 0.2.0
 -------------
 * SpreadSheet is used to conduct operations like multiplication, division,
   addition and subtraction between multiple files that have a table like 
-  structure
+  structure. SpreadSheet can also be used to retrieve information about csv
+  files
 
 Documentation
 =============
