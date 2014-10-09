@@ -1,5 +1,3 @@
-= sycsvpro
-
 NAME
     sycsvpro - Processing CSV files
 
@@ -7,7 +5,7 @@ SYNOPSIS
     sycsvpro [global options] command [command options] [arguments...]
 
 VERSION
-    0.1.7
+    0.2.0
 
 GLOBAL OPTIONS
     -f, --file=FILE    - CSV file to operate on (default: none)
@@ -17,24 +15,27 @@ GLOBAL OPTIONS
     --version          - Display the program version
 
 COMMANDS
-    aggregate - Aggregates the occurences of row values. Optionally adds a sum row
-    allocate  - Allocate specified columns from the file to a key value
-    analyze   - Analyze the CSV file regarding columns, rows and content
-    calc      - Process operations on columns. Optionally add a sum row for columns withnumber
-                values
-    collect   - Collect values of specified rows and columns from the file and group them in
-                categories
-    count     - Counts the occurences of column values. Uses column values as headings with count as
-                values. Columns with a condition will be added as new columns and the condition will
-                be set as column name. Optionally adds a sum row
-    edit      - Creates a script/insert file or opens a script/insert file for editing if it exists
-    execute   - Executes the code provided in a file
-    extract   - Extract specified rows and columns from the file
-    help      - Shows a list of commands or help for one command
-    insert    - Inserts rows from a file to a csv-file
-    join      - Join two files based on a joint column value
-    list      - Lists script or insert files in the scripts directory with optionally listing
-                methods of script files
-    map       - Map values in columns to new values
-    sort      - Sort rows based on column values
-    table     - Creates a table from a source file
+    aggregate   - Aggregates the occurences of row values. Optionally adds a sum row
+    allocate    - Allocate specified columns from the file to a key value
+    analyze     - Analyze the CSV file regarding columns, rows and content
+    calc        - Process operations on columns. Optionally add a sum row for columns withnumber values
+    collect     - Collect values of specified rows and columns from the file and group them in categories
+    count       - Counts the occurences of column values. Uses column values as headings with count as values. Columns with a condition will be added as new columns
+                  and the condition will be set as column name. Optionally adds a sum row
+    edit        - Creates a script/insert file or opens a script/insert file for editing if it exists
+    execute     - Executes the code provided in a file
+    extract     - Extract specified rows and columns from the file
+    help        - Shows a list of commands or help for one command
+    insert      - Inserts rows from a file to a csv-file. You can for instance add sum operations in Excel or LibreOffice style if you want to process the resulting
+                  file in Excel or LibreOffice
+    join        - Join two files based on a joint column value
+    list        - Lists script or insert files in the scripts directory with optionally listing methods of script files
+    map         - Map values in columns to new values
+    merge       - Merge multiple files based on a common column value with a key value at the first column of a row
+    sort        - Sort rows based on column values. It is possible to sort on multiple columns
+    spreadsheet - Do arithmetic operation with table like data. The table has to have rows with same size. Arithmetic operations are *, /, + and - where the results
+                  can be concatenated. Complete functions can be looked up at https://rubygems.org/gem/sycsvpro
+    table       - Associates columns to a key value. A key value can be a combination of multiple column values. Values associated can be generated from an arithmetic
+                  or string operation. Header columns can be generated dynamically based on column values
+    transpose   - Transposes rows and columns
+    unique      - Remove duplicate rows from a file. Duplicates are identified by key columns

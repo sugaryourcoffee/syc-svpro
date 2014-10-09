@@ -42,5 +42,6 @@ Test files are in
 
     spec/sycsvpro/files
 
-:include: sycsvpro.rdoc
+== Help contents
+:include:sycsvpro.rdoc
 

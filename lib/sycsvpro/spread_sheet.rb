@@ -72,14 +72,14 @@ module Sycsvpro
     #
     # Params
     # ======
-    # r:          has row labels if true
-    # c:          has column labels if true
-    # row_labels: explicitly provides row labels
-    # col_labels: explicitly provides column labels
-    # values:     flat array with values
-    # rows:       indicates the row count in combination with values param
-    # cols:       indicates the col count in combination with values param
-    # file:       file that contains values to create spread sheet with
+    # r::          has row labels if true
+    # c::          has column labels if true
+    # row_labels:: explicitly provides row labels
+    # col_labels:: explicitly provides column labels
+    # values::     flat array with values
+    # rows::       indicates the row count in combination with values param
+    # cols::       indicates the col count in combination with values param
+    # file::       file that contains values to create spread sheet with
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
@@ -232,7 +232,7 @@ module Sycsvpro
     end
 
     # Returns the result in a new spread sheet
-     # Multiplies two spreadsheets column by column and returns a new spread
+    # Multiplies two spreadsheets column by column and returns a new spread
     # sheet with the result
     #   1 2 3   3 2 1    3  4  3
     #   4 5 6 * 6 5 4 = 24 25 24
