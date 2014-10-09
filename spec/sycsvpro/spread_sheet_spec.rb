@@ -42,6 +42,20 @@ module Sycsvpro
       expect { s1 == s2 }
     end
 
+    it "should skip empty rows in file" do
+      file = File.join(File.dirname(__FILE__), 
+                       "files/spread_sheet_with_empty_rows.csv")
+
+      s1 = SpreadSheet.new(file: file, r: true, c: true)
+      s2 = SpreadSheet.new(['Alpha', 'Beta', 'Gamma'],
+                           ['A',NotAvailable,2,3],
+                           ['C',7,NotAvailable,9],
+                           r: true, c: true)
+      expect { s1 == s2 }
+     end
+
+    it "should fill empty rows with NA"
+
     it "should be created from flat array" do
       s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 2)
       s2 = SpreadSheet.new([1,2],[3,4],[5,6])
@@ -78,6 +92,10 @@ module Sycsvpro
       s2 = SpreadSheet.new(['A','B'],['C1',1,7],['C2',3,11],['C3',5,13], r: true, c: true)
       expect { s1.tranpose == s2 }
     end
+
+    it "should sort on columns"
+
+    it "should filter rows on column values"
 
     it "should assign new values to rows and columns"
 

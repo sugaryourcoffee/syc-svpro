@@ -393,6 +393,7 @@ module Sycsvpro
           values.each_slice(col_count) { |row| rows << row }
         elsif opts[:file]
           File.readlines(opts[:file]).each do |line| 
+            next if line.chomp.empty?
             row = line.split(';')
             rows << row.collect { |v| 
               v.strip.empty? ? NotAvailable : Float(v.chomp) rescue v.chomp 
