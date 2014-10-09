@@ -719,6 +719,12 @@ Version 0.2.0
   structure. SpreadSheet can also be used to retrieve information about csv
   files
 
+Version 0.2.1
+-------------
+* When creating spread sheets from file empty rows are skipped
+* To equalize column sizes of rows in spread sheets `equalize: true` flag was
+  introduced
+
 Documentation
 =============
 The class documentation can be found at 

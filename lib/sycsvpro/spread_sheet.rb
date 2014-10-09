@@ -84,6 +84,7 @@ module Sycsvpro
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
       rows = rows_from_params(@opts) if rows.empty?
+      rows = equalize_rows(rows) if @opts[:equalize]
       check_validity_of(rows)
       @row_labels, @col_labels = create_labels(rows)
       @rows = rows
@@ -404,14 +405,33 @@ module Sycsvpro
         rows
       end
 
+      # If rows are of different column size the rows are equalized in column
+      # size by filling missing columns with NA
+      def equalize_rows(rows)
+        column_sizes = rows.collect { |r| r.size }
+
+        return rows if column_sizes.uniq.size == 1
+
+        max_size = column_sizes.max
+        small_rows = []
+        column_sizes.each_with_index { |c,i| small_rows << i if c < max_size }
+
+        small_rows.each do |i| 
+          rows[i] += [NotAvailable] * (max_size - rows[i].size)
+        end
+
+        rows
+      end
+
       # Checks whether the rows are valid, that is
       #   * same size
       #   * not nil
       #   * at least one row
       def check_validity_of(rows)
-        raise "rows need to be arrays"           if !rows_are_arrays?(rows)
-        raise "needs at least one row"           if rows.empty?
-        raise "rows must be of same column size" if !same_column_size?(rows)
+        raise "rows need to be arrays"              if !rows_are_arrays?(rows)
+        raise "needs at least one row"              if rows.empty?
+        raise "rows must be of same column size. "+
+              "Use equalize: true flag to fix."     if !same_column_size?(rows)
       end
 
       # Checks whether all rows have the same column size. Returns true if

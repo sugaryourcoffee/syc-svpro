@@ -7,7 +7,8 @@ module Sycsvpro
     # Creation of spread sheets
     it "should ensure all rows have the same column size" do
       expect { SpreadSheet.new([1,2], [3,4,5]) }.to raise_error(RuntimeError,
-                                             "rows must be of same column size")
+                    "rows must be of same column size. Use equalize: true "+
+                    "flag to fix.")
     end
 
     it "should not accept non arrays as rows" do
@@ -51,10 +52,35 @@ module Sycsvpro
                            ['A',NotAvailable,2,3],
                            ['C',7,NotAvailable,9],
                            r: true, c: true)
-      expect { s1 == s2 }
-     end
+      
+      expect { s1 == s2 }.to be_true
+    end
 
-    it "should fill empty rows with NA"
+    it "should equalize column size through NA" do
+      s1 = SpreadSheet.new([1,2,3],[4,5],[6,7,8,9],[10], equalize: true)
+      s2 = SpreadSheet.new([1,2,3,NotAvailable],
+                           [4,5,NotAvailable,NotAvailable],
+                           [6,7,8,9],
+                           [10,NotAvailable,NotAvailable,NotAvailable])
+      s1.should eq s2
+    end
+
+    it "should equalize column size through NA with row and column labels" do
+      s1 = SpreadSheet.new(['A','B'],
+                           ['W',1,2,3],
+                           ['X',4,5],
+                           ['Y',6,7,8,9],
+                           ['Z',10], 
+                           r: true, c: true,
+                           equalize: true)
+      
+      s2 = SpreadSheet.new(['A','B',2,3],['W',1,2,3,NotAvailable],
+                           ['X',4,5,NotAvailable,NotAvailable],
+                           ['Y',6,7,8,9],
+                           ['Z',10,NotAvailable,NotAvailable,NotAvailable],
+                           r: true, c: true)
+      s1.should eq s2
+    end
 
     it "should be created from flat array" do
       s1 = SpreadSheet.new(values: [1,2,3,4,5,6], cols: 2)
