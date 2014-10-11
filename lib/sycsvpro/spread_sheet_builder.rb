@@ -20,20 +20,22 @@ module Sycsvpro
     #
     #     SpreadSheetBuilder.new(outfile:   "out.csv",
     #                            files:     "f1.csv,f2.csv",
-    #                            rlabels:   "true,false",
-    #                            clabels:   "false,true",
+    #                            r:         "true,false",
+    #                            c:         "false,true",
     #                            aliases:   "a,b",
     #                            operation: "(a*b).transpose",
+    #                            ds:        ",",
     #                            print:     "true").execute
     #
     # outfile:   file where the result of the operation is written to
     # files:     files that hold the spread sheet data
-    # rlabels:   indication whether the corresponding file has row labels
-    # clabels:   indication whether the corresponding file has column labels
+    # r:         indication whether the corresponding file has row labels
+    # c:         indication whether the corresponding file has column labels
     # aliases:   symbols that correspond to the spread sheet created from the
     #            files. The symbols are used in the operation. The symbols have
     #            to be choosen carefully not to conflict with existing methods
     #            and variables
+    # ds:        decimal spearator '.' or ',' where '.' is default
     # operation: arithmetic operation on spread sheets using the aliases as
     #            place holders for the spread sheets. The last evaluated
     #            operation is returned as result and saved to outfile in case
@@ -93,7 +95,7 @@ module Sycsvpro
 
         operands = {}
         opts[:aliases].split(',').each_with_index do |a,i|
-          operands[a] = SpreadSheet.new(file: files[i], 
+          operands[a] = SpreadSheet.new(file: files[i], ds: opts[:ds], 
                                         r: rlabels[i], c: clabels[i])
         end
 

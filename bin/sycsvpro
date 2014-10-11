@@ -426,6 +426,10 @@ command :spreadsheet do |c|
   c.arg_name 'ALIAS_1,ALIAS_2,...,ALIAS_N'
   c.flag [:a, :alias]
 
+  c.desc 'Decimal separator for number values'
+  c.arg_name '.|,'
+  c.flag [:ds], default: '.'
+
   c.desc 'The arithmetic operation with the table data'
   c.arg_name 'ARITHMETIC_OPERATION'
   c.flag [:o, :operation]
@@ -441,6 +445,7 @@ command :spreadsheet do |c|
                                      clabels:   options[:c],
                                      aliases:   options[:a],
                                      operation: options[:o],
+                                     ds:        options[:ds],
                                      print:     options[:p]).execute
     print 'done'
   end

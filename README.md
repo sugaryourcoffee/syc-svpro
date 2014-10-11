@@ -714,16 +714,22 @@ Version 0.1.13
 
 Version 0.2.0
 -------------
-* SpreadSheet is used to conduct operations like multiplication, division,
-  addition and subtraction between multiple files that have a table like 
-  structure. SpreadSheet can also be used to retrieve information about csv
-  files
+* SpreadSheet has been introduced. A spread sheet is used to conduct 
+  operations like multiplication, division, addition and subtraction between 
+  multiple files that have a table like structure. SpreadSheet can also be used 
+  to retrieve information about csv files
 
 Version 0.2.1
 -------------
 * When creating spread sheets from file empty rows are skipped
 * To equalize column sizes of rows in spread sheets `equalize: true` flag was
   introduced
+* To distinguish between different number locales like _1.234.567,89_, 
+  _1,234,567.89_, _1 234 567.89_ and the like a `ds` flag was introduced to
+  spread sheet to indicate the number formatting
+* Optimize performance when creating spread sheets from files
+* Dsl module has got 3 new methods #is\_integer?, #is\_float? and #str2num to
+  convert strings that represent numbers to numericals
 
 Documentation
 =============

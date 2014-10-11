@@ -1,4 +1,5 @@
 require_relative 'not_available'
+require_relative 'dsl'
 
 # Operating csv files
 module Sycsvpro
@@ -33,6 +34,8 @@ module Sycsvpro
   #   A * C = [0*0]     8     16
   #           [1*0]    24     32
   class SpreadSheet
+
+    include Dsl
 
     # rows of the spread sheet
     attr_accessor :rows
@@ -80,6 +83,9 @@ module Sycsvpro
     # rows::       indicates the row count in combination with values param
     # cols::       indicates the col count in combination with values param
     # file::       file that contains values to create spread sheet with
+    # ds::         decimal spearator '.' or ',' where '.' is default. The
+    #              decimal separator is used when spread sheet is created from
+    #              file
     def initialize(*rows)
       opts = rows.pop if rows.last.is_a?(::Hash)
       @opts = opts || {}
@@ -393,13 +399,14 @@ module Sycsvpro
           end
           values.each_slice(col_count) { |row| rows << row }
         elsif opts[:file]
+          start_read = Time.now
           File.readlines(opts[:file]).each do |line| 
             next if line.chomp.empty?
-            row = line.split(';')
-            rows << row.collect { |v| 
-              v.strip.empty? ? NotAvailable : Float(v.chomp) rescue v.chomp 
+            rows << line.split(SEMICOLON).collect { |v| 
+              v.strip.empty? ? NotAvailable : str2num(v.chomp, opts[:ds])
             }
           end
+          STDERR.puts "Reading file in #{Time.now - start_read} seconds"
         end
 
         rows

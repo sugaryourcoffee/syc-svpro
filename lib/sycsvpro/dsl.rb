@@ -8,6 +8,25 @@ module Dsl
   # Example:
   #     Year,c1+c2,c1=~/[A-Z]{1,2}/,Month
   COMMA_SPLITTER_REGEX = /(?<=,|^)(BEGIN.*?END|\/.*?\/|.*?)(?=,|$)/i
+  # Recognizes a string that represents an integer value
+  INTEGER_REGEX = /^\d{1,3}(?:[,\. ]\d{3}|\d)*$/
+  COMMA_POINT_SPACE_REGEX = /[,\. ]/
+  # Recognizes a string that represents a float value in the form of 1,333.45
+  DECIMAL_POINT_REGEX = /^\d{1,3}(?:[, ]\d{3}|\d)*(?:\.\d*)$/
+  # Recognizes a string that represents a float value in the form of 1.333,45
+  DECIMAL_COMMA_REGEX = /^\d{1,3}(?:[\. ]\d{3}|\d)*(?:,\d*)$/
+  # A regex that recognizes '.' and ' ' to be used e.g. in #gsub to optimize performance
+  POINT_SPACE_REGEX    = /[\. ]/
+  # A regex that recognizes ',' and ' ' to be used e.g. in #gsub to optimize performance
+  COMMA_SPACE_REGEX    = /[, ]/
+  # A point '.' to be used e.g. in #gsub to optimize performance
+  POINT = '.'
+  # A comma ',' to be used e.g. in #gsub to optimize performance
+  COMMA = ','
+  # A semicolon ';' to be used e.g. in #gsub to optimize performance
+  SEMICOLON = ';'
+  # An empty string '' to be used e.g. in #gsub to optimize performance
+  EMPTY = ''
 
   # read arguments provided at invocation
   # :call-seq:
@@ -96,6 +115,40 @@ module Dsl
   def split_by_comma_regex(values)
     values.scan(COMMA_SPLITTER_REGEX).flatten.each.
       collect { |h| h.gsub(/BEGIN|END/, "") }
+  end
+
+  # Checks if the string represents an integer if so returns the integer 
+  # otherwise nil
+  def is_integer?(value)
+    return value.
+      gsub(COMMA_POINT_SPACE_REGEX, EMPTY) if !(value =~ INTEGER_REGEX).nil?
+  end
+
+  # Checks if the string represents a float and in case it is a float returns
+  # the float value otherwise nil
+  #   "1.5" -> 1.5
+  #   "1."  -> 1.0
+  def is_float?(value, decimal_separator = POINT)
+    if decimal_separator == POINT
+      return value.
+        gsub(COMMA_SPACE_REGEX, EMPTY) if !(value =~ DECIMAL_POINT_REGEX).nil?
+    else
+      return value.
+        gsub(POINT_SPACE_REGEX, EMPTY).
+        gsub(COMMA, POINT) if !(value =~ DECIMAL_COMMA_REGEX).nil?
+    end
+  end
+
+  # Converts a string to a numeric if the string represents a numerical value
+  def str2num(value, decimal_separator = POINT)
+    case 
+    when v = is_integer?(value)
+      v.to_i
+    when v = is_float?(value, decimal_separator)
+      v.to_f
+    else
+      value
+    end 
   end
 
   private
