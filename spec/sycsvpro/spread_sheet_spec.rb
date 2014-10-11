@@ -31,6 +31,10 @@ module Sycsvpro
       expect { s1 == s2 }
     end
 
+    it "should be created from first n rows of file"
+
+    it "should be created from last n rows of file"
+
     it "should be created from file with missing values" do
       file = File.join(File.dirname(__FILE__), "files/spread_sheet_na.csv")
 
