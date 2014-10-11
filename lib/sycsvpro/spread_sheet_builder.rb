@@ -25,23 +25,25 @@ module Sycsvpro
     #                            aliases:   "a,b",
     #                            operation: "(a*b).transpose",
     #                            ds:        ",",
+    #                            equalize:  "true",
     #                            print:     "true").execute
     #
-    # outfile:   file where the result of the operation is written to
-    # files:     files that hold the spread sheet data
-    # r:         indication whether the corresponding file has row labels
-    # c:         indication whether the corresponding file has column labels
-    # aliases:   symbols that correspond to the spread sheet created from the
-    #            files. The symbols are used in the operation. The symbols have
-    #            to be choosen carefully not to conflict with existing methods
-    #            and variables
-    # ds:        decimal spearator '.' or ',' where '.' is default
-    # operation: arithmetic operation on spread sheets using the aliases as
-    #            place holders for the spread sheets. The last evaluated
-    #            operation is returned as result and saved to outfile in case
-    #            the result is a spread sheet. In all other cases the result can
-    #            be printed with the print flag.
-    # print:     print the result
+    # outfile::   file where the result of the operation is written to
+    # files::     files that hold the spread sheet data
+    # r::         indication whether the corresponding file has row labels
+    # c::         indication whether the corresponding file has column labels
+    # aliases::   symbols that correspond to the spread sheet created from the
+    #             files. The symbols are used in the operation. The symbols have
+    #             to be choosen carefully not to conflict with existing methods
+    #             and variables
+    # ds::        decimal spearator '.' or ',' where '.' is default
+    # equalize::  indicates whether different column sizes should be equalized
+    # operation:: arithmetic operation on spread sheets using the aliases as
+    #             place holders for the spread sheets. The last evaluated
+    #             operation is returned as result and saved to outfile in case
+    #             the result is a spread sheet. In all other cases the result 
+    #             can be printed with the print flag.
+    # print::     print the result
     def initialize(opts = {})
       @print     = opts[:print]
       @operands  = create_operands(opts)
@@ -96,6 +98,7 @@ module Sycsvpro
         operands = {}
         opts[:aliases].split(',').each_with_index do |a,i|
           operands[a] = SpreadSheet.new(file: files[i], ds: opts[:ds], 
+                                        equalize: opts[:equalize],
                                         r: rlabels[i], c: clabels[i])
         end
 

@@ -731,6 +731,10 @@ Version 0.2.1
 * Dsl module has got 3 new methods #is\_integer?, #is\_float? and #str2num to
   convert strings that represent numbers to numericals
 
+Version 0.2.2
+-------------
+* Add the equalize switch to the spread sheet command line
+
 Documentation
 =============
 The class documentation can be found at 

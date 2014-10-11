@@ -82,6 +82,7 @@ module Sycsvpro
     # values::     flat array with values
     # rows::       indicates the row count in combination with values param
     # cols::       indicates the col count in combination with values param
+    # equalize::   If columns are of different size equalizes the column size
     # file::       file that contains values to create spread sheet with
     # ds::         decimal spearator '.' or ',' where '.' is default. The
     #              decimal separator is used when spread sheet is created from
@@ -435,10 +436,10 @@ module Sycsvpro
       #   * not nil
       #   * at least one row
       def check_validity_of(rows)
-        raise "rows need to be arrays"              if !rows_are_arrays?(rows)
-        raise "needs at least one row"              if rows.empty?
-        raise "rows must be of same column size. "+
-              "Use equalize: true flag to fix."     if !same_column_size?(rows)
+        raise "rows need to be arrays"           if !rows_are_arrays?(rows)
+        raise "needs at least one row"           if rows.empty?
+        raise "rows must be of same column size. Use "+
+              "'equalize: true' flag to fix it." if !same_column_size?(rows)
       end
 
       # Checks whether all rows have the same column size. Returns true if

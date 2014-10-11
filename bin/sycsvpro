@@ -430,6 +430,10 @@ command :spreadsheet do |c|
   c.arg_name '.|,'
   c.flag [:ds], default: '.'
 
+  c.desc 'In order to build spread sheets rows have to be of equal size. The '+
+         'e switch equalizes row sizes over all rows'
+  c.switch [:e, :equalize], :default_value => false
+
   c.desc 'The arithmetic operation with the table data'
   c.arg_name 'ARITHMETIC_OPERATION'
   c.flag [:o, :operation]
@@ -446,6 +450,7 @@ command :spreadsheet do |c|
                                      aliases:   options[:a],
                                      operation: options[:o],
                                      ds:        options[:ds],
+                                     equalize:  options[:e],
                                      print:     options[:p]).execute
     print 'done'
   end
