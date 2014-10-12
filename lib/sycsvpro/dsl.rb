@@ -108,7 +108,7 @@ module Dsl
 
   # Remove non-UTF chars from string
   def str2utf8(str)
-    str.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: '')
+    str.encode('UTF-8', 'binary', invalid: :replace, undef: :replace, replace: EMPTY)
   end
 
   # Retrieves the values scanned by a COMMA_SPLITTER_REGEX

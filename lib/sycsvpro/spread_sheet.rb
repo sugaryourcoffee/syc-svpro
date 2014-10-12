@@ -421,7 +421,9 @@ module Sycsvpro
         elsif opts[:file]
           File.foreach(opts[:file]) do |line| 
             next if line.chomp.empty?
-            rows << line.split(SEMICOLON).collect { |v| 
+            values = line.split(SEMICOLON) rescue str2utf8(line).
+                                                    split(SEMICOLON)
+            rows << values.collect { |v| 
               v.strip.empty? ? NotAvailable : str2num(v.chomp, opts[:ds])
             }
           end

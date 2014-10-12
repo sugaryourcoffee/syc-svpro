@@ -738,6 +738,7 @@ Version 0.2.2
 * Introduce _r_ and _c_ arguments to SpreadSheet#write to indicate whether the
   row and column labels should be written to the file. Row and column labels are
   written per default for compatibility reasons
+* Catch encoding errors when creating spread sheet from file
 
 Documentation
 =============
