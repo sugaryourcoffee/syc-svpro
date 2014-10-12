@@ -326,12 +326,31 @@ module Sycsvpro
       @col_labels = opts[:cols] if opts[:cols]
     end
 
-    # Writes spread sheet to a file separated with ';'
-    def write(file)
+    # Writes spread sheet to a file separated with ';'. Accepts two boolean
+    # arguments to indicate whether the row and column labels should be saved
+    # along with the spread sheet's labels
+    # r:: when true row labels will be saved, default is true
+    # c:: when true column labels will be saved, default is true
+    def write(file, opts = {})
+      opts = {r: true, c: true}.merge(opts)
+
+      if opts[:r]
+        construct_row = -> row,i { row.insert(0,row_labels[i]).join(SEMICOLON) }
+      else
+        construct_row = -> row,i { row.join(SEMICOLON) }
+      end
+      
       File.open(file, 'w') do |out|
-        out.puts "#{SEMICOLON}#{col_labels.join(SEMICOLON)}"
+        if opts[:c]
+          if opts[:r]
+            out.puts "#{SEMICOLON}#{col_labels.join(SEMICOLON)}"
+          else
+            out.puts col_labels.join(SEMICOLON) 
+          end
+        end
+
         rows.each_with_index do |row, i| 
-          out.puts row.insert(0, row_labels[i]).join(SEMICOLON)
+          out.puts construct_row.call row, i
         end
       end 
     end

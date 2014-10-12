@@ -115,6 +115,48 @@ module Sycsvpro
       Dir.glob(file).size.should eq 1
     end
 
+    it "should write to file without row labels" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet_out.csv")
+
+      s1 = SpreadSheet.new(['A', 'B', 'C'],['I',1,2,3],['II',4,5,6], 
+                           r: true, c: true)
+      s1.write(file, r: false)
+
+      lines = File.readlines(file)
+
+      content = ["A;B;C\n", "1;2;3\n", "4;5;6\n"]
+
+      lines.should eq content
+    end
+
+    it "should write to file without column labels" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet_out.csv")
+
+      s1 = SpreadSheet.new(['A', 'B', 'C'],['I',1,2,3],['II',4,5,6], 
+                           r: true, c: true)
+      s1.write(file, c: false)
+
+      lines = File.readlines(file)
+
+      content = ["I;1;2;3\n", "II;4;5;6\n"]
+
+      lines.should eq content
+    end
+ 
+    it "should only write data to file" do
+      file = File.join(File.dirname(__FILE__), "files/spread_sheet_out.csv")
+
+      s1 = SpreadSheet.new(['A', 'B', 'C'],['I',1,2,3],['II',4,5,6], 
+                           r: true, c: true)
+      s1.write(file, r: false, c: false)
+
+      lines = File.readlines(file)
+
+      content = ["1;2;3\n", "4;5;6\n"]
+
+      lines.should eq content
+    end
+ 
     # Manipulating spread sheets
 
     it "should transpose rows and columns" do
