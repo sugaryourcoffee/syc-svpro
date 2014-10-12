@@ -329,9 +329,9 @@ module Sycsvpro
     # Writes spread sheet to a file separated with ';'
     def write(file)
       File.open(file, 'w') do |out|
-        out.puts ";#{col_labels.join(';')}"
+        out.puts "#{SEMICOLON}#{col_labels.join(SEMICOLON)}"
         rows.each_with_index do |row, i| 
-          out.puts "#{row_labels[i]};#{row.join(';')}"
+          out.puts row.insert(0, row_labels[i]).join(SEMICOLON)
         end
       end 
     end
@@ -400,14 +400,12 @@ module Sycsvpro
           end
           values.each_slice(col_count) { |row| rows << row }
         elsif opts[:file]
-          start_read = Time.now
-          File.readlines(opts[:file]).each do |line| 
+          File.foreach(opts[:file]) do |line| 
             next if line.chomp.empty?
             rows << line.split(SEMICOLON).collect { |v| 
               v.strip.empty? ? NotAvailable : str2num(v.chomp, opts[:ds])
             }
           end
-          STDERR.puts "Reading file in #{Time.now - start_read} seconds"
         end
 
         rows
@@ -436,8 +434,8 @@ module Sycsvpro
       #   * not nil
       #   * at least one row
       def check_validity_of(rows)
-        raise "rows need to be arrays"           if !rows_are_arrays?(rows)
-        raise "needs at least one row"           if rows.empty?
+        raise "rows need to be arrays"             if !rows_are_arrays?(rows)
+        raise "needs at least one row"             if rows.empty?
         raise "rows must be of same column size. Use "+
               "'equalize: true' flag to fix this." if !same_column_size?(rows)
       end
@@ -523,7 +521,8 @@ module Sycsvpro
       # a spread sheet
       def process(operator, s)
         s = coerce(s) || s
-        raise "operand needs to be a SpreadSheet, Numeric or Array" unless s.is_a?(SpreadSheet)
+        raise "operand needs to be a SpreadSheet, "+
+              "Numeric or Array" unless s.is_a?(SpreadSheet)
         result = []
         rlabel = []
         clabel = []
