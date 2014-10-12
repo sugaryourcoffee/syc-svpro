@@ -7,8 +7,8 @@ module Sycsvpro
     # Creation of spread sheets
     it "should ensure all rows have the same column size" do
       expect { SpreadSheet.new([1,2], [3,4,5]) }.to raise_error(RuntimeError,
-                    "rows must be of same column size. Use equalize: true "+
-                    "flag to fix.")
+                    "rows must be of same column size. Use 'equalize: true' "+
+                    "flag to fix this.")
     end
 
     it "should not accept non arrays as rows" do

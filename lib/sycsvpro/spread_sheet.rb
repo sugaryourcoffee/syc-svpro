@@ -439,7 +439,7 @@ module Sycsvpro
         raise "rows need to be arrays"           if !rows_are_arrays?(rows)
         raise "needs at least one row"           if rows.empty?
         raise "rows must be of same column size. Use "+
-              "'equalize: true' flag to fix it." if !same_column_size?(rows)
+              "'equalize: true' flag to fix this." if !same_column_size?(rows)
       end
 
       # Checks whether all rows have the same column size. Returns true if
