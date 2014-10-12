@@ -10,12 +10,13 @@ module Sycsvpro
   #    1 + na -> na
   class NotAvailable
 
+    # The string representation of NotAvailable
+    NA = "NA"
+
     class << self
 
       # Catches all expressions where na is the first argument
       def method_missing(name, *args, &block)
-        super if name == :to_ary
-        super if name == :to_str
         self
       end
 
@@ -25,9 +26,17 @@ module Sycsvpro
         [self,value]
       end
 
+      # Checks whether SpreadSheet responds to 'name'. The methods :to_ary and
+      # :to_str are excluded
+      def respond_to?(name)
+        return false if name == :to_ary
+        return false if name == :to_str
+        super
+      end
+
       # Returns NA as the string representation
       def to_s
-        "NA"
+        NA
       end
       
     end
